@@ -116,8 +116,6 @@ jobs:
       # 不会把自己再触发一遍：GITHUB_TOKEN 推的提交不触发 workflow，而且上面的
       # push 过滤器里没有 Formula/。两道保险。
       - name: 提交 formula
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git add Formula
@@ -132,11 +130,18 @@ jobs:
           git pull --rebase --autostash
           git push
 
-          # 上面那条「不触发 workflow」的另一面：sync-gitee 的 push 触发器也收不到
-          # 这一下。formula 基本只由这里改，不补一刀的话 Gitee 上那份 tap 会一直停
-          # 在最后一次人工提交——而它正是给 GitHub 连不上的人用的，停了没人会发现。
-          # workflow_dispatch 是 GITHUB_TOKEN 那条限制的明文例外，打得动。
-          gh workflow run sync-gitee.yml
+      # 上面那条「不触发 workflow」的另一面：sync-gitee 的 push 触发器也收不到那一
+      # 下。formula 基本只由这个 job 改，不补一刀的话 Gitee 上那份 tap 会一直停在
+      # 最后一次人工提交——而它正是给 GitHub 连不上的人用的，停了这边谁也看不见。
+      # workflow_dispatch 是 GITHUB_TOKEN 那条限制的明文例外，打得动。
+      #
+      # 不判「这次改没改」：那样要等到下次发版才第一次走到这行，等于留一条到时候
+      # 才知道通不通的路。每轮都打的话它跟着定时构建两小时跑一遍，哪天权限或命令
+      # 不对当场就是红的。sync-gitee 本身是幂等的，没变化时它自己就什么都不做。
+      - name: 捅一下 sync-gitee
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync-gitee.yml
 
   # tap 的地址形式是非约定的（带 URL），而这正是这次改动唯一的风险点——真跑一遍
   # brew tap + brew install，而不是只看 formula 文件长得对不对。
