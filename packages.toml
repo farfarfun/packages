@@ -1,0 +1,19 @@
+# 收进 farfarfun 包仓库的项目。
+#
+# 每个条目是一个 GitHub 仓库：它 release 附件里的 .deb 会被拉下来编进 APT 索引。
+# 加一个新项目就是在这儿加三行，仓库本身不用动。
+#
+# 为什么不把 .deb 提交进 git：GitHub Pages 的站点上限是 1 GB，而二进制只增不减，
+# 真到了那天想清理得改写历史。各项目的 Release 本来就是事实来源，这里只记
+# 「收谁的、留几版」，pool 每次按这张表重新拼。
+
+[[source]]
+repo = "farfarfun/fundeploy"
+# 索引里保留最近几个版本。留多于一个是为了能 `apt install fundeploy=0.3.0`
+# 回退——只留最新的话，装坏了就没有退路。
+keep = 3
+# 0.3.0 之前是 Bash 版，deb 是 Architecture: all 并且 Depends 一堆东西，装出来是
+# 一棵脚本树而不是一个二进制——跟现在是两个完全不同的东西，不该在同一个包名下
+# 让人 `apt install fundeploy=0.1.17` 装到。0.1.15 那一版包名还叫 nltdeploy，
+# 收进来等于凭空多出一个谁也不认识的包。
+min_version = "0.3.0"

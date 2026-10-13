@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>farfarfun 包仓库</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 46rem; margin: 3rem auto; padding: 0 1.2rem;
+         font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", sans-serif; }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+  h2 { font-size: 1.1rem; margin-top: 2.2rem; }
+  p.sub { color: #888; margin-top: 0; }
+  pre { background: #1115; padding: .9rem 1rem; border-radius: 6px; overflow-x: auto; font-size: 14px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<h1>farfarfun 包仓库</h1>
+<p class="sub">加一次源，以后所有 farfarfun 的包都能直接 <code>apt install</code>。</p>
+
+<h2>加源</h2>
+<pre><code>curl -fsSL https://farfarfun.github.io/packages/farfarfun.gpg \
+  | sudo tee /usr/share/keyrings/farfarfun.gpg >/dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/farfarfun.gpg] https://farfarfun.github.io/packages/deb stable main" \
+  | sudo tee /etc/apt/sources.list.d/farfarfun.list
+
+sudo apt update</code></pre>
+
+<h2>装</h2>
+<pre><code>sudo apt install fundeploy</code></pre>
+<p>支持 amd64 和 arm64。想装旧版本用 <code>apt install fundeploy=0.3.0</code>，
+可选的版本见 <code>apt list -a fundeploy</code>。</p>
+
+<h2>其它渠道</h2>
+<pre><code>brew install farfarfun/tap/fundeploy      # macOS / Linuxbrew
+cargo install fundeploy                   # 有 Rust 工具链的话
+curl -fsSL https://raw.githubusercontent.com/farfarfun/fundeploy/master/install.sh | sh</code></pre>
+
+<h2>这个仓库怎么来的</h2>
+<p>索引由 <a href="https://github.com/farfarfun/packages">farfarfun/packages</a>
+自动生成：各项目发版时把 <code>.deb</code> 挂在自己的 GitHub Release 上，这边按
+<code>packages.toml</code> 收上来、重算索引、签名、发到 Pages。</p>
+</body>
+</html>

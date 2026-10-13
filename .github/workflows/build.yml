@@ -1,0 +1,132 @@
+name: build
+
+on:
+  # 各项目发完 release 后打过来的通知，正常路径。
+  repository_dispatch:
+    types: [package-published]
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - packages.toml
+      - scripts/**
+      - site/**
+      - .github/workflows/build.yml
+  # 兜底。某个项目的 dispatch 没打过来（token 过期、workflow 改坏了），第二天
+  # 这一跑也会把它收进来——否则「发版了但 apt 里没有」要等到有人报错才发现。
+  schedule:
+    - cron: '17 4 * * *'
+
+permissions:
+  contents: read
+
+# 整个仓库每次都是全量重建，两次并行跑会互相覆盖 Pages 产物。不取消进行中的那
+# 次：它可能正带着另一个项目刚发的包，取消了那个包这一轮就没了。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      signed: ${{ steps.config.outputs.signed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: config
+        env:
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "$APT_GPG_PRIVATE_KEY" ]; then
+            echo "signed=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "signed=false" >>"$GITHUB_OUTPUT"
+            echo "::warning::没配 APT_GPG_PRIVATE_KEY，跳过发布。"
+          fi
+
+      - name: 装工具
+        if: steps.config.outputs.signed == 'true'
+        run: sudo apt-get update && sudo apt-get install -y apt-utils dpkg-dev
+
+      - id: key
+        name: 导入签名密钥
+        if: steps.config.outputs.signed == 'true'
+        env:
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          fpr="$(printf '%s' "$APT_GPG_PRIVATE_KEY" \
+            | gpg --batch --with-colons --import-options show-only --import 2>/dev/null \
+            | awk -F: '$1 == "fpr" {print $10; exit}')"
+          [ -n "$fpr" ] || { echo "密钥读不出指纹" >&2; exit 1; }
+          printf '%s' "$APT_GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "fingerprint=$fpr" >>"$GITHUB_OUTPUT"
+
+      - name: 按清单收 .deb
+        if: steps.config.outputs.signed == 'true'
+        env:
+          # 只读公开 release，默认 token 就够。
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/collect-debs.sh packages.toml debs
+
+      - name: 组装并签名
+        if: steps.config.outputs.signed == 'true'
+        env:
+          APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
+        run: bash scripts/build-deb-repo.sh debs public/deb "${{ steps.key.outputs.fingerprint }}"
+
+      - name: 放公钥和说明页
+        if: steps.config.outputs.signed == 'true'
+        run: |
+          set -euo pipefail
+          cp site/index.html public/index.html
+          # 公钥放站点根上，不放 deb/ 下面：以后再加 rpm 源的话用的是同一把钥匙。
+          gpg --batch --export "${{ steps.key.outputs.fingerprint }}" >public/farfarfun.gpg
+          gpg --batch --armor --export "${{ steps.key.outputs.fingerprint }}" >public/farfarfun.asc
+          echo "=== 索引里有这些包 ==="
+          grep -E '^(Package|Version|Architecture):' public/deb/dists/stable/main/binary-amd64/Packages
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.config.outputs.signed == 'true'
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.signed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # 真照着 README 的说明加一遍源再装。索引算错、签名不对、架构漏了，都是
+      # 到这一步才看得出来——而用户碰到的正是这一步。
+      - name: 加源装一遍
+        run: |
+          set -eux
+          base=https://farfarfun.github.io/packages
+          # Pages 部署到边缘生效有几十秒延迟，重试几次再判失败。
+          for i in 1 2 3 4 5 6; do
+            curl -fsSL "$base/farfarfun.gpg" -o /tmp/k.gpg && break
+            sleep 10
+          done
+          sudo install -m 0644 /tmp/k.gpg /usr/share/keyrings/farfarfun.gpg
+          echo "deb [signed-by=/usr/share/keyrings/farfarfun.gpg] $base/deb stable main" \
+            | sudo tee /etc/apt/sources.list.d/farfarfun.list
+          sudo apt-get update
+          sudo apt-get install -y fundeploy
+          fundeploy --version
