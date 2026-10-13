@@ -148,8 +148,10 @@ jobs:
           # 裸名字装。tap 过之后 brew 在所有已 tap 的仓库里找，不用写全路径——
           # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
           # 正好提醒我们该改文档了。
-          # 不要 `| head`：会给 brew 一个 broken pipe，pipefail 下整步就红了。
-          brew info fundeploy | grep -F 'farfarfun/packages/fundeploy: stable'
+          # 问 json 不问人看的输出：`==>` 那些标题走的是 stderr，还带 ANSI 颜色，
+          # grep 它纯属给自己找事。
+          test "$(brew info --json=v2 fundeploy | jq -r '.formulae[0].tap')" \
+            = farfarfun/packages
           brew install fundeploy 2>&1 | tee /tmp/out
           # 确认装的真是本 tap 的那份，而不是碰巧撞上了别处的同名包。
           grep -F 'Installing fundeploy from farfarfun/packages' /tmp/out
