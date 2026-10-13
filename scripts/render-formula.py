@@ -23,7 +23,7 @@ from pathlib import Path
 
 import manifest
 
-GITEE_API = "https://gitee.com/api/v5/repos"
+GITEE = "https://gitee.com"
 
 # 附件名的约定：`<包名>-<target>.tar.gz`，跟各项目 release workflow 的构建矩阵
 # 一一对应。少了哪个平台就不渲染那一块，不是错——有的项目可能只发 Linux。
@@ -63,23 +63,53 @@ def fetch_sums(repo: str, tag: str, into: Path) -> dict[str, str]:
     return sums(into / "SHA256SUMS")
 
 
-def gitee_mirrors(repo: str, tag: str) -> dict[str, str]:
-    """Gitee 镜像上这一版的附件直链，按附件名索引。
+class _Stay(urllib.request.HTTPRedirectHandler):
+    """别跟 302。附件在不在，Gitee 自己那一跳就答完了，没必要再跑一趟 CDN。"""
 
-    取不到就返回空，不报错。镜像由各项目自己的 sync-gitee 流水线推过去，发版和
-    同步之间有时间差，「这会儿还没有」是常态；本仓库每两小时全量重渲染一遍，
-    下一轮自然补上。反过来，宁可暂时少一条 mirror，也不写一个还不存在的地址。
+    def redirect_request(self, *_args, **_kw):
+        return None
 
-    用 API 给的 `browser_download_url` 而不是自己拼：拼对了也只是碰巧，真改了
-    路由这边不会有任何征兆。
+
+_opener = urllib.request.build_opener(_Stay)
+
+
+def on_gitee(url: str) -> bool:
+    """这个地址在 Gitee 上取不取得到。
+
+    判死不判活：只有明确 404 才算没有，超时、限流、连不上一律当有。写错一条
+    mirror 的代价约等于零——brew 只在 url 下不动时才去试它，试到 404 和压根没写
+    是同一个结局；漏写一条的代价是国内用户装不上。两边不对等，就往有的那边偏。
     """
-    url = f"{GITEE_API}/{repo}/releases/tags/{tag}"
+    req = urllib.request.Request(url, method="HEAD")
     try:
-        with urllib.request.urlopen(url, timeout=15) as r:
-            assets = json.load(r).get("assets", [])
-    except (urllib.error.URLError, OSError, json.JSONDecodeError, TimeoutError):
-        return {}
-    return {a["name"]: a["browser_download_url"] for a in assets if a.get("name")}
+        with _opener.open(req, timeout=10):
+            return True
+    except urllib.error.HTTPError as e:
+        return e.code != 404
+    except (urllib.error.URLError, OSError):
+        return True
+
+
+def gitee_mirrors(repo: str, tag: str, assets: list[str]) -> dict[str, str]:
+    """这些附件在 Gitee 镜像上的直链，按附件名索引；确认不在的不收。
+
+    地址是拼的，但每条都 HEAD 过一次——验的就是待会儿要写进 formula 的那个串本身，
+    比问 API 要一个 `browser_download_url` 再原样抄过去还直接。
+
+    走文件服务器而不是 `/api/v5`：那个 API 匿名限流很紧，几次调用就开始回 403 且
+    一黏好一阵，而「被限流」和「还没同步」在返回里分不开（它对没同步的 tag 回的是
+    200 加一个裸 `null`，连状态码都指望不上）。真按它来，CI 被限的那一轮会把已经
+    好好的 mirror 全删掉，下一轮再加回来，formula 来回抖。
+
+    少掉几条是正常的：镜像由各项目自己的 sync-gitee 推过去，发版和同步之间有时间
+    差，而 formula 是发版后几十秒就重渲染的。本仓库每两小时全量再来一遍，补得上。
+    """
+    out = {}
+    for name in assets:
+        url = f"{GITEE}/{repo}/releases/download/{tag}/{name}"
+        if on_gitee(url):
+            out[name] = url
+    return out
 
 
 def render(
@@ -161,14 +191,14 @@ def main() -> int:
             # tap 里一个包只有一份 formula，只能是最新版。想装旧版走 apt。
             tag = tags[0]
             checksums = fetch_sums(s["repo"], tag, Path(tmp))
-            mirrors = gitee_mirrors(s["repo"], tag)
+            want = [f"{pkg}-{t}.tar.gz" for *_, t in PLATFORMS if f"{pkg}-{t}.tar.gz" in checksums]
+            mirrors = gitee_mirrors(s["repo"], tag, want)
             text = render(s, tag, checksums, mirrors)
             if text is None:
                 print(f"  {pkg} {tag}: 附件里没有能用的二进制包，跳过")
                 continue
             (outdir / f"{pkg}.rb").write_text(text)
-            where = "带 Gitee 镜像" if mirrors else "无 Gitee 镜像"
-            print(f"  {pkg} {tag}: 已生成（{where}）")
+            print(f"  {pkg} {tag}: 已生成（Gitee 镜像 {len(mirrors)}/{len(want)}）")
             wrote += 1
 
     if sources and not wrote:
