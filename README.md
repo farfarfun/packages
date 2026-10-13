@@ -39,23 +39,23 @@ formula——所以很容易误以为是裸名字本身的问题。这儿 trust 
 
 ## 加一个新项目
 
-在 `packages.toml` 里加几行，提交，完事：
+在 `packages.toml` 里加几行，提交，完事。funget 就是这么加进来的：
 
 ```toml
 [[source]]
-repo = "farfarfun/foo"
+repo = "farfarfun/funget"
 keep = 3
 
 # 可选。有这一节才生成 Homebrew formula。
 [source.brew]
-desc = "Does one thing well"
+desc = "HTTP file transfer tool with ranged concurrency and resume"
 ```
 
 **真的只改这一个文件**：两个装机验证（apt 的和 brew 的）都是按这张表遍历的，
 不用回去改 workflow。当前收了 `fundeploy` 和 `funget` 两个。
 
 前提是那个项目的 release 附件按约定命名：`.deb` 每个架构一个（`amd64`、`arm64`），
-brew 要的是 `foo-<target>.tar.gz` 加一份 `SHA256SUMS`。项目那边再加一步，发完
+brew 要的是 `<包名>-<target>.tar.gz` 加一份 `SHA256SUMS`。项目那边再加一步，发完
 release 通知这里重建：
 
 ```yaml
