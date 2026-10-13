@@ -179,3 +179,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fundeploy
           fundeploy --version
+
+      # 留多版的全部理由就是能回退。只装最新版的话，索引漏掉老版本这种故障是看
+      # 不出来的——装得上，只是退不回去。
+      - name: 退回上一版再装一遍
+        run: |
+          set -eux
+          apt-cache madison fundeploy
+          old="$(apt-cache madison fundeploy | awk '{print $3}' | sort -V | head -1)"
+          sudo apt-get install -y --allow-downgrades "fundeploy=${old}"
+          fundeploy --version | grep -F "$old"

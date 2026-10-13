@@ -44,6 +44,7 @@ DIST="${OUTPUT_DIR}/dists/stable"
 # 哪个文件属于谁，而出问题时第一件事就是去 pool 里核对。
 # 首字母从包名的 control 字段取，不从文件名猜：文件名是构建脚本拼的，改个拼法
 # 就和索引对不上了，而 control 是 apt 自己认的那一份。
+declare -A WANT=()
 for deb in "${DEBS[@]}"; do
   name="$(dpkg-deb -f "$deb" Package)"
   [[ -n "$name" ]] || die "读不出包名: $deb"
@@ -54,17 +55,30 @@ for deb in "${DEBS[@]}"; do
   dest="${OUTPUT_DIR}/pool/main/${letter}/${name}"
   mkdir -p "$dest"
   cp -f "$deb" "$dest/"
+  arch="$(dpkg-deb -f "$deb" Architecture)"
+  WANT["$arch"]=$(( ${WANT["$arch"]:-0} + 1 ))
 done
 
 # 每个架构扫出自己的 Packages。二进制是静态链接的、每个架构一个包，索引共用的话
 # arm64 的机器会在列表里看到 amd64 的包，apt 直接判定「没有可安装的候选」。
+#
+# --multiversion 不能少：不加的话 dpkg-scanpackages 每个包只写最新的那一版，
+# pool 里躺着 keep 规定的几版而索引里只有一版——`apt install fundeploy=0.3.0`
+# 报「找不到该版本」，而回退正是留多版的全部理由。
 for arch in "${ARCHES[@]}"; do
   mkdir -p "${DIST}/main/binary-${arch}"
   (
     cd "$OUTPUT_DIR"
-    dpkg-scanpackages --arch "$arch" pool
+    dpkg-scanpackages --multiversion --arch "$arch" pool
   ) >"${DIST}/main/binary-${arch}/Packages"
   [[ -s "${DIST}/main/binary-${arch}/Packages" ]] || die "${arch} 没有对应的包"
+
+  # pool 里放进去几个，索引里就得有几条。漏掉的那种是最难发现的故障：装还是装
+  # 得上（最新版在），只是回退悄悄没了。
+  got="$(grep -c '^Package:' "${DIST}/main/binary-${arch}/Packages")"
+  want="${WANT[$arch]:-0}"
+  [[ "$got" -eq "$want" ]] || die "${arch}: pool 里 ${want} 个包，索引里只有 ${got} 条"
+
   gzip -9 -c "${DIST}/main/binary-${arch}/Packages" >"${DIST}/main/binary-${arch}/Packages.gz"
 done
 
