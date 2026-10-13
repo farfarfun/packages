@@ -34,9 +34,14 @@ sudo apt update</code></pre>
 <p>支持 amd64 和 arm64。想装旧版本用 <code>apt install fundeploy=0.3.0</code>，
 可选的版本见 <code>apt list -a fundeploy</code>。</p>
 
+<h2>Homebrew</h2>
+<p>同一个仓库也是 Homebrew tap。<code>tap</code> 那行要把 URL 写出来，
+因为 <code>brew tap a/b</code> 默认只找 <code>a/homebrew-b</code>：</p>
+<pre><code>brew tap farfarfun/packages https://github.com/farfarfun/packages
+brew install farfarfun/packages/fundeploy</code></pre>
+
 <h2>其它渠道</h2>
-<pre><code>brew install farfarfun/tap/fundeploy      # macOS / Linuxbrew
-cargo install fundeploy                   # 有 Rust 工具链的话
+<pre><code>cargo install fundeploy                   # 有 Rust 工具链的话
 curl -fsSL https://raw.githubusercontent.com/farfarfun/fundeploy/master/install.sh | sh</code></pre>
 
 <h2>这个仓库怎么来的</h2>

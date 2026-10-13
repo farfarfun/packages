@@ -1,10 +1,11 @@
 # farfarfun/packages
 
-farfarfun 所有项目共用的包仓库。**用户只加一次源**，以后新增的包直接
-`apt install` 就有。Homebrew formula 也在这儿生成，推到
-[farfarfun/homebrew-tap](https://github.com/farfarfun/homebrew-tap)。
+farfarfun 所有项目共用的包仓库。**用户只加一次源**，以后新增的包直接装。
+这个仓库同时是 APT 源和 Homebrew tap。
 
 站点: <https://farfarfun.github.io/packages>
+
+### APT
 
 ```bash
 curl -fsSL https://farfarfun.github.io/packages/farfarfun.gpg \
@@ -13,6 +14,20 @@ echo "deb [signed-by=/usr/share/keyrings/farfarfun.gpg] https://farfarfun.github
   | sudo tee /etc/apt/sources.list.d/farfarfun.list
 sudo apt update && sudo apt install fundeploy
 ```
+
+### Homebrew
+
+```bash
+brew tap farfarfun/packages https://github.com/farfarfun/packages
+brew install farfarfun/packages/fundeploy
+```
+
+tap 那行要把 URL 写出来：`brew tap a/b` 默认去找 `github.com/a/homebrew-b`，而这个
+仓库还要当 apt 源用，叫 `homebrew-packages` 的话 apt 地址里会凭空多出 homebrew
+几个字。URL 形式是 brew 支持的，只是第一次多打一截；tap 过之后就和普通 tap 一样。
+
+旧的 [farfarfun/homebrew-tap](https://github.com/farfarfun/homebrew-tap) 冻在 0.3.1
+不再更新，装过的按它 README 重新 tap 一次。
 
 ## 加一个新项目
 
@@ -54,10 +69,11 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
                 │   build-deb-repo.sh  拼 pool、每个架构各扫一份 Packages、
                 │                      apt-ftparchive 出 Release、GPG 签名
                 │   deploy-pages       发到 GitHub Pages
-                │   verify             真加源装一遍 fundeploy
+                │   verify             真加源装一遍，再退一版装一遍
                 │
-                └─► render-formula.py  按最新版的 SHA256SUMS 拼 formula，
-                                       推到 farfarfun/homebrew-tap
+                └─► render-formula.py  按最新版的 SHA256SUMS 拼 Formula/*.rb，
+                                       提交回本仓库 master
+                    verify-brew        真 tap 一遍再 brew install
 ```
 
 两条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
@@ -91,31 +107,23 @@ arm64 的机器会在列表里看到 amd64 的包，apt 直接判定「没有可
 | --- | --- |
 | `APT_GPG_PRIVATE_KEY` | ASCII-armored 签名私钥 |
 | `APT_GPG_PASSPHRASE` | 私钥密码；无密码密钥可不设 |
-| `HOMEBREW_TAP_DEPLOY_KEY` | `farfarfun/homebrew-tap` 的可写 Deploy Key 私钥 |
 
 ```bash
 gpg --armor --export-secret-keys <KEY_ID> \
   | gh secret set APT_GPG_PRIVATE_KEY --repo farfarfun/packages
-
-ssh-keygen -t ed25519 -N '' -C 'farfarfun packages' -f tap_key
-gh api --method POST repos/farfarfun/homebrew-tap/keys \
-  -f title='farfarfun/packages' -F read_only=false \
-  -f key="$(cat tap_key.pub)"
-gh secret set HOMEBREW_TAP_DEPLOY_KEY --repo farfarfun/packages <tap_key
-rm tap_key tap_key.pub
 ```
 
 Settings → Pages 里把发布源选成 **GitHub Actions**。
 
-两个 secret 各自独立：缺哪个就跳过哪条线并告警，不会发出一个没签名的 apt 仓库，
-也不会因为 tap 推不上去让 apt 这边跟着红。
+没配 `APT_GPG_PRIVATE_KEY` 时 apt 那条线会跳过并告警，不会发出一个没签名的仓库。
+formula 那条线不需要任何 secret——它提交回本仓库，默认的 `GITHUB_TOKEN` 就够。
 
 ## 本地跑
 
 ```bash
 bash scripts/collect-debs.sh packages.toml debs
 bash scripts/build-deb-repo.sh debs public/deb <GPG密钥ID>
-python3 scripts/render-formula.py packages.toml /tmp/formula
+python3 scripts/render-formula.py packages.toml Formula
 ```
 
 需要 `gh`、`python3`、`dpkg-dev`、`apt-utils`、GnuPG。

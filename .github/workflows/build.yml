@@ -93,43 +93,25 @@ jobs:
         with:
           path: public
 
-  # Homebrew 的 tap 必须叫 homebrew-<名字>（`brew tap farfarfun/tap` 就是去找
-  # farfarfun/homebrew-tap），合并不进这个仓库。但它本来也已经是一个源管所有包
-  # 了，用户那边没什么要改的；搬过来的是**生成**：formula 和 apt 索引出自同一张
-  # 清单，加一个新项目不用再往那个项目里塞一个 job 和一把部署密钥。
+  # 这个仓库自己就是 Homebrew tap：根目录的 Formula/ 由同一张清单生成，提交回
+  # 自己的 master。brew 认 Formula/ 这个目录名，不要求仓库叫 homebrew-*——代价是
+  # tap 的时候得把 URL 写出来（见 README）。
   brew:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - id: config
-        env:
-          HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
-        run: |
-          if [ -n "$HOMEBREW_TAP_DEPLOY_KEY" ]; then
-            echo "tap=true" >>"$GITHUB_OUTPUT"
-          else
-            echo "tap=false" >>"$GITHUB_OUTPUT"
-            echo "::warning::没配 HOMEBREW_TAP_DEPLOY_KEY，跳过 tap 更新。"
-          fi
-
-      - uses: actions/checkout@v4
-        if: steps.config.outputs.tap == 'true'
-        with:
-          repository: farfarfun/homebrew-tap
-          ssh-key: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
-          path: tap
-
       - name: 生成 formula
-        if: steps.config.outputs.tap == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 scripts/render-formula.py packages.toml tap/Formula
+        run: python3 scripts/render-formula.py packages.toml Formula
 
-      - name: 推到 tap
-        if: steps.config.outputs.tap == 'true'
-        working-directory: tap
+      # 不会把自己再触发一遍：GITHUB_TOKEN 推的提交不触发 workflow，而且上面的
+      # push 过滤器里没有 Formula/。两道保险。
+      - name: 提交 formula
         run: |
           set -euo pipefail
           git add Formula
@@ -139,8 +121,26 @@ jobs:
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git commit -m "Update formulae from farfarfun/packages"
+          git commit -m "chore: 按 packages.toml 更新 formula"
+          # 同一时刻可能有另一次构建刚推过，rebase 一下再推。
+          git pull --rebase --autostash
           git push
+
+  # tap 的地址形式是非约定的（带 URL），而这正是这次改动唯一的风险点——真跑一遍
+  # brew tap + brew install，而不是只看 formula 文件长得对不对。
+  verify-brew:
+    needs: brew
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: 真 tap 一遍再装
+        run: |
+          set -eux
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew tap farfarfun/packages https://github.com/farfarfun/packages
+          brew install farfarfun/packages/fundeploy
+          fundeploy --version
+          fundeploy list >/dev/null
 
   deploy:
     needs: build
