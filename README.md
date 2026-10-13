@@ -49,8 +49,12 @@ brew trust farfarfun/packages
 brew install fundeploy
 ```
 
-镜像由本仓库的 `sync-gitee` 推过去，push 即跟。两边 formula 一字不差，装出来的也
-是同一批二进制——mirror 和 url 共用同一行 `sha256`，对不上 brew 会停住。
+镜像由本仓库的 `sync-gitee` 推过去，push 即跟（formula 是 CI 自己提交的，那种提交
+不触发 workflow，所以构建完会额外打一下 `sync-gitee`）。两边 formula 一字不差，装
+出来的也是同一批二进制——mirror 和 url 共用同一行 `sha256`，对不上 brew 会停住。
+
+这三行不是写在这儿就算数的：每次构建都有一个 `verify-brew-gitee`，把 github 的几
+个域名指到 127.0.0.1、清掉下载缓存，再照上面这三行装一遍。装不上就是红的。
 
 apt 那半边没有这条路：deb 树是 Actions 部署到 GitHub Pages 的，不在 git 里，镜像
 仓库带不走它。国内走 apt 装不上的话，用装机脚本（它自带 Gitee 回落）。
@@ -111,8 +115,11 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
                 │   verify             真加源装一遍，再退一版装一遍
                 │
                 └─► render-formula.py  按最新版的 SHA256SUMS 拼 Formula/*.rb，
+                                       每条 url 配一条 Gitee mirror（HEAD 探过才写），
                                        提交回本仓库 master
                     verify-brew        真 tap 一遍再 brew install
+                    verify-brew-gitee  把 github 指到 127.0.0.1、清掉下载缓存，
+                                       从 Gitee tap 再装一遍
 ```
 
 两条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
