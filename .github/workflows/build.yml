@@ -148,7 +148,8 @@ jobs:
           # 裸名字装。tap 过之后 brew 在所有已 tap 的仓库里找，不用写全路径——
           # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
           # 正好提醒我们该改文档了。
-          brew info fundeploy | head -1 | grep -F 'farfarfun/packages/fundeploy'
+          # 不要 `| head`：会给 brew 一个 broken pipe，pipefail 下整步就红了。
+          brew info fundeploy | grep -F 'farfarfun/packages/fundeploy: stable'
           brew install fundeploy 2>&1 | tee /tmp/out
           # 确认装的真是本 tap 的那份，而不是碰巧撞上了别处的同名包。
           grep -F 'Installing fundeploy from farfarfun/packages' /tmp/out
