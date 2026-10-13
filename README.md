@@ -19,16 +19,23 @@ sudo apt update && sudo apt install fundeploy
 
 ```bash
 brew tap farfarfun/packages https://github.com/farfarfun/packages
+brew trust farfarfun/packages
 brew install fundeploy
 ```
 
-tap 那行要把 URL 写出来：`brew tap a/b` 默认去找 `github.com/a/homebrew-b`，而这个
-仓库还要当 apt 源用，叫 `homebrew-packages` 的话 apt 地址里会凭空多出 homebrew
+**`tap` 那行要把 URL 写出来**：`brew tap a/b` 默认去找 `github.com/a/homebrew-b`，而
+这个仓库还要当 apt 源用，叫 `homebrew-packages` 的话 apt 地址里会凭空多出 homebrew
 几个字。URL 形式是 brew 支持的，只是第一次多打一截。
 
-tap 过之后装就是裸名字，brew 会在所有已 tap 的仓库里找。只有当 homebrew-core 里
-出现同名包时才要写全 `farfarfun/packages/fundeploy` 来指定——CI 的 `verify-brew`
-每次都按裸名字装一遍，真撞名了那边会先红。
+**`trust` 那行不能省**：Homebrew 6.0 起第三方 tap 默认不可信，不 trust 的话裸名字
+会被直接拒绝（`Refusing to load formula ... from untrusted tap`）。写全名
+`brew install farfarfun/packages/fundeploy` 能装，是因为它顺带只信任了那一个
+formula——所以很容易误以为是裸名字本身的问题。这儿 trust 整个 tap：这个仓库本来就
+是用来一次管全组织的包的，逐个信任等于每加一个包再来一遍。
+
+两行都过了之后就是裸名字装，brew 在所有已 tap 的仓库里解析。只有 homebrew-core 里
+出现同名包时才需要写全路径——CI 的 `verify-brew` 每次都按裸名字装一遍，真撞名了那边
+会先红。
 
 旧的 [farfarfun/homebrew-tap](https://github.com/farfarfun/homebrew-tap) 冻在 0.3.1
 不再更新，装过的按它 README 重新 tap 一次。

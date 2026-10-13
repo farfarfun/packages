@@ -135,15 +135,23 @@ jobs:
     steps:
       - name: 真 tap 一遍再装
         run: |
-          set -eux
+          set -euxo pipefail
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew tap farfarfun/packages https://github.com/farfarfun/packages
 
-          # 裸名字装。tap 过之后 brew 会在已 tap 的仓库里找，不用写全路径——
+          # Homebrew 6.0 起第三方 tap 默认不可信，不 trust 的话连 brew info 都直接
+          # 拒绝加载。写全名 `brew install a/b/c` 会顺带只信任那一个 formula——所以
+          # 「写全名能装、裸名字不能」，很容易误以为是裸名字的问题。trust 整个 tap：
+          # 这个仓库本来就是用来一次管全组织的包的，逐个信任等于每加一个包再来一遍。
+          brew trust farfarfun/packages
+
+          # 裸名字装。tap 过之后 brew 在所有已 tap 的仓库里找，不用写全路径——
           # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
           # 正好提醒我们该改文档了。
           brew info fundeploy | head -1 | grep -F 'farfarfun/packages/fundeploy'
-          brew install fundeploy
+          brew install fundeploy 2>&1 | tee /tmp/out
+          # 确认装的真是本 tap 的那份，而不是碰巧撞上了别处的同名包。
+          grep -F 'Installing fundeploy from farfarfun/packages' /tmp/out
           fundeploy --version
           fundeploy list >/dev/null
 
