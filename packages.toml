@@ -1,8 +1,9 @@
 # 收进 farfarfun 包仓库的项目。
 #
 # 每个条目是一个 GitHub 仓库。它 release 附件里的 `.deb` 会被编进 APT 索引，
-# 带 `[source.brew]` 的还会生成一份 Homebrew formula 推到 farfarfun/homebrew-tap。
-# 加一个新项目就是在这儿加几行，项目仓库本身不用动。
+# 带 `[source.brew]` 的还会生成一份 Homebrew formula 提交回本仓库的 Formula/
+# （这个仓库同时就是 tap）。加一个新项目就是在这儿加几行，项目仓库本身不用动 ——
+# CI 的两个装机验证也是按这张表遍历的，不用回去改 workflow。
 #
 # 附件名按约定认：`<包名>-<target>.tar.gz` 和 `<包名>_<版本>_<架构>.deb`，包名取
 # 仓库名。各项目的 release workflow 本来就是一个模子出来的，不再单独配一遍。
@@ -28,3 +29,16 @@ desc = "Manage development toolchains, local services and package mirrors from o
 # brew test 跑的额外断言：`[参数, 输出里该出现的字串]`。
 # `--version` 对版本号的断言是默认就有的，不用写在这儿。
 checks = [["list", "service"]]
+
+[[source]]
+repo = "farfarfun/funget"
+keep = 3
+# 1.1.72 及更早的 release 里没有 .deb（那时还没做这条渠道）。collect-debs.sh 对
+# 「没有 .deb」是容忍的，写下限只是为了别让 keep=3 把名额占在没有包的版本上。
+min_version = "1.1.73"
+
+[source.brew]
+desc = "HTTP file transfer tool with ranged concurrency and resume"
+# --help 里有 download 这个子命令。funget 没有 fundeploy 那种能空跑的子命令：
+# download / upload / info 全要一个真 URL，不该让 brew test 依赖网络。
+checks = [["--help", "download"]]

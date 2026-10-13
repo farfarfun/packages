@@ -135,6 +135,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - uses: actions/checkout@v4
+
       - name: 真 tap 一遍再装
         run: |
           set -euxo pipefail
@@ -147,18 +149,24 @@ jobs:
           # 这个仓库本来就是用来一次管全组织的包的，逐个信任等于每加一个包再来一遍。
           brew trust farfarfun/packages
 
-          # 裸名字装。tap 过之后 brew 在所有已 tap 的仓库里找，不用写全路径——
-          # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
-          # 正好提醒我们该改文档了。
-          # 问 json 不问人看的输出：`==>` 那些标题走的是 stderr，还带 ANSI 颜色，
-          # grep 它纯属给自己找事。
-          test "$(brew info --json=v2 fundeploy | jq -r '.formulae[0].tap')" \
-            = farfarfun/packages
-          brew install fundeploy 2>&1 | tee /tmp/out
-          # 确认装的真是本 tap 的那份，而不是碰巧撞上了别处的同名包。
-          grep -F 'Installing fundeploy from farfarfun/packages' /tmp/out
-          fundeploy --version
-          fundeploy list >/dev/null
+          # 按 packages.toml 遍历，不写死包名——加一个项目不用回来改这里。
+          pkgs="$(python3 scripts/list-packages.py packages.toml --brew)"
+          while IFS=$'\t' read -r pkg bin; do
+            # 裸名字装。tap 过之后 brew 在所有已 tap 的仓库里找，不用写全路径——
+            # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
+            # 正好提醒我们该改文档了。
+            # 问 json 不问人看的输出：`==>` 那些标题走的是 stderr，还带 ANSI 颜色，
+            # grep 它纯属给自己找事。
+            test "$(brew info --json=v2 "$pkg" | jq -r '.formulae[0].tap')" \
+              = farfarfun/packages
+            brew install "$pkg" 2>&1 | tee /tmp/out
+            # 确认装的真是本 tap 的那份，而不是碰巧撞上了别处的同名包。
+            grep -F "Installing ${pkg} from farfarfun/packages" /tmp/out
+            "$bin" --version
+            # packages.toml 里的 checks 被渲染进了 formula 的 test 块，而在这之前
+            # 没有任何一步会去跑它——配了等于没配。brew test 是唯一会执行它的入口。
+            brew test "$pkg"
+          done <<<"$pkgs"
 
   deploy:
     needs: build
@@ -180,6 +188,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v4
+
       # 真照着 README 的说明加一遍源再装。索引算错、签名不对、架构漏了，都是
       # 到这一步才看得出来——而用户碰到的正是这一步。
       - name: 加源装一遍
@@ -187,7 +197,7 @@ jobs:
           set -eux
           base=https://farfarfun.github.io/packages
           # Pages 部署到边缘生效有几十秒延迟，重试几次再判失败。
-          for i in 1 2 3 4 5 6; do
+          for _ in 1 2 3 4 5 6; do
             curl -fsSL "$base/farfarfun.gpg" -o /tmp/k.gpg && break
             sleep 10
           done
@@ -195,15 +205,24 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/farfarfun.gpg] $base/deb stable main" \
             | sudo tee /etc/apt/sources.list.d/farfarfun.list
           sudo apt-get update
-          sudo apt-get install -y fundeploy
-          fundeploy --version
+          # 按 packages.toml 遍历。apt 收所有项目，不只是配了 brew 的那些。
+          python3 scripts/list-packages.py packages.toml >/tmp/pkgs
+          cat /tmp/pkgs
+          while IFS=$'\t' read -r pkg bin; do
+            sudo apt-get install -y "$pkg"
+            "$bin" --version
+          done </tmp/pkgs
 
       # 留多版的全部理由就是能回退。只装最新版的话，索引漏掉老版本这种故障是看
       # 不出来的——装得上，只是退不回去。
       - name: 退回上一版再装一遍
         run: |
           set -eux
-          apt-cache madison fundeploy
-          old="$(apt-cache madison fundeploy | awk '{print $3}' | sort -V | head -1)"
-          sudo apt-get install -y --allow-downgrades "fundeploy=${old}"
-          fundeploy --version | grep -F "$old"
+          while IFS=$'\t' read -r pkg bin; do
+            apt-cache madison "$pkg"
+            # 刚接进来的项目索引里可能只有一版（min_version 挡掉了更早的），这时
+            # 最老的就是最新的，装一遍不算回退但也不该红。
+            old="$(apt-cache madison "$pkg" | awk '{print $3}' | sort -V | head -1)"
+            sudo apt-get install -y --allow-downgrades "${pkg}=${old}"
+            "$bin" --version | grep -F "$old"
+          done </tmp/pkgs
