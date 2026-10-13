@@ -12,10 +12,12 @@ on:
       - scripts/**
       - site/**
       - .github/workflows/build.yml
-  # 兜底。某个项目的 dispatch 没打过来（token 过期、workflow 改坏了），第二天
-  # 这一跑也会把它收进来——否则「发版了但 apt 里没有」要等到有人报错才发现。
+  # 定时扫。对不发 dispatch 的项目（funget 就是，它刻意不存 PAT）这是唯一的发现
+  # 途径，所以频率按「发版后最多等多久能 apt install 到」定，不是按「兜底」定 ——
+  # 两小时一次，最坏情况两小时。再密没意义：全量重建本身只要几分钟，但 Pages
+  # 的部署是有配额的，而且这里拉的是各项目 Release，不是什么会秒变的东西。
   schedule:
-    - cron: '17 4 * * *'
+    - cron: '17 */2 * * *'
 
 permissions:
   contents: read

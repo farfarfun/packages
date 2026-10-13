@@ -68,7 +68,17 @@ release 通知这里重建：
             -f event_type=package-published
 ```
 
-不加这一步也行，这边每天 04:17 会兜底扫一遍，只是当天看不到新版本。
+**不加这一步是完全可以的，而且往往更可取。**这边每两小时（`17 */2 * * *`）会
+自己扫一遍各项目的 Release，所以不通知的代价只是「发版后最多等两小时才能
+`apt install` 到新版」。而加这一步的代价是项目仓库里要长期存一个 PAT 并盯着它
+过期 —— 跨仓库写绕不开这个，workflow 自带的 `GITHUB_TOKEN` 只对本仓库有效，
+同一个组织也不例外。funget 就是刻意不存，它的 secret 是零。
+
+等不了两小时的话，手动打一下就行，用的是人的身份：
+
+```bash
+gh workflow run build.yml -R farfarfun/packages
+```
 
 ## 它是怎么跑的
 
@@ -87,7 +97,7 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
 两条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
 formula，只能是最新的——想装旧版走 apt。
 
-触发时机：各项目 `repository_dispatch`、改了 `packages.toml`、手动、每天兜底一次。
+触发时机：各项目 `repository_dispatch`、改了 `packages.toml`、手动、每两小时一次。
 
 ### 几个刻意的决定
 
