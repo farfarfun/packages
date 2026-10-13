@@ -32,6 +32,6 @@ class Fundeploy < Formula
 
   test do
     assert_match version.to_s, shell_output("#{bin}/fundeploy --version")
-    assert_match "service", shell_output("#{bin}/fundeploy list")
+    assert_match "\u670d\u52a1", shell_output("#{bin}/fundeploy list")
   end
 end

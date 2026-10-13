@@ -28,7 +28,10 @@ min_version = "0.3.0"
 desc = "Manage development toolchains, local services and package mirrors from one CLI"
 # brew test 跑的额外断言：`[参数, 输出里该出现的字串]`。
 # `--version` 对版本号的断言是默认就有的，不用写在这儿。
-checks = [["list", "service"]]
+# 断言的是分节标题而不是某个具体服务名：服务清单会增减，标题不会。原来写的是
+# 英文 `service`，而 `fundeploy list` 打的是中文 —— 那条断言从来没通过过，只是
+# 在 verify-brew 开始跑 brew test 之前没人执行它。
+checks = [["list", "服务"]]
 
 [[source]]
 repo = "farfarfun/funget"
