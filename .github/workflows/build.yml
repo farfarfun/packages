@@ -188,6 +188,55 @@ jobs:
             brew test "$pkg"
           done
 
+  # 「GitHub 连不上也能 brew install」是对国内用户的承诺，而上面那个 job 验不到它：
+  # 那边 url 一次就通了，mirror 那行压根没被读过。真把 github 掐掉装一遍。
+  #
+  # 这一环没法靠读代码定下来。mirror 是 Homebrew 自己的 DSL，照理 url 失败就轮到
+  # 它，但「照理」和「这个版本在这条路径上真会退」之间差着一次实跑；而且这个承诺
+  # 一旦不成立，发现它的人恰好是最没法反馈回来的那批。
+  verify-brew-gitee:
+    needs: brew
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 掐掉 GitHub，从 Gitee 装一遍
+        env:
+          # 掐网之后 brew 自动更新只会卡住，而且它要更新的东西跟这次要验的事无关。
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_ANALYTICS: 1
+        run: |
+          set -euxo pipefail
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # tap 本身也从 Gitee 来——国内那条路第一步就是它，`brew tap` 是 git clone，
+          # formula 里写多少 mirror 都救不了它。
+          brew tap farfarfun/packages https://gitee.com/farfarfun/packages
+          brew trust farfarfun/packages
+
+          # 等 tap 落地再掐。objects.githubusercontent.com 是 release 附件 302 过去
+          # 的地方，只掐 github.com 的话附件照样下得到，等于没掐。
+          for h in github.com objects.githubusercontent.com \
+                   codeload.github.com raw.githubusercontent.com; do
+            echo "127.0.0.1 $h" | sudo tee -a /etc/hosts
+          done
+          # 确认真掐上了，否则下面整个 job 是一场空绿。
+          ! curl -fsS --max-time 10 -o /dev/null https://github.com/farfarfun/fundeploy
+
+          mapfile -t rows < <(python3 scripts/list-packages.py packages.toml --brew)
+          for row in "${rows[@]}"; do
+            pkg="${row%%$'\t'*}"
+            bin="${row##*$'\t'}"
+            brew install "$pkg" 2>&1 | tee /tmp/out
+            # 确认它确实是退到 mirror 才装上的，不是从哪个缓存里摸出来的——
+            # 那样这个 job 会是绿的，而承诺其实没验。
+            grep -F "gitee.com" /tmp/out
+            "$bin" --version
+            brew test "$pkg"
+            brew uninstall "$pkg"
+          done
+
   deploy:
     needs: build
     if: needs.build.outputs.signed == 'true'
