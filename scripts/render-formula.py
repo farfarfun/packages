@@ -8,15 +8,22 @@ SHA256SUMS，按里面的校验和拼出 `<包名>.rb`。
 
 装的是发布好的二进制，不是从源码编：brew 从源码编得先有 Rust 工具链，而这些
 工具里就有一个是用来装工具链的，那个顺序是反的。
+
+各项目在 Gitee 上有镜像的话，附件地址会多写一条 `mirror`：GitHub 下不动时 brew
+自己会去试它，国内不用改任何配置。
 """
 
 import json
 import subprocess
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import manifest
+
+GITEE_API = "https://gitee.com/api/v5/repos"
 
 # 附件名的约定：`<包名>-<target>.tar.gz`，跟各项目 release workflow 的构建矩阵
 # 一一对应。少了哪个平台就不渲染那一块，不是错——有的项目可能只发 Linux。
@@ -56,7 +63,28 @@ def fetch_sums(repo: str, tag: str, into: Path) -> dict[str, str]:
     return sums(into / "SHA256SUMS")
 
 
-def render(source: dict, tag: str, checksums: dict[str, str]) -> str | None:
+def gitee_mirrors(repo: str, tag: str) -> dict[str, str]:
+    """Gitee 镜像上这一版的附件直链，按附件名索引。
+
+    取不到就返回空，不报错。镜像由各项目自己的 sync-gitee 流水线推过去，发版和
+    同步之间有时间差，「这会儿还没有」是常态；本仓库每两小时全量重渲染一遍，
+    下一轮自然补上。反过来，宁可暂时少一条 mirror，也不写一个还不存在的地址。
+
+    用 API 给的 `browser_download_url` 而不是自己拼：拼对了也只是碰巧，真改了
+    路由这边不会有任何征兆。
+    """
+    url = f"{GITEE_API}/{repo}/releases/tags/{tag}"
+    try:
+        with urllib.request.urlopen(url, timeout=15) as r:
+            assets = json.load(r).get("assets", [])
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, TimeoutError):
+        return {}
+    return {a["name"]: a["browser_download_url"] for a in assets if a.get("name")}
+
+
+def render(
+    source: dict, tag: str, checksums: dict[str, str], mirrors: dict[str, str]
+) -> str | None:
     pkg = manifest.name_of(source)
     brew = source["brew"]
     version = tag.lstrip("vV")
@@ -78,6 +106,10 @@ def render(source: dict, tag: str, checksums: dict[str, str]) -> str | None:
         for arch_blk, asset in arches:
             body.append(f"    {arch_blk} do")
             body.append(f'      url "{base}/{asset}"')
+            # 镜像是整仓同步过去的，两边字节一致，所以共用下面那一行 sha256 ——
+            # 万一哪天不一致了，brew 会在校验上停住，而不是装上一个来历不明的包。
+            if asset in mirrors:
+                body.append(f'      mirror "{mirrors[asset]}"')
             body.append(f'      sha256 "{checksums[asset]}"')
             body.append("    end")
         body.append("  end")
@@ -129,12 +161,14 @@ def main() -> int:
             # tap 里一个包只有一份 formula，只能是最新版。想装旧版走 apt。
             tag = tags[0]
             checksums = fetch_sums(s["repo"], tag, Path(tmp))
-            text = render(s, tag, checksums)
+            mirrors = gitee_mirrors(s["repo"], tag)
+            text = render(s, tag, checksums, mirrors)
             if text is None:
                 print(f"  {pkg} {tag}: 附件里没有能用的二进制包，跳过")
                 continue
             (outdir / f"{pkg}.rb").write_text(text)
-            print(f"  {pkg} {tag}: 已生成")
+            where = "带 Gitee 镜像" if mirrors else "无 Gitee 镜像"
+            print(f"  {pkg} {tag}: 已生成（{where}）")
             wrote += 1
 
     if sources and not wrote:

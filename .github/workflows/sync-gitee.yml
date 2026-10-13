@@ -1,0 +1,54 @@
+name: sync-gitee
+
+# 镜像到 Gitee 的 farfarfun/packages。
+#
+# 这个仓库同时是 Homebrew tap，`brew tap` 做的就是 git clone —— 所以 GitHub 连不上
+# 的人卡在第一步，formula 里写了多少条 Gitee mirror 都用不上。Gitee 上有一份就能
+# 改用 `brew tap farfarfun/packages https://gitee.com/farfarfun/packages`。
+#
+# 组织级的 action-daily 每两小时会把 farfarfun 下所有仓库镜像一遍，这儿还单独留
+# 一份：那一遍是 149 个仓库一起跑，任何一个环节出岔子整批都不动，而 tap 是装机的
+# 第一步，不该跟着一批无关仓库的运气走。顺带把延迟从「最多两小时」压到「push 即跟」。
+#
+# 只搬 git，不搬 release —— 本仓库没有 release。apt 那半边是 Pages 部署出来的，
+# 不在 git 里，镜像仓库自然也带不走它；国内走 apt 目前没有替代路径。
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-gitee
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # 缺钥匙就明着失败。镜像仓库落后是那种「不报错，只是某天有人发现装不上」的
+      # 故障，让它在这儿就停下来比较省事。
+      - name: 看看 Gitee 的钥匙在不在
+        env:
+          GITEE_RSA_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "${GITEE_RSA_PRIVATE_KEY:-}" ] || {
+            echo "::error::没有 GITEE_RSA_PRIVATE_KEY，没法推到 Gitee。"
+            exit 1
+          }
+
+      - name: 镜像到 Gitee
+        uses: farfarfun-action/mirror-repo@v1
+        with:
+          src: github/${{ github.repository_owner }}
+          dst: gitee/${{ github.repository_owner }}
+          # 公开仓库匿名也读得到，但匿名限流按 runner 的出口 IP 算，是共用的。
+          src_token: ${{ github.token }}
+          dst_key: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          repo-names: ${{ github.event.repository.name }}

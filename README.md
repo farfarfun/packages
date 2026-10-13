@@ -37,6 +37,24 @@ formula——所以很容易误以为是裸名字本身的问题。这儿 trust 
 出现同名包时才需要写全路径——CI 的 `verify-brew` 每次都按裸名字装一遍，真撞名了那边
 会先红。
 
+#### GitHub 连不上的时候
+
+formula 里每个 `url` 都配了一条 Gitee `mirror`，下包这一步 brew 自己会回落，不用
+配任何东西。但 `brew tap` 做的是 git clone，那一步没有回落可言——改成从 Gitee 的
+镜像 tap：
+
+```bash
+brew tap farfarfun/packages https://gitee.com/farfarfun/packages
+brew trust farfarfun/packages
+brew install fundeploy
+```
+
+镜像由本仓库的 `sync-gitee` 推过去，push 即跟。两边 formula 一字不差，装出来的也
+是同一批二进制——mirror 和 url 共用同一行 `sha256`，对不上 brew 会停住。
+
+apt 那半边没有这条路：deb 树是 Actions 部署到 GitHub Pages 的，不在 git 里，镜像
+仓库带不走它。国内走 apt 装不上的话，用装机脚本（它自带 Gitee 回落）。
+
 ## 加一个新项目
 
 在 `packages.toml` 里加几行，提交，完事。funget 就是这么加进来的：
