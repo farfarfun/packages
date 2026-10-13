@@ -103,6 +103,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      # 推完要手动打一下 sync-gitee，见下面那段。
+      actions: write
     steps:
       - uses: actions/checkout@v4
 
@@ -114,6 +116,8 @@ jobs:
       # 不会把自己再触发一遍：GITHUB_TOKEN 推的提交不触发 workflow，而且上面的
       # push 过滤器里没有 Formula/。两道保险。
       - name: 提交 formula
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git add Formula
@@ -127,6 +131,12 @@ jobs:
           # 同一时刻可能有另一次构建刚推过，rebase 一下再推。
           git pull --rebase --autostash
           git push
+
+          # 上面那条「不触发 workflow」的另一面：sync-gitee 的 push 触发器也收不到
+          # 这一下。formula 基本只由这里改，不补一刀的话 Gitee 上那份 tap 会一直停
+          # 在最后一次人工提交——而它正是给 GitHub 连不上的人用的，停了没人会发现。
+          # workflow_dispatch 是 GITHUB_TOKEN 那条限制的明文例外，打得动。
+          gh workflow run sync-gitee.yml
 
   # tap 的地址形式是非约定的（带 URL），而这正是这次改动唯一的风险点——真跑一遍
   # brew tap + brew install，而不是只看 formula 文件长得对不对。
