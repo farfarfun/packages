@@ -37,9 +37,6 @@ formula——所以很容易误以为是裸名字本身的问题。这儿 trust 
 出现同名包时才需要写全路径——CI 的 `verify-brew` 每次都按裸名字装一遍，真撞名了那边
 会先红。
 
-旧的 [farfarfun/homebrew-tap](https://github.com/farfarfun/homebrew-tap) 冻在 0.3.1
-不再更新，装过的按它 README 重新 tap 一次。
-
 ## 加一个新项目
 
 在 `packages.toml` 里加几行，提交，完事：
