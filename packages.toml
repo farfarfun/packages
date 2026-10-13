@@ -1,7 +1,11 @@
 # 收进 farfarfun 包仓库的项目。
 #
-# 每个条目是一个 GitHub 仓库：它 release 附件里的 .deb 会被拉下来编进 APT 索引。
-# 加一个新项目就是在这儿加三行，仓库本身不用动。
+# 每个条目是一个 GitHub 仓库。它 release 附件里的 `.deb` 会被编进 APT 索引，
+# 带 `[source.brew]` 的还会生成一份 Homebrew formula 推到 farfarfun/homebrew-tap。
+# 加一个新项目就是在这儿加几行，项目仓库本身不用动。
+#
+# 附件名按约定认：`<包名>-<target>.tar.gz` 和 `<包名>_<版本>_<架构>.deb`，包名取
+# 仓库名。各项目的 release workflow 本来就是一个模子出来的，不再单独配一遍。
 #
 # 为什么不把 .deb 提交进 git：GitHub Pages 的站点上限是 1 GB，而二进制只增不减，
 # 真到了那天想清理得改写历史。各项目的 Release 本来就是事实来源，这里只记
@@ -17,3 +21,10 @@ keep = 3
 # 让人 `apt install fundeploy=0.1.17` 装到。0.1.15 那一版包名还叫 nltdeploy，
 # 收进来等于凭空多出一个谁也不认识的包。
 min_version = "0.3.0"
+
+# 有这一节才生成 formula。desc 用英文：brew 那边搜索和 `brew desc` 都读它。
+[source.brew]
+desc = "Manage development toolchains, local services and package mirrors from one CLI"
+# brew test 跑的额外断言：`[参数, 输出里该出现的字串]`。
+# `--version` 对版本号的断言是默认就有的，不用写在这儿。
+checks = [["list", "service"]]
