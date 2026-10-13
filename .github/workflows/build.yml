@@ -224,14 +224,19 @@ jobs:
           # 确认真掐上了，否则下面整个 job 是一场空绿。
           ! curl -fsS --max-time 10 -o /dev/null https://github.com/farfarfun/fundeploy
 
+          # 清掉下载缓存。少了这一步，万一包已经躺在缓存里，装是能装上，但走没走
+          # mirror 完全没验到——而那正是这个 job 唯一想证明的事。
+          #
+          # 清完之后这事就不用再断言了：github 的四个域名都指向 127.0.0.1，缓存是
+          # 空的，装得上就只可能是从 Gitee 下来的。比 grep 输出里有没有 "gitee.com"
+          # 结实——brew 6 的进度显示压根不打 URL，只打一行 "✔︎ Formula xxx"。
+          rm -rf "$(brew --cache)"
+
           mapfile -t rows < <(python3 scripts/list-packages.py packages.toml --brew)
           for row in "${rows[@]}"; do
             pkg="${row%%$'\t'*}"
             bin="${row##*$'\t'}"
-            brew install "$pkg" 2>&1 | tee /tmp/out
-            # 确认它确实是退到 mirror 才装上的，不是从哪个缓存里摸出来的——
-            # 那样这个 job 会是绿的，而承诺其实没验。
-            grep -F "gitee.com" /tmp/out
+            brew install "$pkg"
             "$bin" --version
             brew test "$pkg"
             brew uninstall "$pkg"
