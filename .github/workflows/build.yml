@@ -138,7 +138,12 @@ jobs:
           set -eux
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew tap farfarfun/packages https://github.com/farfarfun/packages
-          brew install farfarfun/packages/fundeploy
+
+          # 裸名字装。tap 过之后 brew 会在已 tap 的仓库里找，不用写全路径——
+          # 除非哪天 homebrew-core 里出现同名的，那时 core 优先，这一步就会红，
+          # 正好提醒我们该改文档了。
+          brew info fundeploy | head -1 | grep -F 'farfarfun/packages/fundeploy'
+          brew install fundeploy
           fundeploy --version
           fundeploy list >/dev/null
 

@@ -19,12 +19,16 @@ sudo apt update && sudo apt install fundeploy
 
 ```bash
 brew tap farfarfun/packages https://github.com/farfarfun/packages
-brew install farfarfun/packages/fundeploy
+brew install fundeploy
 ```
 
 tap 那行要把 URL 写出来：`brew tap a/b` 默认去找 `github.com/a/homebrew-b`，而这个
 仓库还要当 apt 源用，叫 `homebrew-packages` 的话 apt 地址里会凭空多出 homebrew
-几个字。URL 形式是 brew 支持的，只是第一次多打一截；tap 过之后就和普通 tap 一样。
+几个字。URL 形式是 brew 支持的，只是第一次多打一截。
+
+tap 过之后装就是裸名字，brew 会在所有已 tap 的仓库里找。只有当 homebrew-core 里
+出现同名包时才要写全 `farfarfun/packages/fundeploy` 来指定——CI 的 `verify-brew`
+每次都按裸名字装一遍，真撞名了那边会先红。
 
 旧的 [farfarfun/homebrew-tap](https://github.com/farfarfun/homebrew-tap) 冻在 0.3.1
 不再更新，装过的按它 README 重新 tap 一次。
