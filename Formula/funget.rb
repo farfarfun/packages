@@ -1,32 +1,32 @@
 class Funget < Formula
   desc "HTTP file transfer tool with ranged concurrency and resume"
   homepage "https://github.com/farfarfun/funget"
-  version "1.1.73"
+  version "1.2.0"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/farfarfun/funget/releases/download/v1.1.73/funget-aarch64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.1.73/funget-aarch64-apple-darwin.tar.gz"
-      sha256 "b26427a0564018e9df1caeedcf2d0488193b1b9ac2ec3625ccb39d7364313503"
+      url "https://github.com/farfarfun/funget/releases/download/v1.2.0/funget-aarch64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.2.0/funget-aarch64-apple-darwin.tar.gz"
+      sha256 "f101fe72ef4d6f05592a2e002f1861381374236563e57d3f0a6ecbd310218933"
     end
     on_intel do
-      url "https://github.com/farfarfun/funget/releases/download/v1.1.73/funget-x86_64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.1.73/funget-x86_64-apple-darwin.tar.gz"
-      sha256 "1b07212b994d3e3403395b298be855ce24ce3354920cab0966f1584d7f6b9f90"
+      url "https://github.com/farfarfun/funget/releases/download/v1.2.0/funget-x86_64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.2.0/funget-x86_64-apple-darwin.tar.gz"
+      sha256 "21c7318d35aeebb37647c57cf3e27174d626cbbbcfc8b839d45c7731b1c112b8"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/farfarfun/funget/releases/download/v1.1.73/funget-aarch64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.1.73/funget-aarch64-unknown-linux-musl.tar.gz"
-      sha256 "f9b8c9081a4db97006ea500c35cf714f8b21fefc2a077d8906168856564d511b"
+      url "https://github.com/farfarfun/funget/releases/download/v1.2.0/funget-aarch64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.2.0/funget-aarch64-unknown-linux-musl.tar.gz"
+      sha256 "d95e615e476d634faf86f7219af7a7d904143d7ef1062421dd6c56d32f2a2a7c"
     end
     on_intel do
-      url "https://github.com/farfarfun/funget/releases/download/v1.1.73/funget-x86_64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.1.73/funget-x86_64-unknown-linux-musl.tar.gz"
-      sha256 "a33b9a2ad63b7ace3ef84f993a9b422479d73eda6e950c6dd3f7838baa3867d1"
+      url "https://github.com/farfarfun/funget/releases/download/v1.2.0/funget-x86_64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funget/releases/download/v1.2.0/funget-x86_64-unknown-linux-musl.tar.gz"
+      sha256 "5413e203f1a1b19f478ed9a13e9e7036587448b1809045e221313714fa9d9ac4"
     end
   end
 
