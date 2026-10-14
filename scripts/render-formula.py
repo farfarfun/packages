@@ -9,8 +9,8 @@ SHA256SUMS，按里面的校验和拼出 `<包名>.rb`。
 装的是发布好的二进制，不是从源码编：brew 从源码编得先有 Rust 工具链，而这些
 工具里就有一个是用来装工具链的，那个顺序是反的。
 
-各项目在 Gitee 上有镜像的话，附件地址会多写一条 `mirror`：GitHub 下不动时 brew
-自己会去试它，国内不用改任何配置。
+各项目在 Gitee 上有镜像仓库的话，附件地址会多写一条 `mirror`：GitHub 下不动时
+brew 自己会去试它，国内不用改任何配置。
 """
 
 import json
@@ -64,7 +64,7 @@ def fetch_sums(repo: str, tag: str, into: Path) -> dict[str, str]:
 
 
 class _Stay(urllib.request.HTTPRedirectHandler):
-    """别跟 302。附件在不在，Gitee 自己那一跳就答完了，没必要再跑一趟 CDN。"""
+    """别跟 302。仓库在不在，Gitee 自己那一跳就答完了，没必要再跑一趟别处。"""
 
     def redirect_request(self, *_args, **_kw):
         return None
@@ -73,14 +73,14 @@ class _Stay(urllib.request.HTTPRedirectHandler):
 _opener = urllib.request.build_opener(_Stay)
 
 
-def on_gitee(url: str) -> bool:
-    """这个地址在 Gitee 上取不取得到。
+def on_gitee(repo: str) -> bool:
+    """这个项目在 Gitee 上有没有镜像仓库。
 
-    判死不判活：只有明确 404 才算没有，超时、限流、连不上一律当有。写错一条
+    判死不判活：只有明确 404 才算没有，超时、限流、连不上一律当有。多写一条
     mirror 的代价约等于零——brew 只在 url 下不动时才去试它，试到 404 和压根没写
     是同一个结局；漏写一条的代价是国内用户装不上。两边不对等，就往有的那边偏。
     """
-    req = urllib.request.Request(url, method="HEAD")
+    req = urllib.request.Request(f"{GITEE}/{repo}", method="HEAD")
     try:
         with _opener.open(req, timeout=10):
             return True
@@ -91,25 +91,25 @@ def on_gitee(url: str) -> bool:
 
 
 def gitee_mirrors(repo: str, tag: str, assets: list[str]) -> dict[str, str]:
-    """这些附件在 Gitee 镜像上的直链，按附件名索引；确认不在的不收。
+    """这些附件在 Gitee 镜像上的直链，按附件名索引；没有镜像仓库就一条不写。
 
-    地址是拼的，但每条都 HEAD 过一次——验的就是待会儿要写进 formula 的那个串本身，
-    比问 API 要一个 `browser_download_url` 再原样抄过去还直接。
+    探的是仓库在不在，而不是每个附件在不在。后者看着更准，实际是个必然探空的
+    判据：各项目的 sync-gitee 在推 tag 那一刻就跑了（那时附件还在构建），release
+    附件要等下一轮同步才到 Gitee，而本仓库是发版后几十秒被 dispatch 过来重渲染的。
+    于是每个新版本第一次渲染一条 mirror 都写不出来，要等两小时后的定时重建才补上
+    ——偏偏发版后那两小时正是人去 upgrade 的时候，而走到这条路上的人没有别的退路。
 
-    走文件服务器而不是 `/api/v5`：那个 API 匿名限流很紧，几次调用就开始回 403 且
-    一黏好一阵，而「被限流」和「还没同步」在返回里分不开（它对没同步的 tag 回的是
-    200 加一个裸 `null`，连状态码都指望不上）。真按它来，CI 被限的那一轮会把已经
-    好好的 mirror 全删掉，下一轮再加回来，formula 来回抖。
+    写在同步前面是安全的：brew 只在 url 下不动时才去读 mirror，指到一个还没同步
+    完的附件和压根没写这一行是同一个结局。附件同步上去之后，formula 不用重渲染
+    就自己成立了。
 
-    少掉几条是正常的：镜像由各项目自己的 sync-gitee 推过去，发版和同步之间有时间
-    差，而 formula 是发版后几十秒就重渲染的。本仓库每两小时全量再来一遍，补得上。
+    不问 `/api/v5`：那个 API 匿名限流很紧，几次调用就开始回 403 且一黏好一阵，而
+    「被限流」和「还没同步」在返回里分不开（它对没同步的 tag 回的是 200 加一个裸
+    `null`，连状态码都指望不上）。
     """
-    out = {}
-    for name in assets:
-        url = f"{GITEE}/{repo}/releases/download/{tag}/{name}"
-        if on_gitee(url):
-            out[name] = url
-    return out
+    if not on_gitee(repo):
+        return {}
+    return {name: f"{GITEE}/{repo}/releases/download/{tag}/{name}" for name in assets}
 
 
 def render(
@@ -198,7 +198,7 @@ def main() -> int:
                 print(f"  {pkg} {tag}: 附件里没有能用的二进制包，跳过")
                 continue
             (outdir / f"{pkg}.rb").write_text(text)
-            print(f"  {pkg} {tag}: 已生成（Gitee 镜像 {len(mirrors)}/{len(want)}）")
+            print(f"  {pkg} {tag}: 已生成（Gitee 镜像 {'有' if mirrors else '无'}）")
             wrote += 1
 
     if sources and not wrote:

@@ -50,11 +50,23 @@ brew install fundeploy
 ```
 
 镜像由本仓库的 `sync-gitee` 推过去，push 即跟（formula 是 CI 自己提交的，那种提交
-不触发 workflow，所以构建完会额外打一下 `sync-gitee`）。两边 formula 一字不差，装
-出来的也是同一批二进制——mirror 和 url 共用同一行 `sha256`，对不上 brew 会停住。
+不触发 workflow，所以构建完会额外打一下 `sync-gitee`，并且等它跑完才往下走）。两边
+formula 一字不差，装出来的也是同一批二进制——mirror 和 url 共用同一行 `sha256`，对不
+上 brew 会停住。
+
+`mirror` 的写入条件是「这个项目在 Gitee 上有镜像仓库」，不是「这个附件已经同步到
+Gitee 了」。后者看着更准，实际是个必然探空的判据：各项目的 `sync-gitee` 在推 tag
+那一刻就跑了，那时附件还在构建，release 附件要等下一轮同步才过去，而这边是发版后
+几十秒就被叫过来重渲染 formula 的。按附件探的话每个新版本第一次渲染一条 mirror 都
+写不出来，得等两小时后的定时重建补——偏偏发版后那两小时正是人去 `brew upgrade` 的
+时候。写在同步前面不会有坏处：brew 只在 `url` 下不动时才去读 mirror，指到一个还没
+同步完的附件和压根没写这一行是同一个结局，而附件一到位，formula 不用重渲染就自己
+成立了。
 
 这三行不是写在这儿就算数的：每次构建都有一个 `verify-brew-gitee`，把 github 的几
-个域名指到 127.0.0.1、清掉下载缓存，再照上面这三行装一遍。装不上就是红的。
+个域名指到 127.0.0.1、清掉下载缓存，再照上面这三行装一遍。装不上就是红的。它跑在
+`sync` 之后，而且装之前先 `diff` 一遍 tap 下来的 `Formula/` 和这一轮推上去的那份
+——Gitee 落后一版的话这儿就红了，不会装着上一版的包报绿。
 
 apt 那半边没有这条路：deb 树是 Actions 部署到 GitHub Pages 的，不在 git 里，镜像
 仓库带不走它。国内走 apt 装不上的话，用装机脚本（它自带 Gitee 回落）。
@@ -115,11 +127,13 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
                 │   verify             真加源装一遍，再退一版装一遍
                 │
                 └─► render-formula.py  按最新版的 SHA256SUMS 拼 Formula/*.rb，
-                                       每条 url 配一条 Gitee mirror（HEAD 探过才写），
-                                       提交回本仓库 master
+                                       项目在 Gitee 上有镜像仓库就给每条 url 配一条
+                                       Gitee mirror，提交回本仓库 master
+                    sync               打一下 sync-gitee 并等它跑完
                     verify-brew        真 tap 一遍再 brew install
                     verify-brew-gitee  把 github 指到 127.0.0.1、清掉下载缓存，
-                                       从 Gitee tap 再装一遍
+                                       从 Gitee tap 再装一遍（两个 verify 都先 diff
+                                       一遍 tap 到的 formula 是不是这一轮那份）
 ```
 
 两条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份

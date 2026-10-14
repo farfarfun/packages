@@ -103,8 +103,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
-      # 推完要手动打一下 sync-gitee，见下面那段。
-      actions: write
     steps:
       - uses: actions/checkout@v4
 
@@ -130,18 +128,52 @@ jobs:
           git pull --rebase --autostash
           git push
 
-      # 上面那条「不触发 workflow」的另一面：sync-gitee 的 push 触发器也收不到那一
-      # 下。formula 基本只由这个 job 改，不补一刀的话 Gitee 上那份 tap 会一直停在
-      # 最后一次人工提交——而它正是给 GitHub 连不上的人用的，停了这边谁也看不见。
-      # workflow_dispatch 是 GITHUB_TOKEN 那条限制的明文例外，打得动。
-      #
-      # 不判「这次改没改」：那样要等到下次发版才第一次走到这行，等于留一条到时候
-      # 才知道通不通的路。每轮都打的话它跟着定时构建两小时跑一遍，哪天权限或命令
-      # 不对当场就是红的。sync-gitee 本身是幂等的，没变化时它自己就什么都不做。
-      - name: 捅一下 sync-gitee
+  # 上面那条「不触发 workflow」的另一面：sync-gitee 的 push 触发器也收不到那一下。
+  # formula 基本只由 brew job 改，不补一刀的话 Gitee 上那份 tap 会一直停在最后一次
+  # 人工提交——而它正是给 GitHub 连不上的人用的，停了这边谁也看不见。
+  # workflow_dispatch 是 GITHUB_TOKEN 那条限制的明文例外，打得动。
+  #
+  # 不判「这次改没改」：那样要等到下次发版才第一次走到这行，等于留一条到时候才知道
+  # 通不通的路。每轮都打的话它跟着定时构建两小时跑一遍，哪天权限或命令不对当场就是
+  # 红的。sync-gitee 本身是幂等的，没变化时它自己就什么都不做。
+  #
+  # 打完要等它跑完，而不是打完就撒手：下面 verify-brew-gitee tap 的就是 Gitee 那份，
+  # 撒手的话两个 job 几乎同时开始，它验的是上一轮的 formula——那种绿是空绿，真出事
+  # （比如这一轮的 formula 漏了 mirror）它一声不响地放过去。
+  sync:
+    needs: brew
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: write
+    steps:
+      - name: 打一下 sync-gitee 并等它跑完
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run sync-gitee.yml
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # 先记时间再打：dispatch 不回 run id，只能按「晚于这一刻的那次
+          # workflow_dispatch」去认。同名 workflow 的 run 是串着来的（它自己有
+          # concurrency group），不会同时冒出两次认错人。
+          since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run sync-gitee.yml --repo "$REPO"
+          id=""
+          for _ in $(seq 24); do
+            sleep 5
+            # gh 按新到旧列，取最老的那个才是我们刚打的（万一期间又被打了一次）。
+            id="$(gh run list --repo "$REPO" --workflow sync-gitee.yml \
+                    --event workflow_dispatch --limit 10 \
+                    --json databaseId,createdAt \
+                    --jq "[.[] | select(.createdAt >= \"$since\")] | last | .databaseId // empty")"
+            [ -n "$id" ] && break
+          done
+          [ -n "$id" ] || {
+            echo "::error::打了 sync-gitee，但两分钟内没见到对应的 run。"
+            exit 1
+          }
+          echo "sync-gitee run: $id"
+          gh run watch "$id" --repo "$REPO" --exit-status
 
   # tap 的地址形式是非约定的（带 URL），而这正是这次改动唯一的风险点——真跑一遍
   # brew tap + brew install，而不是只看 formula 文件长得对不对。
@@ -150,7 +182,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # 取 master 的当下，不是触发这次构建的那个 SHA：formula 是上面 brew job 刚推
+      # 上去的，按触发 SHA checkout 拿到的是上一版，下面那条 diff 就变成拿旧文件比
+      # 旧文件了。
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: 真 tap 一遍再装
         run: |
@@ -163,6 +200,10 @@ jobs:
           # 「写全名能装、裸名字不能」，很容易误以为是裸名字的问题。trust 整个 tap：
           # 这个仓库本来就是用来一次管全组织的包的，逐个信任等于每加一个包再来一遍。
           brew trust farfarfun/packages
+
+          # tap 下来的必须就是这一轮推上去的那份。少了这一步，tap 到一个落后的远端
+          # 照样装得上、照样绿，而验的是上一版——这次生成的东西等于没验。
+          diff -r Formula "$(brew --repository farfarfun/packages)/Formula"
 
           # 按 packages.toml 遍历，不写死包名——加一个项目不用回来改这里。
           # 用 mapfile 而不是 `while read ... <<<`：brew 会把 stdin 剩下的内容吃掉，
@@ -195,11 +236,14 @@ jobs:
   # 它，但「照理」和「这个版本在这条路径上真会退」之间差着一次实跑；而且这个承诺
   # 一旦不成立，发现它的人恰好是最没法反馈回来的那批。
   verify-brew-gitee:
-    needs: brew
+    # 等 sync 而不是 brew：Gitee 上那份 formula 要先跟上，否则验的是上一轮的。
+    needs: sync
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: 掐掉 GitHub，从 Gitee 装一遍
         env:
@@ -214,6 +258,11 @@ jobs:
           # formula 里写多少 mirror 都救不了它。
           brew tap farfarfun/packages https://gitee.com/farfarfun/packages
           brew trust farfarfun/packages
+
+          # Gitee 那份和这一轮推上去的必须一字不差。上一轮这个 job 是绿的，装的却是
+          # 上一个版本的 formula（sync 还没跑完就开始 tap）——没有这条断言，镜像落后
+          # 多久都看不出来。
+          diff -r Formula "$(brew --repository farfarfun/packages)/Formula"
 
           # 等 tap 落地再掐。objects.githubusercontent.com 是 release 附件 302 过去
           # 的地方，只掐 github.com 的话附件照样下得到，等于没掐。
