@@ -5,6 +5,8 @@ farfarfun 所有项目共用的包仓库。**用户只加一次源**，以后新
 
 站点: <https://farfarfun.github.io/packages>
 
+## 安装
+
 ### APT
 
 ```bash
