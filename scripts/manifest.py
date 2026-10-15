@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""读 packages.toml、挑 release。select-releases.py 和 render-formula.py 共用。
+"""读 packages.toml、挑 release、读 SHA256SUMS。几个脚本共用。
 
 版本比较自己做而不是交给 `sort -V`：后者对 `0.10.0` vs `0.9.0` 是对的，但碰上
 `1.0.0-rc1` 这类后缀就不一定，而没人保证仓库里没打过预发布 tag。
@@ -8,6 +8,7 @@
 import json
 import subprocess
 import tomllib
+from pathlib import Path
 
 
 def ver(tag: str) -> tuple:
@@ -42,6 +43,34 @@ def releases(repo: str) -> list[str]:
     tags = [r["tagName"] for r in rs if not r["isDraft"] and not r["isPrerelease"]]
     # gh 按发布时间排，而我们要的是版本序——补发一个老版本的 patch 之后两者会分叉。
     return sorted(tags, key=ver, reverse=True)
+
+
+def sums(path: Path) -> dict[str, str]:
+    """读 SHA256SUMS。二进制模式的行是 `hash *name`，把那个星号去掉。"""
+    out = {}
+    for line in path.read_text().splitlines():
+        parts = line.split()
+        if len(parts) == 2 and len(parts[0]) == 64:
+            out[parts[1].lstrip("*")] = parts[0]
+    return out
+
+
+def fetch_sums(repo: str, tag: str, into: Path) -> dict[str, str]:
+    """下这次 release 的 SHA256SUMS，读成 {附件名: 校验和}。下不到就是空字典。
+
+    两个渲染器（formula 和 cask）都从这里取校验和：各项目的 SHA256SUMS 是同一步
+    生成的，没有理由让它们各读一遍。
+    """
+    r = subprocess.run(
+        [
+            "gh", "release", "download", tag, "--repo", repo,
+            "--pattern", "SHA256SUMS", "--dir", str(into), "--clobber",
+        ],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        return {}
+    return sums(into / "SHA256SUMS")
 
 
 def selected(source: dict) -> list[str]:

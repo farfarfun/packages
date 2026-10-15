@@ -95,9 +95,12 @@ jobs:
         with:
           path: public
 
-  # 这个仓库自己就是 Homebrew tap：根目录的 Formula/ 由同一张清单生成，提交回
-  # 自己的 master。brew 认 Formula/ 这个目录名，不要求仓库叫 homebrew-*——代价是
+  # 这个仓库自己就是 Homebrew tap：根目录的 Formula/ 和 Casks/ 由同一张清单生成，
+  # 提交回自己的 master。brew 认这两个目录名，不要求仓库叫 homebrew-*——代价是
   # tap 的时候得把 URL 写出来（见 README）。
+  #
+  # 两种产物在同一个 job 里渲染、一次提交。分成两个 job 的话它们会同时往 master
+  # 推，变成靠 `git pull --rebase` 赛跑，而分开的好处只是少一次 checkout。
   brew:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -106,24 +109,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 生成 formula
+      - name: 生成 formula 和 cask
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 scripts/render-formula.py packages.toml Formula
-
-      # 不会把自己再触发一遍：GITHUB_TOKEN 推的提交不触发 workflow，而且上面的
-      # push 过滤器里没有 Formula/。两道保险。
-      - name: 提交 formula
         run: |
           set -euo pipefail
-          git add Formula
+          python3 scripts/render-formula.py packages.toml Formula
+          python3 scripts/render-cask.py packages.toml Casks
+
+      # 不会把自己再触发一遍：GITHUB_TOKEN 推的提交不触发 workflow，而且上面的
+      # push 过滤器里没有 Formula/ 和 Casks/。两道保险。
+      - name: 提交 formula 和 cask
+        run: |
+          set -euo pipefail
+          git add Formula Casks
           if git diff --cached --quiet; then
-            echo "formula 没变化。"
+            echo "formula 和 cask 都没变化。"
             exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git commit -m "chore: 按 packages.toml 更新 formula"
+          git commit -m "chore: 按 packages.toml 更新 formula 和 cask"
           # 同一时刻可能有另一次构建刚推过，rebase 一下再推。
           git pull --rebase --autostash
           git push
@@ -228,6 +234,57 @@ jobs:
             # 没有任何一步会去跑它——配了等于没配。brew test 是唯一会执行它的入口。
             brew test "$pkg"
           done
+
+  # linuxbrew 压根不读 cask，上面那个 job 覆盖不到它——它按 `--brew` 遍历，cask
+  # 天然不在里面。cask 渲染得对不对、tap 解析得到、裸名字能装，只有 macOS runner
+  # 上能验，所以这是整个仓库唯一一个 macOS job。
+  #
+  # 不验「GitHub 连不上也能装」：cask 的 url 不认 mirror，那条承诺在 cask 上压根
+  # 不成立（见 render-cask.py 的头注释），没有可验的东西。
+  verify-cask:
+    needs: brew
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      # 取 master 的当下，不是触发这次构建的那个 SHA：cask 是上面 brew job 刚推
+      # 上去的，理由同 verify-brew。
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: 真 tap 一遍再装
+        run: |
+          set -euxo pipefail
+          brew tap farfarfun/packages https://github.com/farfarfun/packages
+          brew trust farfarfun/packages
+
+          # tap 下来的必须就是这一轮推上去的那份，否则装的是上一版 cask 而报绿。
+          diff -r Casks "$(brew --repository farfarfun/packages)/Casks"
+
+          # 不用 mapfile：macOS 自带的 /bin/bash 是 3.2，没有这个内建命令。从 fd 3
+          # 读而不是 stdin——brew 会把 stdin 剩下的内容吃掉，那样循环只跑第一个包
+          # 就 EOF 退出，而且是绿的（verify 和 verify-brew 都踩过这个）。
+          python3 scripts/list-packages.py packages.toml --cask >/tmp/casks
+          cat /tmp/casks
+          while IFS=$'\t' read -r pkg app <&3; do
+            # 裸名字就解析到本 tap 的 cask，不写 --cask：tap 里没有同名 formula，
+            # 哪天有了这一步会先红，正好提醒该改文档了。
+            test "$(brew info --json=v2 "$pkg" | jq -r '.casks[0].tap')" \
+              = farfarfun/packages
+            brew install "$pkg"
+            test -d "/Applications/${app}.app"
+
+            # 装进去的就是 cask 声明的那一版。GUI 应用没有 --version 可问，所以读
+            # .app 自己的 Info.plist——那是产物里的事实，而不是拿 brew 的元数据跟
+            # 自己对账。
+            want="$(brew info --json=v2 "$pkg" | jq -r '.casks[0].version')"
+            got="$(/usr/libexec/PlistBuddy -c \
+              'Print :CFBundleShortVersionString' \
+              "/Applications/${app}.app/Contents/Info.plist")"
+            test "$got" = "$want"
+
+            brew uninstall --cask "$pkg"
+          done 3</tmp/casks
 
   # 「GitHub 连不上也能 brew install」是对国内用户的承诺，而上面那个 job 验不到它：
   # 那边 url 一次就通了，mirror 那行压根没被读过。真把 github 掐掉装一遍。
@@ -334,8 +391,21 @@ jobs:
           # 提前结束，而且一声不响地绿着。verify-brew 就是这么漏掉第二个包的。
           mapfile -t rows </tmp/pkgs
           for row in "${rows[@]}"; do
-            sudo apt-get install -y "${row%%$'\t'*}"
-            "${row##*$'\t'}" --version
+            pkg="${row%%$'\t'*}"
+            bin="${row##*$'\t'}"
+            sudo apt-get install -y "$pkg"
+            if [ "$bin" = - ]; then
+              # 第二列是 `-` 的包没有能在无头 runner 上跑的入口（packages.toml 里的
+              # cli = false）。退一步验 .desktop 的 Exec 指到的东西在 PATH 上：装歪了
+              # ——postinst 的软链没建、或者名字跟 .desktop 里写的不是一个——在这儿红。
+              desktops="$(dpkg -L "$pkg" | grep '^/usr/share/applications/.*\.desktop$' || true)"
+              [ -n "$desktops" ]
+              for d in $desktops; do
+                command -v "$(awk -F= '/^Exec=/{print $2; exit}' "$d" | awk '{print $1}')"
+              done
+            else
+              "$bin" --version
+            fi
           done
 
       # 留多版的全部理由就是能回退。只装最新版的话，索引漏掉老版本这种故障是看
@@ -352,5 +422,9 @@ jobs:
             # 最老的就是最新的，装一遍不算回退但也不该红。
             old="$(apt-cache madison "$pkg" | awk '{print $3}' | sort -V | head -1)"
             sudo apt-get install -y --allow-downgrades "${pkg}=${old}"
-            "$bin" --version | grep -F "$old"
+            if [ "$bin" = - ]; then
+              test "$(dpkg-query -W -f='${Version}' "$pkg")" = "$old"
+            else
+              "$bin" --version | grep -F "$old"
+            fi
           done

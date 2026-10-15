@@ -1,12 +1,16 @@
 # 收进 farfarfun 包仓库的项目。
 #
-# 每个条目是一个 GitHub 仓库。它 release 附件里的 `.deb` 会被编进 APT 索引，
-# 带 `[source.brew]` 的还会生成一份 Homebrew formula 提交回本仓库的 Formula/
-# （这个仓库同时就是 tap）。加一个新项目就是在这儿加几行，项目仓库本身不用动 ——
-# CI 的两个装机验证也是按这张表遍历的，不用回去改 workflow。
+# 每个条目是一个 GitHub 仓库。它 release 附件里的 `.deb` 会被编进 APT 索引，带
+# `[source.brew]` 的还会生成一份 Homebrew formula、带 `[source.cask]` 的生成一份
+# cask，都提交回本仓库的 Formula/ 和 Casks/（这个仓库同时就是 tap）。加一个新项目
+# 就是在这儿加几行，项目仓库本身不用动 —— CI 的几个装机验证也是按这张表遍历的，
+# 不用回去改 workflow。
 #
-# 附件名按约定认：`<包名>-<target>.tar.gz` 和 `<包名>_<版本>_<架构>.deb`，包名取
-# 仓库名。各项目的 release workflow 本来就是一个模子出来的，不再单独配一遍。
+# 附件名按约定认，包名取仓库名：
+#   formula  `<包名>-<target>.tar.gz`
+#   cask     `<应用名>-<版本>-macos-<架构>.dmg`（前缀是显示名，见下面 funclash）
+#   apt      `<包名>_<版本>_<架构>.deb`
+# 各项目的 release workflow 本来就是一个模子出来的，不再单独配一遍。
 #
 # 为什么不把 .deb 提交进 git：GitHub Pages 的站点上限是 1 GB，而二进制只增不减，
 # 真到了那天想清理得改写历史。各项目的 Release 本来就是事实来源，这里只记
@@ -45,3 +49,37 @@ desc = "HTTP file transfer tool with ranged concurrency and resume"
 # --help 里有 download 这个子命令。funget 没有 fundeploy 那种能空跑的子命令：
 # download / upload / info 全要一个真 URL，不该让 brew test 依赖网络。
 checks = [["--help", "download"]]
+
+[[source]]
+repo = "farfarfun/funclash"
+# 一个 .deb 45 MB，两个架构，所以 keep=2 就占了 180 MB，而 Pages 整站上限 1 GB。
+# 留两版而不是三版：能回退是留多版的全部理由，两版就够用，第三版只是再占 90 MB。
+# funclash 自己的 README 也是按「apt 保留最近两版」写给用户的。
+keep = 2
+# 改名前的 tag（v0.9.0 及更早）万一被推回这个仓库，那些 release 里的 .deb 叫
+# `FlClash-<版本>-linux-<架构>.deb`，而 dpkg-scanpackages 的 glob 只认
+# `<包名>_<版本>_<架构>.deb` —— 它扫不到却一声不响，然后 build-deb-repo.sh 的
+# 条数核对会判整个组织的发布失败。写个下限把那些 tag 挡在外面。
+min_version = "1.0.0"
+# 没有能在 CI 里跑的命令行入口。postinst 往 /usr/bin 软链的 FunClash 是 Flutter
+# 的窗口程序，它的 main() 只把 argv 交给 URL scheme 处理（funclash 的
+# lib/main.dart），不认 --version，在无头 runner 上跑它只会卡住。verify 对
+# cli = false 的包改成查 .desktop 的 Exec 解析得到、版本从 dpkg 问。
+cli = false
+
+# cask 而不是 [source.brew]：render-formula.py 的 bin.install 要一个
+# `<包名>-<target>.tar.gz` 里的单个二进制，而这是个发 DMG 的桌面应用，没有那个
+# 东西。两种产物由两个渲染器分别生成，见 scripts/render-cask.py 的头注释。
+[source.cask]
+# 应用的显示名：既是 DMG 附件名的前缀，也是装进 /Applications 的 .app 名。跟包名
+# 不一样 —— 包名必须是小写的 funclash（Debian 对 package_name 的要求），而应用
+# 在所有可见的地方都叫 FunClash。
+app = "FunClash"
+desc = "Multi-platform proxy client based on mihomo (Clash.Meta)"
+# funclash 的 README 写的是 macOS 12 及以上。
+min_macos = "monterey"
+# brew uninstall --zap 要清的用户数据按这个 bundle id 拼。应用没开沙箱
+# （macos/Runner/Release.entitlements 里没有 app-sandbox），所以数据直接落在
+# ~/Library 下，不在 Containers 里。macOS 上没有常驻的特权 helper 要清：提权走的
+# 是一次性的 osascript "with administrator privileges"，不装 launchd daemon。
+bundle_id = "com.farfarfun.funclash"

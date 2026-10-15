@@ -14,7 +14,6 @@ brew 自己会去试它，国内不用改任何配置。
 """
 
 import json
-import subprocess
 import sys
 import tempfile
 import urllib.error
@@ -38,29 +37,6 @@ PLATFORMS = [
 def class_name(pkg: str) -> str:
     """包名转 formula 的类名，照 Homebrew 的规矩：按分隔符切开，每段首字母大写。"""
     return "".join(p.capitalize() for p in pkg.replace("_", "-").split("-") if p)
-
-
-def sums(path: Path) -> dict[str, str]:
-    """读 SHA256SUMS。二进制模式的行是 `hash *name`，把那个星号去掉。"""
-    out = {}
-    for line in path.read_text().splitlines():
-        parts = line.split()
-        if len(parts) == 2 and len(parts[0]) == 64:
-            out[parts[1].lstrip("*")] = parts[0]
-    return out
-
-
-def fetch_sums(repo: str, tag: str, into: Path) -> dict[str, str]:
-    r = subprocess.run(
-        [
-            "gh", "release", "download", tag, "--repo", repo,
-            "--pattern", "SHA256SUMS", "--dir", str(into), "--clobber",
-        ],
-        capture_output=True, text=True,
-    )
-    if r.returncode != 0:
-        return {}
-    return sums(into / "SHA256SUMS")
 
 
 class _Stay(urllib.request.HTTPRedirectHandler):
@@ -190,7 +166,7 @@ def main() -> int:
                 continue
             # tap 里一个包只有一份 formula，只能是最新版。想装旧版走 apt。
             tag = tags[0]
-            checksums = fetch_sums(s["repo"], tag, Path(tmp))
+            checksums = manifest.fetch_sums(s["repo"], tag, Path(tmp))
             want = [f"{pkg}-{t}.tar.gz" for *_, t in PLATFORMS if f"{pkg}-{t}.tar.gz" in checksums]
             mirrors = gitee_mirrors(s["repo"], tag, want)
             text = render(s, tag, checksums, mirrors)
