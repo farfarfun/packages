@@ -39,6 +39,20 @@ formula——所以很容易误以为是裸名字本身的问题。这儿 trust 
 出现同名包时才需要写全路径——CI 的 `verify-brew` 每次都按裸名字装一遍，真撞名了那边
 会先红。
 
+#### macOS 上的桌面应用
+
+桌面应用走 cask，装的是 DMG 里的 `.app`，不是命令行二进制：
+
+```bash
+brew install funclash          # 装进 /Applications/FunClash.app
+brew uninstall --zap funclash  # 连 ~/Library 下的用户数据一起清
+```
+
+还是裸名字，不用写 `--cask`：brew 在已 tap 的仓库里按名字解析，formula 和 cask 都在
+里面。cask 只有 macOS 一条线——linuxbrew 压根不读它，所以 CI 里 `verify-cask` 是整个
+仓库唯一一个 macOS job。它装完会读 `.app` 自己的 `Info.plist` 跟 cask 声明的版本对
+账：GUI 应用没有 `--version` 可问，而「装上了」和「装上的是这一版」是两件事。
+
 #### GitHub 连不上的时候
 
 formula 里每个 `url` 都配了一条 Gitee `mirror`，下包这一步 brew 自己会回落，不用
@@ -70,6 +84,11 @@ Gitee 了」。后者看着更准，实际是个必然探空的判据：各项�
 `sync` 之后，而且装之前先 `diff` 一遍 tap 下来的 `Formula/` 和这一轮推上去的那份
 ——Gitee 落后一版的话这儿就红了，不会装着上一版的包报绿。
 
+cask 也没有这条路的后半截。Cask 的 `url` 不认 `mirror`——那是 Formula 的 DSL，cask
+的 `url` 只收 `verified:`/`using:` 这类参数。`brew tap` 从 Gitee 来是可以的（cask
+文件本身在 git 里，整仓搬得过去），但 DMG 只能从 GitHub 下。`verify-brew-gitee` 因此
+不覆盖 cask：它按 `--brew` 遍历，cask 天然不在里面，不是漏了验。
+
 apt 那半边没有这条路：deb 树是 Actions 部署到 GitHub Pages 的，不在 git 里，镜像
 仓库带不走它。国内走 apt 装不上的话，用装机脚本（它自带 Gitee 回落）。
 
@@ -87,12 +106,38 @@ keep = 3
 desc = "HTTP file transfer tool with ranged concurrency and resume"
 ```
 
-**真的只改这一个文件**：两个装机验证（apt 的和 brew 的）都是按这张表遍历的，
-不用回去改 workflow。当前收了 `fundeploy` 和 `funget` 两个。
+发 DMG 的桌面应用把 `[source.brew]` 换成 `[source.cask]`，funclash 是这么加的：
 
-前提是那个项目的 release 附件按约定命名：`.deb` 每个架构一个（`amd64`、`arm64`），
-brew 要的是 `<包名>-<target>.tar.gz` 加一份 `SHA256SUMS`。项目那边再加一步，发完
-release 通知这里重建：
+```toml
+[[source]]
+repo = "farfarfun/funclash"
+keep = 2
+cli = false       # 没有能在无头 runner 上跑的命令行入口
+
+[source.cask]
+app = "FunClash"  # 显示名：既是 DMG 附件名的前缀，也是 .app 的名字
+desc = "Multi-platform proxy client based on mihomo (Clash.Meta)"
+min_macos = "monterey"
+bundle_id = "com.farfarfun.funclash"   # --zap 按它拼要清的目录
+```
+
+`cli = false` 是给 apt 那条线看的：verify 默认拿第二列跑 `--version`，而这个包装出
+来的是个窗口程序，在无头 runner 上跑它只会卡住。标了之后 verify 改成验 `.desktop`
+的 `Exec` 指到的东西在 PATH 上、版本问 `dpkg-query`。
+
+**真的只改这一个文件**：三个装机验证（apt、formula、cask）都是按这张表遍历的，
+不用回去改 workflow。当前收了 `fundeploy`、`funget` 和 `funclash` 三个。
+
+前提是那个项目的 release 附件按约定命名，并且带一份 `SHA256SUMS`：
+
+| 渠道 | 附件名 |
+| --- | --- |
+| apt | `<包名>_<版本>_<架构>.deb`，`amd64`、`arm64` 各一个 |
+| formula | `<包名>-<target>.tar.gz` |
+| cask | `<应用名>-<版本>-macos-<架构>.dmg` |
+
+cask 那一行的前缀是**显示名**而不是包名：包名必须小写（Debian 的要求），而应用在
+所有可见的地方叫 `FunClash`。项目那边再加一步，发完 release 通知这里重建：
 
 ```yaml
   notify-packages:
@@ -128,18 +173,21 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
                 │   deploy-pages       发到 GitHub Pages
                 │   verify             真加源装一遍，再退一版装一遍
                 │
-                └─► render-formula.py  按最新版的 SHA256SUMS 拼 Formula/*.rb，
-                                       项目在 Gitee 上有镜像仓库就给每条 url 配一条
-                                       Gitee mirror，提交回本仓库 master
+                └─► render-formula.py  按最新版的 SHA256SUMS 拼 Formula/*.rb，项目在
+                                       Gitee 上有镜像仓库就给每条 url 配一条 mirror
+                    render-cask.py     同一张清单拼 Casks/*.rb（cask 没有 mirror 可
+                                       配），两份一起提交回本仓库 master
                     sync               打一下 sync-gitee 并等它跑完
                     verify-brew        真 tap 一遍再 brew install
+                    verify-cask        macOS runner 上装 cask，读 .app 的 Info.plist
+                                       跟声明的版本对账
                     verify-brew-gitee  把 github 指到 127.0.0.1、清掉下载缓存，
-                                       从 Gitee tap 再装一遍（两个 verify 都先 diff
-                                       一遍 tap 到的 formula 是不是这一轮那份）
+                                       从 Gitee tap 再装一遍（三个 verify 都先 diff
+                                       一遍 tap 到的文件是不是这一轮那份）
 ```
 
-两条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
-formula，只能是最新的——想装旧版走 apt。
+三条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
+formula 或 cask，只能是最新的——想装旧版走 apt，或者去项目的 Release 下 DMG。
 
 触发时机：各项目 `repository_dispatch`、改了 `packages.toml`、手动、每两小时一次。
 
@@ -160,8 +208,10 @@ arm64 的机器会在列表里看到 amd64 的包，apt 直接判定「没有可
 **`InRelease` 和 `Release.gpg` 都出。** 新版 apt 只取前者，老一点的发行版还在找
 后者，少一个就是一句「Release 文件没有签名」的硬报错。
 
-**保留最近 3 版而不是只留最新。** 留多于一个才能 `apt install fundeploy=0.3.0`
-回退；只留最新的话，装坏了就没有退路。
+**保留最近几版而不是只留最新。** 留多于一个才能 `apt install fundeploy=0.3.0`
+回退；只留最新的话，装坏了就没有退路。留几版按项目各写（`keep`）：命令行工具几 MB，
+留 3 版；funclash 一个 `.deb` 45 MB、两个架构，留 2 版就占去 180 MB，而上面那条
+1 GB 是整站的上限。
 
 ## 一次性配置
 
@@ -178,7 +228,8 @@ gpg --armor --export-secret-keys <KEY_ID> \
 Settings → Pages 里把发布源选成 **GitHub Actions**。
 
 没配 `APT_GPG_PRIVATE_KEY` 时 apt 那条线会跳过并告警，不会发出一个没签名的仓库。
-formula 那条线不需要任何 secret——它提交回本仓库，默认的 `GITHUB_TOKEN` 就够。
+tap 那条线不需要任何 secret——formula 和 cask 都提交回本仓库，默认的 `GITHUB_TOKEN`
+就够。
 
 ## 本地跑
 
@@ -186,6 +237,7 @@ formula 那条线不需要任何 secret——它提交回本仓库，默认的 `
 bash scripts/collect-debs.sh packages.toml debs
 bash scripts/build-deb-repo.sh debs public/deb <GPG密钥ID>
 python3 scripts/render-formula.py packages.toml Formula
+python3 scripts/render-cask.py packages.toml Casks
 ```
 
 需要 `gh`、`python3`、`dpkg-dev`、`apt-utils`、GnuPG。
