@@ -119,6 +119,20 @@ def gh_json(args: list[str]):
         return None
 
 
+def releases_of(repo: str) -> list[dict]:
+    """这个仓库的正式 release，取不到就当没有。
+
+    manifest.release_list 是 check=True 的：对 collect-debs 那条线来说，gh 挂了就
+    该整次构建红掉，不能发一个少了包的索引。站点这边相反 —— 被限流、没登录、网断了
+    的时候，页面少几节总比构建红掉好（真正该红的是索引那半边，它自己会红）。
+    """
+    try:
+        return manifest.release_list(repo)
+    except (OSError, subprocess.CalledProcessError, json.JSONDecodeError, KeyError) as e:
+        warn(f"{repo} 的 release 列不出来：{e}")
+        return []
+
+
 def arch_of(low: str) -> str | None:
     for hint, arch in ARCH_HINTS:
         if hint in low:
@@ -430,7 +444,7 @@ def collect(
         in_apt = name in index if index else True
         channels = [c for c in CHANNELS if (c == "apt" and in_apt) or c in source]
 
-        history = [] if offline else (manifest.release_list(source["repo"]) or [])
+        history = [] if offline else releases_of(source["repo"])
         floor = source.get("min_version")
         # min_version 管的是「收哪几版进源」，不是「这个项目有过哪些版本」。版本一节
         # 按它过滤（列出来的每一版都要真能装），更新日志一节不过滤 —— funget 的下限
