@@ -461,7 +461,13 @@ def collect(
         if name in index:
             versions = index[name][:keep]
             for v in versions:
-                v["tag"] = next((t for t in dates if t.lstrip("vV") == v["version"]), "")
+                # 索引里的版本和 tag 不是逐字相等的：funclash 的 deb 把构建号留在
+                # `Version:` 里（`1.0.2+2026101602`），而 tag 是 `v1.0.2`。按
+                # manifest.ver 比 —— 它把 `v` 前缀和 `+build` / `-rc` 后缀都剥掉了，
+                # 逐字比的话这种包每一版都查不到日期，也点不进 Release。
+                v["tag"] = next(
+                    (t for t in dates if manifest.ver(t) == manifest.ver(v["version"])), ""
+                )
                 v["date"] = dates.get(v["tag"], "")
         else:
             versions = [
