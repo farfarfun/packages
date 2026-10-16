@@ -23,8 +23,17 @@ def load(path: str) -> list[dict]:
 
 
 def name_of(source: dict) -> str:
-    """包名取仓库名。两边同名是这个组织的约定，不单独配一遍。"""
-    return source["repo"].split("/")[-1]
+    """包名。默认取仓库名 —— 两边同名是这个组织的约定，不单独配一遍。
+
+    `name` 是给例外留的口子：一个仓库发出来的东西不叫仓库名时，硬按仓库名命名
+    会让 `apt install` 的名字和应用自己的名字对不上。funread-web 就是这种 ——
+    仓库名带 `-web` 是因为它同时是 npm 包 `@farfarfun/funread-web` 的源码，而它
+    打出来的桌面客户端对用户就叫 funread。
+
+    **能不写就不写。** 多一个映射就多一处「这个文件属于谁」要回来查的地方，
+    而 pool 目录、formula 文件名、站点路径全都按这个名字走。
+    """
+    return source.get("name") or source["repo"].split("/")[-1]
 
 
 def release_list(repo: str) -> list[dict]:

@@ -49,8 +49,9 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 | formula | `<包名>-<target>.tar.gz` | 见下 | 少一个平台就不渲染那一块（不是错） |
 | cask | `<应用名>-<版本>-macos-<架构>.dmg` | `arm64`、`amd64` | **两个缺一个，整份 cask 都不生成** |
 
-- `<包名>` 一律小写（Debian 对 `Package` 字段的要求），并且**等于 GitHub 仓库名** ——
-  这个组织不单独配包名映射。
+- `<包名>` 一律小写（Debian 对 `Package` 字段的要求），默认**等于 GitHub 仓库名**。
+  不一样的话在 `packages.toml` 里写 `name`（见第 2 节）—— **能不写就不写**，多一个
+  映射就多一处「这个文件属于谁」要回来查的地方。
 - `<版本>` 不带 `v`。
 - `<应用名>` 是桌面应用的显示名，通常和包名不一样（`FunClash` 对 `funclash`）：
   它既是 DMG 名的前缀，也是装进 `/Applications` 的 `.app` 名。
@@ -99,6 +100,9 @@ e0980a95...b7efd7  fundeploy-aarch64-apple-darwin.tar.gz
 ```toml
 [[source]]
 repo = "farfarfun/funget"
+# 可选：包名和仓库名不一致时写。能不写就不写 —— pool 目录、formula 文件名、
+# 站点路径全按这个名字走，多一处映射就多一处要回来对的地方。
+# name = "funget"
 # 索引里保留最近几版。留多于一个是为了能 `apt install funget=1.1.73` 回退。
 keep = 3
 # 可选：比这更早的 tag 不收。
@@ -123,7 +127,8 @@ bundle_id = "com.farfarfun.funclash"   # 可选，`brew uninstall --zap` 按它�
 
 | 字段 | 作用 | 默认 |
 | --- | --- | --- |
-| `repo` | `<组织>/<仓库>`，包名取仓库名 | 必填 |
+| `repo` | `<组织>/<仓库>` | 必填 |
+| `name` | 包名。仓库名和包名不一致时才写 | 仓库名 |
 | `keep` | 索引里留最近几版 | 3 |
 | `min_version` | 收版本的下限。管的是「收哪几版进源」，不管「这个项目有过哪些版本」—— 页面上的更新日志不受它影响 | 无 |
 | `cli` | 装出来有没有能跑 `--version` 的命令行入口 | `true` |
