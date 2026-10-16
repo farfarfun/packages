@@ -15,11 +15,15 @@ formula 用嵌套的 `on_macos`/`on_arm` 块并带一个 `test do`，cask 用 `a
 一个脚本等于两套逻辑共用一个名字。
 
 **cask 没有 Gitee 回落。** Cask 的 `url` 不认 `mirror` —— 那是 Formula 的 DSL，
-cask 的 `url` 只收 `verified:`/`using:`/`header:` 这类参数。所以 render-formula.py
+cask 的 `url` 只收 `using:`/`header:` 这类参数。所以 render-formula.py
 里那一整套「GitHub 下不动就去 Gitee」在这儿无从写起。`brew tap` 那一步还是能从
 Gitee 的镜像仓库来（cask 文件本身在 git 里，sync-gitee 整仓搬过去），但 DMG 只能
 从 GitHub 下。CI 的 verify-brew-gitee 因此不覆盖 cask：它按 `--brew` 遍历，cask
 天然不在里面，不是漏了。
+
+`url` 不写 `verified:`：下载地址就挂在 `homepage` 底下，Homebrew 自己会认，显式
+写反而是被废弃的参数。`depends_on macos:` 同理只给符号（`:monterey` 本身就是
+「这个版本或更新」），字符串比较那种写法也废弃了。
 """
 
 import sys
@@ -73,8 +77,7 @@ def render(source: dict, tag: str, checksums: dict[str, str]) -> str | None:
         "  sha256 " + (",\n" + " " * 9).join(checks),
         "",
         f'  url "https://github.com/{source["repo"]}/releases/download/'
-        f'{prefix}#{{version}}/{app}-#{{version}}-macos-#{{arch}}.dmg",',
-        f'      verified: "github.com/{source["repo"]}/"',
+        f'{prefix}#{{version}}/{app}-#{{version}}-macos-#{{arch}}.dmg"',
         f'  name "{app}"',
         f'  desc "{cask["desc"]}"',
         f'  homepage "https://github.com/{source["repo"]}"',
@@ -82,7 +85,7 @@ def render(source: dict, tag: str, checksums: dict[str, str]) -> str | None:
     ]
 
     if "min_macos" in cask:
-        body += [f'  depends_on macos: ">= :{cask["min_macos"]}"', ""]
+        body += [f'  depends_on macos: :{cask["min_macos"]}', ""]
 
     body += [f'  app "{app}.app"']
 
