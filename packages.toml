@@ -83,3 +83,26 @@ min_macos = "monterey"
 # ~/Library 下，不在 Containers 里。macOS 上没有常驻的特权 helper 要清：提权走的
 # 是一次性的 osascript "with administrator privileges"，不装 launchd daemon。
 bundle_id = "com.farfarfun.funclash"
+
+# ⚠️ 这一节还不能合进 master。funread 今天是个纯 Python 库（PyPI 上的 funread，
+# pyproject.toml 里没有 [project.scripts]），GitHub 上一个 release 都没有 —— 现在
+# 收进来的话，verify 按这张表遍历跑 `apt install funread` 会找不到候选，整次构建红，
+# 而且定时构建两小时红一次。
+#
+# 合并前这三件事要都成立（见 docs/package-spec.md）：
+#   1. funread 有一个自带运行时的命令行入口，`funread --version` 打得出版本号
+#      —— brew test 的默认断言就是它，apt 那边的 verify 也跑这条；
+#   2. release 附件按约定命名：`funread_<版本>_{amd64,arm64}.deb`，以及
+#      `funread-<target>.tar.gz`（四个 target 见规范，里面是单个可执行文件）；
+#   3. 同一次 release 里有一份覆盖所有附件的 SHA256SUMS。
+#
+# 到位之后跑一遍 `python3 scripts/sitedata.py packages.toml --check funread`，
+# 报告里没有 `!` 再合。
+[[source]]
+repo = "farfarfun/funread"
+keep = 3
+
+[source.brew]
+desc = "Manage Legado book sources and RSS feeds: parse, validate and batch process"
+# brew test 的额外断言。--help 不碰网络也不读配置，是这个库唯一能空跑的入口。
+checks = [["--help", "funread"]]

@@ -54,12 +54,22 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 - `<版本>` 不带 `v`。
 - `<应用名>` 是桌面应用的显示名，通常和包名不一样（`FunClash` 对 `funclash`）：
   它既是 DMG 名的前缀，也是装进 `/Applications` 的 `.app` 名。
-- formula 的 target 是 Rust 的目标三元组，认这四个：
+- formula 的 target 认这四个：
   `aarch64-apple-darwin`、`x86_64-apple-darwin`、
   `aarch64-unknown-linux-musl`、`x86_64-unknown-linux-musl`。
   Linux 用 musl 而不是 gnu：静态链接的包不挑 glibc 版本，老发行版也能装。
+  **这四个名字只是约定好的平台标签，和项目用什么语言写的无关** —— 它们长得像 Rust
+  的目标三元组，是因为头两个收进来的项目是 Rust 的。Python / Go / Zig 写的工具照用
+  这四个名字，渲染器只按名字取文件。
 - `.tar.gz` 里是**一个可执行文件**，名字等于包名（或 `[source.brew].bin` 指定的名字）。
   formula 的 `bin.install` 直接装它。
+
+**不是编译型语言的项目**（纯 Python、Node 之类）要进 apt 和 brew 这两条线，得先有一个
+**自带运行时的单文件可执行程序**（PyInstaller、Nuitka、shiv、pkg 之类打出来的那种），
+它才是上面那些附件里装的东西。这不是形式要求：apt 和 brew 的承诺是「装上就能跑」，
+而一个依赖机器上恰好有对版本 Python 和一串第三方包的脚本给不了这个承诺 —— 那条路是
+`pip` / `uv`，站点上可以把它写成一条额外渠道（见[第 3 节](#3-站点文案-sitepages包名toml可选)
+的 `[[install]]`），但它不进索引也不进 tap。库本身只发 PyPI 的项目，今天这个仓库收不了。
 
 ### 1.3 `SHA256SUMS`（必需）
 
