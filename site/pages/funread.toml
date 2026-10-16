@@ -1,0 +1,50 @@
+# funread 的包页文案。格式见 docs/package-spec.md。
+#
+# 和 packages.toml 里那一节一样，这份文案在 funread 出命令行二进制之前是备着的：
+# 文案不依赖 release，先写好，收进来那天页面就是满的，不用再补一轮。
+
+tagline.zh = "管理 Legado 阅读 APP 的书源与 RSS 源：解析、校验、批量处理。"
+tagline.en = "Manage Legado book sources and RSS feeds: parse, validate and batch process."
+
+description.zh = "funread 用来管理和处理 Legado 阅读 APP 的书源与 RSS 源，支持书源解析、规则校验（含 JS 规则）与批量处理，既是 Python 工具库也是命令行工具。"
+description.en = "funread manages and processes Legado book sources and RSS feeds, with source parsing, rule validation (JavaScript rules included) and batch processing. It is both a Python library and a command-line tool."
+
+[[features]]
+title.zh = "书源解析"
+title.en = "Source parsing"
+text.zh = "读 Legado 的书源与 RSS 源，拆成能逐字段检查的结构。"
+text.en = "Reads Legado book and RSS sources into a structure you can inspect field by field."
+
+[[features]]
+title.zh = "规则校验"
+title.en = "Rule validation"
+text.zh = "按规则跑一遍，告诉你哪一条不成立，而不是只说这个源坏了。"
+text.en = "Runs the rules and says which one fails, instead of just calling the source broken."
+
+[[features]]
+title.zh = "JS 规则真执行"
+title.en = "Real JavaScript rules"
+text.zh = "接的是 quickjs，书源里的 JS 规则是真跑出来的结果。"
+text.en = "Backed by quickjs, so the JavaScript rules in a source really run."
+
+[[features]]
+title.zh = "批量处理"
+title.en = "Batch processing"
+text.zh = "成百上千个源一起过，结果可以落库。"
+text.en = "Sweeps hundreds of sources at once and can persist the results."
+
+# apt / brew 之外的渠道。Python 库这条和命令行是两回事，note 里说清楚，免得有人
+# `pip install` 完去找 funread 命令 —— funget 的页面上也是这么写的。
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funread"
+note.zh = "装的是 Python 库，用来在自己的代码里 import。"
+note.en = "Installs the Python library, to import from your own code."
+
+[[install]]
+id = "uv"
+title = "uv"
+cmd = "uv add funread"
+note.zh = "同一个 Python 库，加进 uv 管理的项目里。"
+note.en = "The same Python library, added to a uv-managed project."
