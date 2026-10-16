@@ -1,0 +1,47 @@
+# fundeploy 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "一条命令管本机的开发环境、常驻服务、工具和镜像源。"
+tagline.en = "Manage development toolchains, local services and package mirrors from one CLI."
+
+description.zh = "fundeploy 是一个单文件静态二进制，用一条命令管理本机的开发环境、常驻服务、工具链和镜像源，不依赖 Python、Node 或任何运行时，支持 macOS 与 Linux 的 x86_64 / arm64。"
+description.en = "fundeploy is a single static binary that manages development toolchains, long-running local services and package mirrors from one CLI, with no Python, Node or other runtime needed. For macOS and Linux on x86_64 and arm64."
+
+[[features]]
+title.zh = "一条命令"
+title.en = "One command"
+text.zh = "开发环境、常驻服务、工具链、镜像源都从同一个入口管。"
+text.en = "Toolchains, local services and mirrors all behind one entry point."
+
+[[features]]
+title.zh = "没有运行时"
+title.en = "No runtime"
+text.zh = "单个静态二进制，不依赖 Python、Node 或任何解释器。"
+text.en = "A single static binary — no Python, Node or interpreter to install first."
+
+[[features]]
+title.zh = "两个系统四个架构"
+title.en = "Two systems"
+text.zh = "macOS 与 Linux，x86_64 与 arm64 各一份。"
+text.en = "macOS and Linux, on x86_64 and arm64."
+
+[[features]]
+title.zh = "连不上也能装"
+title.en = "Works behind the wall"
+text.zh = "装机脚本探不通 GitHub 时自动改用 Gitee 镜像。"
+text.en = "The install script falls back to the Gitee mirror when GitHub is unreachable."
+
+# apt / brew 之外的渠道。`id` 要在这一页里唯一（它进 DOM 的 id），`os` 是给页面
+# 按当前系统预选用的，留空就永远不会被自动选中。
+[[install]]
+id = "script"
+title = "install.sh"
+cmd = "curl -fsSL https://raw.githubusercontent.com/farfarfun/fundeploy/HEAD/install.sh | sh"
+note.zh = "装到 ~/.local/bin，不动你的 shell 配置；GitHub 不通时自己换 Gitee。"
+note.en = "Installs into ~/.local/bin without touching your shell config, and falls back to Gitee when GitHub is unreachable."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install fundeploy --force --locked"
+note.zh = "有 Rust 工具链的话。从源码编，慢。"
+note.en = "If you have a Rust toolchain. Builds from source, so it takes a while."

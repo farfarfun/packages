@@ -79,16 +79,32 @@ jobs:
           APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
         run: bash scripts/build-deb-repo.sh debs public/deb "${{ steps.key.outputs.fingerprint }}"
 
-      - name: 放公钥和说明页
+      - name: 放公钥
         if: steps.config.outputs.signed == 'true'
         run: |
           set -euo pipefail
-          cp site/index.html public/index.html
+          mkdir -p public
           # 公钥放站点根上，不放 deb/ 下面：以后再加 rpm 源的话用的是同一把钥匙。
           gpg --batch --export "${{ steps.key.outputs.fingerprint }}" >public/farfarfun.gpg
           gpg --batch --armor --export "${{ steps.key.outputs.fingerprint }}" >public/farfarfun.asc
           echo "=== 索引里有这些包 ==="
           grep -E '^(Package|Version|Architecture):' public/deb/dists/stable/main/binary-amd64/Packages
+
+      # 刻意不挂 `if: signed`：渲染站点不用 GPG，不挂的话 fork 和没配 secret 的 PR
+      # 也会跑一遍渲染器，模板写坏、文案少一种语言当场就是红的。上传 Pages 产物那步
+      # 仍然只在 signed 时跑，发布行为一个字没变。
+      #
+      # 要在索引生成之后：版本一节读的是刚扫出来的 Packages，它才是 apt 真能装到的
+      # 那几版。索引不在（上面跳过了）时渲染器自己退化成按 Release 列。
+      - name: 渲染站点
+        env:
+          # 只读公开 release 和 CHANGELOG.md，默认 token 就够。
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/render-site.py site public \
+            --packages packages.toml \
+            --deb public/deb \
+            --fingerprint "${{ steps.key.outputs.fingerprint }}"
 
       - uses: actions/upload-pages-artifact@v3
         if: steps.config.outputs.signed == 'true'

@@ -1,0 +1,16 @@
+    <section class="section wrap" id="versions" aria-labelledby="versions-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>{{num}}</p>
+          <h2 id="versions-title">{{t.versionsTitle}}</h2>
+          <p class="section-sub">{{sub}}</p>
+          <p class="rail-text">{{t.versionsLead}}</p>
+          <p class="rail-links">
+            <a href="{{repoUrl}}/releases">{{t.versionsAll}}</a>
+          </p>
+        </div>
+        <div class="col">
+{{%rows}}
+        </div>
+      </div>
+    </section>

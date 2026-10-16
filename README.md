@@ -3,7 +3,10 @@
 farfarfun 所有项目共用的包仓库。**用户只加一次源**，以后新增的包直接装。
 这个仓库同时是 APT 源和 Homebrew tap。
 
-站点: <https://farfarfun.github.io/packages>
+站点: <https://farfarfun.github.io/packages>（每个包还有自己的一页，中英各一份）
+
+接一个新项目进来：**[docs/package-spec.md](docs/package-spec.md)** —— 发布约定、
+清单字段、页面文案格式和自检命令都在里面，那份文档可以直接丢给项目维护者。
 
 ## 安装
 
@@ -125,8 +128,9 @@ bundle_id = "com.farfarfun.funclash"   # --zap 按它拼要清的目录
 来的是个窗口程序，在无头 runner 上跑它只会卡住。标了之后 verify 改成验 `.desktop`
 的 `Exec` 指到的东西在 PATH 上、版本问 `dpkg-query`。
 
-**真的只改这一个文件**：三个装机验证（apt、formula、cask）都是按这张表遍历的，
-不用回去改 workflow。当前收了 `fundeploy`、`funget` 和 `funclash` 三个。
+**真的只改这一个文件**：三个装机验证（apt、formula、cask）和站点（包列表、每个包
+自己那一页）都是按这张表遍历的，不用回去改 workflow，也不用改页面。当前收了
+`fundeploy`、`funget` 和 `funclash` 三个。
 
 前提是那个项目的 release 附件按约定命名，并且带一份 `SHA256SUMS`：
 
@@ -137,7 +141,14 @@ bundle_id = "com.farfarfun.funclash"   # --zap 按它拼要清的目录
 | cask | `<应用名>-<版本>-macos-<架构>.dmg` |
 
 cask 那一行的前缀是**显示名**而不是包名：包名必须小写（Debian 的要求），而应用在
-所有可见的地方叫 `FunClash`。项目那边再加一步，发完 release 通知这里重建：
+所有可见的地方叫 `FunClash`。
+
+完整的约定（含页面文案格式、更新日志格式、CI 会验什么、自检命令）在
+[docs/package-spec.md](docs/package-spec.md)，接入时照着那份走。加完之后跑一遍
+`python3 scripts/sitedata.py packages.toml --check <包名>`，能看到站点认出了什么、
+漏了什么。
+
+项目那边再加一步，发完 release 通知这里重建：
 
 ```yaml
   notify-packages:
@@ -170,6 +181,8 @@ gh workflow run build.yml -R farfarfun/packages
 packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release 下 .deb
                 │   build-deb-repo.sh  拼 pool、每个架构各扫一份 Packages、
                 │                      apt-ftparchive 出 Release、GPG 签名
+                │   render-site.py     读清单 + 刚扫出来的索引 + 各项目 Release，
+                │                      渲染总览页和每个包一页（中英各一份）
                 │   deploy-pages       发到 GitHub Pages
                 │   verify             真加源装一遍，再退一版装一遍
                 │
@@ -213,6 +226,30 @@ arm64 的机器会在列表里看到 amd64 的包，apt 直接判定「没有可
 留 3 版；funclash 一个 `.deb` 45 MB、两个架构，留 2 版就占去 180 MB，而上面那条
 1 GB 是整站的上限。
 
+**站点在构建时整个生成，不写死任何包名。** 页面上的版本、附件、校验和、更新日志
+全部来自 `packages.toml`、刚扫出来的 APT 索引和各项目的 Release —— 加一个包只改
+清单，它自己就会多出一页。渲染这一步不挂 `if: signed`：它不用 GPG，让没配 secret
+的 PR 也跑一遍，模板写坏当场就是红的。
+
+**取不到的数据就整块不出。** `gh` 不可用、索引还没建、项目没写 `CHANGELOG.md`，
+对应的那一节直接不渲染，而不是渲染一个空壳。所以页面上「少了一块」永远是数据的
+问题，查 `scripts/sitedata.py ... --check <包名>` 就能看到少在哪儿。
+
+## 站点
+
+```
+site/
+  home.html  package.html   两种页面的模板
+  partials/                 页头页脚、各节的骨架
+  strings.toml              所有文案，[zh] 和 [en] 两张表，键必须一一对应
+  pages/<包名>.toml         每个包的标语、功能点、截图、额外安装渠道（可选）
+  assets/                   style.css 和 app.js（JS 里没有一个字的文案）
+```
+
+渲染器是 `scripts/render-site.py`，数据层是 `scripts/sitedata.py`，都只用标准库。
+页面是静态生成的，JS 只做增强：关掉 JS 之后分段控件消失、所有面板展开，内容一句
+不少。
+
 ## 一次性配置
 
 | Secret | 用途 |
@@ -238,9 +275,18 @@ bash scripts/collect-debs.sh packages.toml debs
 bash scripts/build-deb-repo.sh debs public/deb <GPG密钥ID>
 python3 scripts/render-formula.py packages.toml Formula
 python3 scripts/render-cask.py packages.toml Casks
+python3 scripts/render-site.py site public --packages packages.toml --deb public/deb
 ```
 
-需要 `gh`、`python3`、`dpkg-dev`、`apt-utils`、GnuPG。
+只看站点的话前两步可以跳过（没有索引时版本一节退化成按 Release 列）：
+
+```bash
+python3 scripts/render-site.py site /tmp/preview --packages packages.toml
+python3 -m http.server -d /tmp/preview 8000
+```
+
+需要 `gh`、`python3`、`dpkg-dev`、`apt-utils`、GnuPG。渲染站点只要 `python3`，
+`gh` 没登录也能跑（取不到的那几块不出）。
 
 ---
 

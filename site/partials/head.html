@@ -1,0 +1,42 @@
+<!-- 两种页面共用的 <head>。渲染器填 pageTitle / pageDescription / canonical /
+     alternates / jsonld / otherHref 这几样，其余是定值。 -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{pageTitle}}</title>
+  <meta name="description" content="{{pageDescription}}">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f3efea" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181617" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="{{canonical}}">
+{{%alternates}}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="farfarfun packages">
+  <meta property="og:title" content="{{pageTitle}}">
+  <meta property="og:description" content="{{pageDescription}}">
+  <meta property="og:url" content="{{canonical}}">
+  <meta property="og:locale" content="{{ogLocale}}">
+  <link rel="icon" href="{{up}}favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="{{up}}assets/style.css">
+{{%jsonld}}
+  <!-- 在首次绘制之前定下主题和语言：放到 app.js 里就会先闪一下浅色，或者先闪一下
+       中文页再跳到英文页。 -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      try {
+        var theme = localStorage.getItem('farfarfun.theme');
+        if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+      } catch (e) {}
+      if (root.dataset.pageLang !== 'zh') return;
+      if (/[?&]lang=zh(&|$)/.test(location.search)) return;
+      var lang = null;
+      try { lang = localStorage.getItem('farfarfun.lang'); } catch (e) {}
+      if (lang !== 'zh' && lang !== 'en') {
+        var prefs = navigator.languages || [navigator.language || ''];
+        lang = prefs.some(function (l) { return /^zh/i.test(l); }) ? 'zh' : 'en';
+      }
+      // 中文页是 x-default，所以由它把读不懂中文的人送去英文页；`?lang=zh` 能挡住。
+      if (lang === 'en') location.replace('{{otherHref}}' + location.search + location.hash);
+    })();
+  </script>
+  <noscript><style>.pane[hidden]{display:block !important}.seg{display:none}</style></noscript>

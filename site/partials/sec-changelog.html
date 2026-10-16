@@ -1,0 +1,17 @@
+    <section class="section wrap" id="changelog" aria-labelledby="changelog-title">
+      <div class="rail-grid">
+        <div class="rail rail-sticky">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>{{num}}</p>
+          <h2 id="changelog-title">{{t.changelogTitle}}</h2>
+          <p class="section-sub">{{sub}}</p>
+          <p class="rail-text">{{lead}}</p>
+{{%search}}
+          <p class="rail-links">
+            <a href="{{repoUrl}}/releases">{{t.changelogMore}}</a>
+          </p>
+        </div>
+        <div class="col">
+{{%body}}
+        </div>
+      </div>
+    </section>

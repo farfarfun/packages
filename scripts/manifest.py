@@ -27,22 +27,31 @@ def name_of(source: dict) -> str:
     return source["repo"].split("/")[-1]
 
 
-def releases(repo: str) -> list[str]:
-    """仓库里的正式 release tag，新的在前。
+def release_list(repo: str) -> list[dict]:
+    """仓库里的正式 release，新的在前，每项是 `{"tag": ..., "date": "2026-10-16"}`。
 
     草稿和预发布不要：它们是给人单独试的，不该让 apt upgrade 自动装上。
+
+    发布日期一起带出来，而不是让要用的人再按 tag 查一遍：`gh release list` 本来就
+    返回这个字段，站点那边每个版本都要显示日期，逐个 `gh release view` 是同一份数据
+    多花 N 次 API。
     """
     out = subprocess.run(
         [
             "gh", "release", "list", "--repo", repo, "--limit", "100",
-            "--json", "tagName,isDraft,isPrerelease",
+            "--json", "tagName,isDraft,isPrerelease,publishedAt",
         ],
         capture_output=True, text=True, check=True,
     ).stdout
-    rs = json.loads(out)
-    tags = [r["tagName"] for r in rs if not r["isDraft"] and not r["isPrerelease"]]
+    rs = [r for r in json.loads(out) if not r["isDraft"] and not r["isPrerelease"]]
     # gh 按发布时间排，而我们要的是版本序——补发一个老版本的 patch 之后两者会分叉。
-    return sorted(tags, key=ver, reverse=True)
+    rs.sort(key=lambda r: ver(r["tagName"]), reverse=True)
+    return [{"tag": r["tagName"], "date": (r["publishedAt"] or "")[:10]} for r in rs]
+
+
+def releases(repo: str) -> list[str]:
+    """仓库里的正式 release tag，新的在前。"""
+    return [r["tag"] for r in release_list(repo)]
 
 
 def sums(path: Path) -> dict[str, str]:

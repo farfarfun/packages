@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="{{locale}}" data-page-lang="{{lang}}">
+<head>
+<!-- include head.html -->
+</head>
+<body>
+  <a class="skip" href="#install">{{t.skip}}</a>
+<!-- include nav.html -->
+
+  <main id="top">
+    <section class="hero hero-pkg">
+<!-- include deco.html -->
+      <div class="wrap hero-inner">
+        <a class="eyebrow" href="{{releaseUrl}}">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>{{eyebrow}}</span>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <h1 class="display mono">{{pkgName}}</h1>
+        <p class="lede">{{tagline}}</p>
+        <ul class="chips">{{%chips}}</ul>
+        <div class="cta">
+          <a class="btn primary" href="#install">{{t.pkgCtaInstall}}</a>
+{{%ctaDownload}}
+        </div>
+{{%features}}
+      </div>
+    </section>
+
+{{%sections}}
+  </main>
+
+<!-- include foot.html -->
+  <script src="{{up}}assets/app.js" defer></script>
+</body>
+</html>

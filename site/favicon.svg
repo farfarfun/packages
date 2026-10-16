@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <!-- 和 site/partials/glyph.html 是同一个箱子，按 240 的画布放大。独立的 SVG 文件
+       引不到页面的 CSS 变量，所以颜色写死，深色模式靠内嵌的媒体查询。 -->
+  <style>
+    .a { fill: #92b1ca; stroke: #92b1ca }
+    .b { fill: #58738f; stroke: #58738f }
+    .c { fill: #7d79b0; stroke: #7d79b0 }
+    @media (prefers-color-scheme: dark) {
+      .a { fill: #a2c4de; stroke: #a2c4de }
+      .b { fill: #6f90b4; stroke: #6f90b4 }
+      .c { fill: #9a96cb; stroke: #9a96cb }
+    }
+  </style>
+  <g stroke-width="22" stroke-linejoin="round" transform="translate(12 24) scale(3.6)">
+    <path class="a" d="M30 7 53 20.5 30 34 7 20.5Z"/>
+    <path class="b" d="M7 24.5 30 38v25L7 49.5Z"/>
+    <path class="c" d="M53 24.5 30 38v25l23-13.5Z"/>
+  </g>
+</svg>

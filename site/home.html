@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="{{locale}}" data-page-lang="{{lang}}">
+<head>
+<!-- include head.html -->
+</head>
+<body>
+  <a class="skip" href="#setup">{{t.skip}}</a>
+<!-- include nav.html -->
+
+  <main id="top">
+    <section class="hero">
+<!-- include deco.html -->
+      <div class="wrap hero-inner">
+        <a class="eyebrow" href="#packages">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>{{eyebrow}}</span>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <h1 class="display">{{t.homeTitle}}</h1>
+        <p class="lede">{{t.homeLede}}</p>
+        <div class="cta">
+          <a class="btn primary" href="#setup">{{t.homeCtaSetup}}</a>
+          <a class="btn quiet" href="#packages">{{t.homeCtaPackages}}</a>
+        </div>
+        <ul class="facts">
+          <li><b>{{t.fact1Title}}</b><span>{{t.fact1}}</span></li>
+          <li><b>{{t.fact2Title}}</b><span>{{t.fact2}}</span></li>
+          <li><b>{{t.fact3Title}}</b><span>{{t.fact3}}</span></li>
+          <li><b>{{t.fact4Title}}</b><span>{{t.fact4}}</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section wrap" id="setup" aria-labelledby="setup-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>01</p>
+          <h2 id="setup-title">{{t.setupTitle}}</h2>
+          <p class="section-sub">{{t.setupSub}}</p>
+          <p class="rail-text">{{t.setupLead}}</p>
+          <p class="rail-links">
+            <a href="{{up}}farfarfun.gpg">farfarfun.gpg</a>
+            <a href="{{up}}farfarfun.asc">farfarfun.asc</a>
+          </p>
+{{%fingerprint}}
+        </div>
+{{%setupPanes}}
+      </div>
+    </section>
+
+    <section class="section wrap" id="packages" aria-labelledby="packages-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>02</p>
+          <h2 id="packages-title">{{t.packagesTitle}}</h2>
+          <p class="section-sub">{{packagesSub}}</p>
+          <p class="rail-text">{{t.packagesLead}}</p>
+        </div>
+{{%cards}}
+      </div>
+    </section>
+
+    <section class="section wrap" id="how" aria-labelledby="how-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>03</p>
+          <h2 id="how-title">{{t.howTitle}}</h2>
+          <p class="section-sub">{{t.howSub}}</p>
+          <p class="rail-text">{{t.howLead}}</p>
+          <p class="rail-links">
+            <a href="https://github.com/farfarfun/packages#readme">{{t.howMore}}</a>
+          </p>
+        </div>
+        <div class="col">
+          <div class="tip">
+            <h3>{{t.howFlowTitle}}</h3>
+            <pre class="flow"><code>{{t.howFlow}}</code></pre>
+          </div>
+          <div class="tip">
+            <h3>{{t.howTriggerTitle}}</h3>
+            <p>{{t.howTrigger}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<!-- include foot.html -->
+  <script src="{{up}}assets/app.js" defer></script>
+</body>
+</html>

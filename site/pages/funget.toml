@@ -1,0 +1,45 @@
+# funget 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "HTTP 文件传输工具：Range 并发下载、断点续传、PUT/POST 上传。"
+tagline.en = "HTTP file transfer tool with ranged concurrency, resume and PUT/POST upload."
+
+description.zh = "funget 是一个 HTTP 文件传输工具，支持单线程下载、Range 并发下载、断点续传和 PUT/POST 上传。核心由 Rust 实现，命令行是独立的静态二进制，不需要 Python 环境。"
+description.en = "funget is an HTTP file transfer tool with single-stream and ranged concurrent downloads, resume and PUT/POST upload. The core is written in Rust and the CLI is a standalone static binary that needs no Python."
+
+[[features]]
+title.zh = "并发下载"
+title.en = "Ranged concurrency"
+text.zh = "按 Range 切块并发拉，断了能接着下。"
+text.en = "Splits a file by range, downloads in parallel and resumes after an interruption."
+
+[[features]]
+title.zh = "上传也管"
+title.en = "Uploads too"
+text.zh = "PUT 和 POST 两种上传都支持。"
+text.en = "Both PUT and POST uploads are supported."
+
+[[features]]
+title.zh = "不需要 Python"
+title.en = "No Python needed"
+text.zh = "命令行是静态链接的原生二进制，各渠道装出来的是同一套实现。"
+text.en = "The CLI is a statically linked native binary, identical across every channel."
+
+[[features]]
+title.zh = "也能当库用"
+title.en = "Also a library"
+text.zh = "Python 包提供下载和上传的四个函数，由同一个 Rust 核心驱动。"
+text.en = "The Python package exposes four download and upload functions over the same Rust core."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install funget"
+note.zh = "有 Rust 工具链的话。"
+note.en = "If you have a Rust toolchain."
+
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funget"
+note.zh = "装的是 Python 库，不带 funget 命令 —— 命令行请走上面任意一条渠道。"
+note.en = "Installs the Python library only; it does not ship the funget command. Use one of the channels above for the CLI."

@@ -1,0 +1,43 @@
+# funclash 的包页文案。推导不出来的东西（标语、功能点、截图）写在这儿，能推导的
+# （版本、附件、更新日志）由 sitedata.py 从 Release 和索引里取，不要往这儿抄。
+#
+# 没有这个文件的包照样有页面，只是首屏用 packages.toml 里那句英文 desc、也没有
+# 功能点和截图。格式见 docs/package-spec.md。
+
+tagline.zh = "基于 Clash Meta（mihomo）内核的多平台代理客户端。简单易用，开源，无广告。"
+tagline.en = "A multi-platform proxy client based on Clash Meta (mihomo). Simple to use, open source and ad-free."
+
+description.zh = "FunClash 是免费开源的 Clash Meta（mihomo）代理客户端，支持 Android、Windows、macOS 与 Linux，提供规则分流、TUN 模式与订阅导入，没有广告。"
+description.en = "FunClash is a free, open-source Clash Meta (mihomo) proxy client for Android, Windows, macOS and Linux, with rule routing, TUN mode and subscription import. No ads."
+
+[[features]]
+title.zh = "mihomo 内核"
+title.en = "mihomo core"
+text.zh = "规则分流、代理组与 TUN 模式。"
+text.en = "Rule routing, proxy groups and TUN mode."
+
+[[features]]
+title.zh = "订阅导入"
+title.en = "Subscriptions"
+text.zh = "通过订阅链接导入配置。"
+text.en = "Import a profile from a subscription link."
+
+[[features]]
+title.zh = "WebDAV 同步"
+title.en = "WebDAV sync"
+text.zh = "在设备之间备份与恢复数据。"
+text.en = "Back up and restore your data across devices."
+
+[[features]]
+title.zh = "开源"
+title.en = "Open source"
+text.zh = "以 GPL-3.0 协议开源，没有广告。"
+text.en = "Licensed under GPL-3.0, with no ads."
+
+# 截图在项目自己的仓库里，构建时下到站点下面（见 render-site.py 的 fetch_shots）。
+# 只认 PNG：宽高是从文件头读出来写进 <img> 的，为的是图片加载时不跳版。
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun/funclash/master/docs/snapshots/preview.png"
+dark = "https://raw.githubusercontent.com/farfarfun/funclash/master/docs/snapshots/preview-dark.png"
+alt.zh = "FunClash 仪表盘在 MacBook 与手机上的界面"
+alt.en = "The FunClash dashboard on a MacBook and a phone"

@@ -1,0 +1,26 @@
+<!-- 首屏的装饰：一张等轴网格加三个落在格点上的箱子。纯 SVG + CSS，没有 canvas 也
+     没有脚本 —— 这是一个加源页面，装饰不该是它最重的部分。颜色走 CSS 变量，所以
+     深浅两套主题自动跟着换。 -->
+      <svg class="deco" viewBox="0 0 1200 460" preserveAspectRatio="xMaxYMin slice" aria-hidden="true">
+        <defs>
+          <pattern id="iso-grid" width="120" height="69.3" patternUnits="userSpaceOnUse">
+            <path d="M0 34.65 60 0l60 34.65L60 69.3Z" fill="none" stroke="currentColor" stroke-width="1"/>
+          </pattern>
+          <linearGradient id="deco-fade" x1="0.15" y1="0" x2="0.55" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="1"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="deco-mask"><rect width="1200" height="460" fill="url(#deco-fade)"/></mask>
+          <g id="deco-cube">
+            <path class="sig sig-3" d="M60 0l60 34.65L60 69.3 0 34.65Z"/>
+            <path class="sig sig-2" d="M0 38.65 60 73.3v65.3L0 103.95Z"/>
+            <path class="sig sig-1" d="M120 38.65 60 73.3v65.3l60-34.65Z"/>
+          </g>
+        </defs>
+        <g mask="url(#deco-mask)">
+          <rect width="1200" height="460" fill="url(#iso-grid)"/>
+          <use href="#deco-cube" x="660" y="103.95" opacity="0.55"/>
+          <use href="#deco-cube" x="840" y="34.65" opacity="0.85"/>
+          <use href="#deco-cube" x="900" y="173.25" opacity="0.4"/>
+        </g>
+      </svg>
