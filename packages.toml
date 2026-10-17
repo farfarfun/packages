@@ -84,25 +84,62 @@ min_macos = "monterey"
 # 是一次性的 osascript "with administrator privileges"，不装 launchd daemon。
 bundle_id = "com.farfarfun.funclash"
 
-# ⚠️ 这一节还不能合进 master。funread 今天是个纯 Python 库（PyPI 上的 funread，
-# pyproject.toml 里没有 [project.scripts]），GitHub 上一个 release 都没有 —— 现在
-# 收进来的话，verify 按这张表遍历跑 `apt install funread` 会找不到候选，整次构建红，
-# 而且定时构建两小时红一次。
+[[source]]
+repo = "farfarfun/funread-web"
+# 仓库名带 -web 是因为它同时是 npm 包 @farfarfun/funread-web 的源码，而它打出来的
+# 桌面客户端对用户就叫 funread：deb 的 Package 字段、Tauri 的 productName、装进
+# /Applications 的 .app 名全是 funread。这里跟着产物走，不跟仓库名走。
+name = "funread"
+keep = 3
+# 1.1.126 之前的附件不按规范命名（macOS 只出了一个架构，deb 名带 v 前缀）。
+# 收进来的话 render-cask.py 会因为缺一个架构整段跳过 —— 它对半截矩阵是宁可不出。
+min_version = "1.1.126"
+# 装出来是 Tauri 的窗口程序，无头 runner 上跑它只会卡住，和 funclash 同理。
+cli = false
+
+# 同一次 release 里还有 funread-light（另一套壳：不打包 Web 资源，启动时问服务器
+# 地址）。它的 deb 会跟着 `--pattern '*.deb'` 一起进 APT 源 —— Package 字段是
+# funread-light，和 funread 不撞，`apt install funread-light` 装得到。但它不单列
+# 一个 [[source]]：这张表的单位是仓库，一个仓库只能有一个条目。代价是它没有站点
+# 页面、没有 cask，DMG 只能从 Release 下。真要给它这些，得先拆仓库。
+
+[source.cask]
+# 显示名正好等于包名（Tauri 的 productName 就是小写的 funread），不像 FunClash
+# 那样两者不同。但这个字段仍然要写：render-cask.py 按它拼 DMG 附件名。
+app = "funread"
+desc = "Self-hosted reader for novels and RSS feeds"
+# tauri.conf.json 里 minimumSystemVersion 写的是 10.15。
+min_macos = "catalina"
+bundle_id = "com.farfarfun.funread"
+
+# ⚠️ 这一节是注释掉的，解开之前先读完这段。
 #
-# 合并前这三件事要都成立（见 docs/package-spec.md）：
-#   1. funread 有一个自带运行时的命令行入口，`funread --version` 打得出版本号
+# 它曾经以活动条目的形式合进 master（#6），而它自己的注释当时就写着「还不能合」。
+# 结果从那次合并起，verify / verify-brew / verify-brew-gitee 三个 job 一直红到
+# 现在 —— 核心库 funread 是个纯 Python 库（PyPI 上的 funread，pyproject.toml 里
+# 没有 [project.scripts]），GitHub 上一个 release 都没有，而这三个 job 都按这张表
+# 遍历装包。注释掉而不是删掉：文案和判据都还成立，只是要等它真有东西可装。
+#
+# 另外包名换了。`funread` 给了上面的桌面客户端 —— 对最终用户，`apt install funread`
+# 该装到那个能打开读书的应用；这个库的命令行是开发/运维工具，按惯例带 -cli 后缀。
+# 页面文案也跟着改名成了 site/pages/funread-cli.toml。
+#
+# 解开前这三件事要都成立（见 docs/package-spec.md）：
+#   1. 有一个自带运行时的命令行入口，`funread-cli --version` 打得出版本号
 #      —— brew test 的默认断言就是它，apt 那边的 verify 也跑这条；
-#   2. release 附件按约定命名：`funread_<版本>_{amd64,arm64}.deb`，以及
-#      `funread-<target>.tar.gz`（四个 target 见规范，里面是单个可执行文件）；
+#   2. release 附件按约定命名：`funread-cli_<版本>_{amd64,arm64}.deb`，以及
+#      `funread-cli-<target>.tar.gz`（四个 target 见规范，里面是单个可执行文件）；
 #   3. 同一次 release 里有一份覆盖所有附件的 SHA256SUMS。
 #
-# 到位之后跑一遍 `python3 scripts/sitedata.py packages.toml --check funread`，
-# 报告里没有 `!` 再合。
-[[source]]
-repo = "farfarfun/funread"
-keep = 3
-
-[source.brew]
-desc = "Manage Legado book sources and RSS feeds: parse, validate and batch process"
-# brew test 的额外断言。--help 不碰网络也不读配置，是这个库唯一能空跑的入口。
-checks = [["--help", "funread"]]
+# 到位之后跑一遍 `python3 scripts/sitedata.py packages.toml --check funread-cli`，
+# 报告里没有 `!` 再解开。
+#
+# [[source]]
+# repo = "farfarfun/funread"
+# name = "funread-cli"
+# keep = 3
+#
+# [source.brew]
+# desc = "Manage Legado book sources and RSS feeds: parse, validate and batch process"
+# # brew test 的额外断言。--help 不碰网络也不读配置，是这个库唯一能空跑的入口。
+# checks = [["--help", "funread-cli"]]

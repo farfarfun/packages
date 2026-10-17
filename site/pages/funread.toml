@@ -1,50 +1,50 @@
-# funread 的包页文案。格式见 docs/package-spec.md。
+# funread 桌面客户端的包页文案。格式见 docs/package-spec.md。
 #
-# 和 packages.toml 里那一节一样，这份文案在 funread 出命令行二进制之前是备着的：
-# 文案不依赖 release，先写好，收进来那天页面就是满的，不用再补一轮。
+# 这一份对应 farfarfun/funread-web 打出来的桌面应用（deb / DMG），不是 PyPI 上
+# 那个同名的 Python 库 —— 后者的文案在 funread-cli.toml，包名也已经改叫
+# funread-cli 了。
 
-tagline.zh = "管理 Legado 阅读 APP 的书源与 RSS 源：解析、校验、批量处理。"
-tagline.en = "Manage Legado book sources and RSS feeds: parse, validate and batch process."
+tagline.zh = "自托管的小说与订阅阅读客户端：连你自己那台服务器，断网也能接着读。"
+tagline.en = "A self-hosted reader for novels and RSS feeds: connects to your own server, keeps reading offline."
 
-description.zh = "funread 用来管理和处理 Legado 阅读 APP 的书源与 RSS 源，支持书源解析、规则校验（含 JS 规则）与批量处理，既是 Python 工具库也是命令行工具。"
-description.en = "funread manages and processes Legado book sources and RSS feeds, with source parsing, rule validation (JavaScript rules included) and batch processing. It is both a Python library and a command-line tool."
-
-[[features]]
-title.zh = "书源解析"
-title.en = "Source parsing"
-text.zh = "读 Legado 的书源与 RSS 源，拆成能逐字段检查的结构。"
-text.en = "Reads Legado book and RSS sources into a structure you can inspect field by field."
+description.zh = "funread 是自托管的阅读客户端，没有官方服务器 —— 第一次打开时填你自己那台 funread 服务器的地址和账号，客户端会换一条可随时吊销的设备 token 存在本机。它读 Legado 格式的书源，RSS 订阅在同一个应用里；看过的章节缓存在本地，断网不影响翻页。macOS、Linux、Windows 和 Android 都有。"
+description.en = "funread is a self-hosted reading client with no official server: on first launch you point it at your own funread server, and it trades your password for a revocable device token kept on the machine. It reads Legado-format book sources, carries RSS feeds in the same app, and caches the chapters you have opened so losing the network does not stop you. Available for macOS, Linux, Windows and Android."
 
 [[features]]
-title.zh = "规则校验"
-title.en = "Rule validation"
-text.zh = "按规则跑一遍，告诉你哪一条不成立，而不是只说这个源坏了。"
-text.en = "Runs the rules and says which one fails, instead of just calling the source broken."
+title.zh = "自托管"
+title.en = "Self-hosted"
+text.zh = "没有官方服务器，书和进度都在你自己那台机器上。"
+text.en = "No official server — your books and progress stay on your own machine."
 
 [[features]]
-title.zh = "JS 规则真执行"
-title.en = "Real JavaScript rules"
-text.zh = "接的是 quickjs，书源里的 JS 规则是真跑出来的结果。"
-text.en = "Backed by quickjs, so the JavaScript rules in a source really run."
+title.zh = "书源与订阅"
+title.en = "Sources and feeds"
+text.zh = "读 Legado 格式的书源，RSS 订阅在同一个应用里。"
+text.en = "Reads Legado-format book sources, with RSS feeds in the same app."
 
 [[features]]
-title.zh = "批量处理"
-title.en = "Batch processing"
-text.zh = "成百上千个源一起过，结果可以落库。"
-text.en = "Sweeps hundreds of sources at once and can persist the results."
+title.zh = "断网接着读"
+title.en = "Reads offline"
+text.zh = "翻开过的章节留在本机，地铁里没信号也能往下看。"
+text.en = "Chapters you have opened stay on the device, so a dead signal does not stop you."
 
-# apt / brew 之外的渠道。Python 库这条和命令行是两回事，note 里说清楚，免得有人
-# `pip install` 完去找 funread 命令 —— funget 的页面上也是这么写的。
+[[features]]
+title.zh = "一台设备一条凭据"
+title.en = "One token per device"
+text.zh = "存的是设备 token 不是密码，手机丢了在别的设备上就能吊销。"
+text.en = "It stores a device token rather than your password, so a lost phone can be revoked from anywhere else."
+
+# apt / brew 之外的渠道。funread light 是同一个仓库的另一套壳：不打包 Web 资源，
+# 启动时问服务器地址，然后把整个窗口交给那台服务器上的页面 —— 登录态和离线缓存
+# 跟在浏览器里打开同一个地址完全一样，代价是启动要有网。
+#
+# 它的 .deb 跟着主包一起进了 APT 源（Package 字段是 funread-light），所以这条命令
+# 是真能跑的。但它在 packages.toml 里没有自己的条目（那张表一个仓库只能有一个），
+# 因此没有独立页面、没有 cask —— macOS 和 Windows 的安装包只能去 Release 下。
 [[install]]
-id = "pip"
-title = "pip"
-cmd = "pip install funread"
-note.zh = "装的是 Python 库，用来在自己的代码里 import。"
-note.en = "Installs the Python library, to import from your own code."
-
-[[install]]
-id = "uv"
-title = "uv"
-cmd = "uv add funread"
-note.zh = "同一个 Python 库，加进 uv 管理的项目里。"
-note.en = "The same Python library, added to a uv-managed project."
+id = "light"
+title = "funread light"
+cmd = "sudo apt install funread-light"
+note.zh = "同一个仓库的薄壳版，不内置 Web 资源。加过源之后装，仅 Linux。"
+note.en = "The thin-shell build from the same repo, with no bundled web assets. Linux only, after adding the source."
+os = "linux"
