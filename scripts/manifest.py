@@ -36,6 +36,20 @@ def name_of(source: dict) -> str:
     return source.get("name") or source["repo"].split("/")[-1]
 
 
+def in_apt(source: dict) -> bool:
+    """这个项目走不走 apt 那条线。
+
+    收的是所有发 .deb 的项目 —— 也就是除 uTools 插件之外的全部。插件发的是 .upx，
+    装法是拖进 uTools 窗口，apt 里根本没有它这个东西：收 release 的时候不用去翻它的
+    附件，装机验证也不该对它 `apt-get install`（那个 job 对表里每一行都装一遍，不排
+    掉就是必红）。
+
+    判断写在这儿而不是各脚本里各写一遍：select-releases、list-packages 和站点必须是
+    同一个答案，否则会出现「站点上写着能 apt install 而索引里压根没有」那种分叉。
+    """
+    return "utools" not in source
+
+
 def release_list(repo: str) -> list[dict]:
     """仓库里的正式 release，新的在前，每项是 `{"tag": ..., "date": "2026-10-16"}`。
 

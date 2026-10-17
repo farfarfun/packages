@@ -48,6 +48,7 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 | apt | `<包名>_<版本>_<架构>.deb` | `amd64`、`arm64` | 那个架构的机器在 `apt list` 里看不到这个包 |
 | formula | `<包名>-<target>.tar.gz` | 见下 | 少一个平台就不渲染那一块（不是错） |
 | cask | `<应用名>-<版本>-macos-<架构>.dmg` | `arm64`、`amd64` | **两个缺一个，整份 cask 都不生成** |
+| utools | `<包名>-<版本>.upx` | 没有架构 | 安装一节只剩一条指向 Release 的链接 |
 
 - `<包名>` 一律小写（Debian 对 `Package` 字段的要求），默认**等于 GitHub 仓库名**。
   不一样的话在 `packages.toml` 里写 `name`（见第 2 节）—— **能不写就不写**，多一个
@@ -55,6 +56,8 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 - `<版本>` 不带 `v`。
 - `<应用名>` 是桌面应用的显示名，通常和包名不一样（`FunClash` 对 `funclash`）：
   它既是 DMG 名的前缀，也是装进 `/Applications` 的 `.app` 名。
+- `.upx` 是 uTools 插件包（其实就是个 zip，`plugin.json` 必须在压缩包根目录）。它不分
+  架构也不分平台：Windows、macOS、Linux 上是同一个文件，页面上归在「全平台」那一栏。
 - formula 的 target 认这四个：
   `aarch64-apple-darwin`、`x86_64-apple-darwin`、
   `aarch64-unknown-linux-musl`、`x86_64-unknown-linux-musl`。
@@ -92,7 +95,7 @@ e0980a95...b7efd7  fundeploy-aarch64-apple-darwin.tar.gz
 
 | 看什么 | 怎么认 |
 | --- | --- |
-| 扩展名定平台 | `.apk`→Android，`.dmg`/`.pkg`→macOS，`.exe`/`.msi`→Windows，`.deb`/`.rpm`/`.AppImage`→Linux |
+| 扩展名定平台 | `.apk`→Android，`.dmg`/`.pkg`→macOS，`.exe`/`.msi`→Windows，`.deb`/`.rpm`/`.AppImage`→Linux，`.upx`→全平台 |
 | 名字里的关键字定平台 | `android`、`apple-darwin`/`macos`/`darwin`、`pc-windows`/`windows`、`linux` |
 | 架构 | `arm64-v8a`、`armeabi-v7a`、`aarch64`/`arm64`、`x86_64`/`amd64`/`x64`、`i686`/`i386` |
 | 链接方式 | 名字里有 `musl` 标成静态链接，有 `-gnu` 标成动态链接 |
@@ -133,17 +136,40 @@ app = "FunClash"                # 显示名：DMG 名的前缀，也是 .app 的
 desc = "Multi-platform proxy client based on mihomo (Clash.Meta)"
 min_macos = "monterey"          # 可选，Homebrew 的符号名
 bundle_id = "com.farfarfun.funclash"   # 可选，`brew uninstall --zap` 按它清用户数据
+
+# uTools 插件用这一节。它和上面两个不是一类东西，见下。
+[source.utools]
+app = "两步验证 FunOTP"          # 插件在 uTools 里的名字，就是 plugin.json 的 pluginName
+desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offline"
+store = true                    # 可选，上架了「插件应用市场」才写
 ```
 
 | 字段 | 作用 | 默认 |
 | --- | --- | --- |
-| `repo` | `<组织>/<仓库>` | 必填 |
+| `repo` | `<组织>/<仓库>`。不要求是 `farfarfun` 这个组织 —— uTools 插件在 `farfarfun-utools` 下 | 必填 |
 | `name` | 包名。仓库名和包名不一致时才写 | 仓库名 |
 | `keep` | 索引里留最近几版 | 3 |
 | `min_version` | 收版本的下限。管的是「收哪几版进源」，不管「这个项目有过哪些版本」—— 页面上的更新日志不受它影响 | 无 |
 | `cli` | 装出来有没有能跑 `--version` 的命令行入口 | `true` |
 | `[source.brew]` | 有这一节才出 formula | 无 |
 | `[source.cask]` | 有这一节才出 cask | 无 |
+| `[source.utools]` | 有这一节就是 uTools 插件，见下 | 无 |
+
+### `[source.utools]` 和前两个不一样的地方
+
+这一节不生成任何可安装的产物，它只影响站点：
+
+- **不进 APT 索引**，也不出现在 apt 那条装机验证里。写了这一节的项目，
+  `scripts/list-packages.py` 和 `scripts/select-releases.py` 都会跳过它（判断在
+  `manifest.in_apt`，三个地方共用一个答案）。
+- **CI 不装它。** uTools 是个带界面的宿主程序，无头 runner 上没有「装一个插件」这回
+  事，所以没有对应的 verify job。`.upx` 里有什么、装上去能不能用，由插件仓库自己的
+  `build.sh` 和 `ci.yml` 保证。
+- **安装一节没有命令。** 页面上给的是那个 `.upx` 文件本身（名字、大小、校验和、下载），
+  外加一句「拖进 uTools 窗口」。只带一个 `.upx` 的插件不会再单独出一节「下载」——
+  那会把同一行列第二遍。
+- `store = true` 才会多出一条「在插件应用市场里搜 `<app>`」的说明。**没上架就别写**：
+  写了等于在页面上许一个兑现不了的承诺。
 
 **体积要算一下。** 整个 Pages 站点上限 1 GB，而 `.deb` 是按 `keep` 份数×架构数累加的：
 命令行工具几 MB，`keep = 3` 很合适；一个 45 MB 的桌面应用两个架构，`keep = 2`
@@ -160,6 +186,12 @@ bundle_id = "com.farfarfun.funclash"   # 可选，`brew uninstall --zap` 按它�
 不写也有页面，只是首屏用 `packages.toml` 里那句英文 `desc`，没有功能点和截图。
 
 ```toml
+# 显示名：首屏那个大标题和首页卡片上写什么。不写就是包名，并且用等宽字体 —— 对
+# apt / brew 的包来说那串字正是你要照着敲的东西。uTools 插件该写：它在 uTools 里叫
+# 「两步验证 FunOTP」，没有任何一条命令里会出现 utools-funotp。写了就不走等宽。
+name.zh = "两步验证 FunOTP"
+name.en = "FunOTP"
+
 # 标语：首屏那句话。写成 x.zh / x.en 两种语言；只写一个字符串的话两边共用。
 tagline.zh = "HTTP 文件传输工具：Range 并发下载、断点续传、PUT/POST 上传。"
 tagline.en = "HTTP file transfer tool with ranged concurrency, resume and PUT/POST upload."
@@ -176,12 +208,17 @@ text.zh = "按 Range 切块并发拉，断了能接着下。"
 text.en = "Splits a file by range, downloads in parallel and resumes."
 
 # 截图。只认 PNG —— 宽高是从文件头读出来写进 <img> 的，为的是加载时不跳版。
-# 图放在你自己的项目仓库里，这边构建时下到站点下面，不热链。
+# 图放在你自己的项目仓库里，这边构建时下到站点的 assets/shots/<包名>/ 下，不热链。
+# 按包分目录是必须的：各项目的截图都叫 home.png / dark.png 这种通名，平铺会互相覆盖。
 [[shots]]
 light = "https://raw.githubusercontent.com/<组织>/<仓库>/master/docs/snapshots/preview.png"
 dark = "https://raw.githubusercontent.com/<组织>/<仓库>/master/docs/snapshots/preview-dark.png"   # 可选
 alt.zh = "……界面"
 alt.en = "…… interface"
+# 图下面那句说明，可选。alt 是写给读屏的，caption 是写给看图的人的 —— 一张截图上有
+# 什么，光看图经常认不出来。一张图的包可以不写，四五张的建议每张都写。
+caption.zh = "顶部是分组，卡片上是验证码和倒计时圆环，点一下就复制。"
+caption.en = "Groups along the top; each card shows the code and a countdown ring."
 
 # apt / brew 之外的渠道，排在安装分段的后面。
 [[install]]
@@ -276,6 +313,10 @@ gh workflow run build.yml -R farfarfun/packages
 
 命令行工具的 `--version` 必须打出版本号本身（`brew test` 的默认断言就是它）。
 
+**uTools 插件一个 job 都不占**：无头 runner 上装不了 uTools，也就没有可验的东西。
+`.upx` 里该有什么、装上去能不能用，由插件仓库自己的 `build.sh` 和 `ci.yml` 保证 ——
+这边只核对「这次 release 里有没有那个 `.upx`」，在下面的自检报告里看。
+
 ---
 
 ## 7. 自检
@@ -300,7 +341,20 @@ funclash  farfarfun/funclash
   下载区 linux    6 个文件
   ? 认不出平台   FunClash-1.0.2-panel.zip
   更新日志       结构化时间线，3 个版本
-  页面文案       标语 有、功能点 4 条、截图 1 张、额外渠道 0 条
+  页面文案       显示名 无（用包名）、标语 有、功能点 4 条、截图 1 张、额外渠道 0 条
+```
+
+uTools 插件的那一份长这样 —— 不查 `.deb`（它不发），改查 `.upx`：
+
+```
+utools-funotp  farfarfun-utools/utools-funotp
+  最新 release   v1.0.0（2026-10-17）
+  渠道           utools
+  SHA256SUMS     有
+  .upx           utools-funotp-1.0.0.upx
+  下载区 any      1 个文件
+  更新日志       只列版本（格式认不出），1 个版本
+  页面文案       显示名 有、标语 有、功能点 4 条、截图 4 张、额外渠道 0 条
 ```
 
 想看页面真长什么样（不用等 CI，也不用有 GPG 密钥）：

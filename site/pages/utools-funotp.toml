@@ -1,0 +1,67 @@
+# utools-funotp 的包页文案。格式见 docs/package-spec.md。
+#
+# 页面上写「两步验证 FunOTP」而不是 utools-funotp：后者是仓库名，而没有任何一条命令
+# 里会出现它 —— 用户在 uTools 里看到和搜到的是前者。
+
+name.zh = "两步验证 FunOTP"
+name.en = "FunOTP"
+
+tagline.zh = "uTools 里的两步验证器：本地离线算 TOTP / HOTP 动态码，主搜索框搜账号回车就复制。"
+tagline.en = "A two-factor authenticator inside uTools: TOTP / HOTP codes computed offline, searchable straight from the main input box."
+
+description.zh = "FunOTP 是一个 uTools 插件，在本机离线生成兼容 Google Authenticator 的动态验证码，支持 TOTP、HOTP 与 Steam 令牌，可用截屏扫码、图片、剪贴板或 otpauth 链接添加账号，并支持本地与 WebDav 备份。"
+description.en = "FunOTP is a uTools plugin that generates Google Authenticator–compatible one-time codes locally and offline. It supports TOTP, HOTP and Steam tokens, adds accounts by screen capture, image, clipboard or otpauth link, and backs up locally or over WebDav."
+
+[[features]]
+title.zh = "本机算，不联网"
+title.en = "Computed locally"
+text.zh = "按 RFC 4226 / 6238 在本机算，插件自身不请求任何第三方服务。"
+text.en = "Codes follow RFC 4226 / 6238 and are computed on your machine; the plugin itself calls no third-party service."
+
+[[features]]
+title.zh = "搜完直接复制"
+title.en = "Copy from the search box"
+text.zh = "在 uTools 主搜索框搜账号名，回车就把当前验证码复制走。"
+text.en = "Search an account in the uTools input box and press Enter to copy the current code."
+
+[[features]]
+title.zh = "怎么加都行"
+title.en = "Several ways to add"
+text.zh = "截屏扫码、图片、剪贴板、otpauth 链接、手动输入，还能批量导入迁移二维码。"
+text.en = "Screen capture, image, clipboard, an otpauth link or by hand — plus bulk import of migration QR codes."
+
+[[features]]
+title.zh = "备份在你手上"
+title.en = "Backups stay yours"
+text.zh = "本地 JSON、WebDav，或者导出 otpauth 链接给别的验证器。"
+text.en = "Local JSON, WebDav, or export otpauth links to any other authenticator."
+
+# 截图在插件自己的仓库里，构建时下到站点下面（见 render-site.py 的 fetch_shots）。
+# 只认 PNG：宽高是从文件头读出来写进 <img> 的，为的是图片加载时不跳版。
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funotp/master/docs/screenshots/home.png"
+alt.zh = "FunOTP 的账号列表"
+alt.en = "The FunOTP account list"
+caption.zh = "顶部是分组，卡片上是验证码和倒计时圆环，点一下就复制。"
+caption.en = "Groups along the top; each card shows the code and a countdown ring — click to copy."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funotp/master/docs/screenshots/add.png"
+alt.zh = "FunOTP 的添加账号界面"
+alt.en = "Adding an account in FunOTP"
+caption.zh = "截屏、图片、剪贴板三种扫码，也可以粘贴链接或手动填。"
+caption.en = "Scan from a screen capture, an image or the clipboard — or paste a link and fill it in by hand."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funotp/master/docs/screenshots/settings.png"
+alt.zh = "FunOTP 的设置界面"
+alt.en = "The FunOTP settings"
+caption.zh = "每行卡片数、分组显示、默认打码、复制后是否退出插件。"
+caption.en = "Cards per row, group display, masking by default, and whether to leave the plugin after copying."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funotp/master/docs/screenshots/dark.png"
+alt.zh = "FunOTP 的深色主题"
+alt.en = "FunOTP in dark mode"
+caption.zh = "浅色 / 深色 / 跟随系统；最后 5 秒会把下一个验证码先提示出来。"
+caption.en = "Light, dark or follow the system; the next code is previewed over the final five seconds."

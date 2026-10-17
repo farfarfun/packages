@@ -10,7 +10,12 @@
 #   formula  `<包名>-<target>.tar.gz`
 #   cask     `<应用名>-<版本>-macos-<架构>.dmg`（前缀是显示名，见下面 funclash）
 #   apt      `<包名>_<版本>_<架构>.deb`
+#   utools   `<包名>-<版本>.upx`
 # 各项目的 release workflow 本来就是一个模子出来的，不再单独配一遍。
+#
+# `[source.utools]` 和前三个不是一类东西：它不进 APT 索引、不生成 formula、CI 也装不了
+# 它（uTools 是个带界面的宿主程序，无头 runner 上没有「装一个插件」这回事）。它在这张
+# 表里只为了一件事 —— 让这些插件也有一页中英双语的说明页，跟着 Release 自动更新。
 #
 # 为什么不把 .deb 提交进 git：GitHub Pages 的站点上限是 1 GB，而二进制只增不减，
 # 真到了那天想清理得改写历史。各项目的 Release 本来就是事实来源，这里只记
@@ -49,6 +54,20 @@ desc = "HTTP file transfer tool with ranged concurrency and resume"
 # --help 里有 download 这个子命令。funget 没有 fundeploy 那种能空跑的子命令：
 # download / upload / info 全要一个真 URL，不该让 brew test 依赖网络。
 checks = [["--help", "download"]]
+
+[[source]]
+repo = "farfarfun/funbuild"
+keep = 3
+# 1.6.104 及更早的 release 里没有二进制附件：那时只发 PyPI wheel（里面装的是同一个
+# 二进制）和 crate，apt / brew 这两条渠道是 1.6.105 才接的。
+min_version = "1.6.105"
+
+[source.brew]
+desc = "One-command release pipeline for Python, frontend, Flutter and Rust repos"
+# 只断言 --help：funbuild 的每条子命令都要先找到 git 仓库根，`--help` 是唯一一个
+# 不触发仓库探测的入口（探测是延迟到真正执行子命令时才做的），不该让 brew test
+# 去造一个仓库。
+checks = [["--help", "build"]]
 
 [[source]]
 repo = "farfarfun/funclash"
@@ -154,3 +173,49 @@ bundle_id = "com.farfarfun.funread"
 # desc = "Manage Legado book sources and RSS feeds: parse, validate and batch process"
 # # brew test 的额外断言。--help 不碰网络也不读配置，是这个库唯一能空跑的入口。
 # checks = [["--help", "funread-cli"]]
+# ---------------------------------------------------------------------------------------
+# uTools 插件。仓库在 farfarfun-utools 那个组织下，不在 farfarfun 下 —— repo 写全名就行，
+# 这张表本来就不假设是同一个组织。
+#
+# 四个插件共同的事实，不在每一节里重复：产物是一个 `.upx`（其实就是个 zip，根目录放
+# plugin.json），三个桌面系统共用同一个文件，装法是拖进 uTools 窗口；数据都存在 uTools
+# 自己的 dbStorage 里。keep 对它们只影响页面上「版本」那一节列几行 —— 插件的包不进
+# APT pool，不占 Pages 那 1 GB。
+# ---------------------------------------------------------------------------------------
+
+[[source]]
+repo = "farfarfun-utools/utools-funotp"
+keep = 3
+
+[source.utools]
+# 插件在 uTools 里的名字，就是 plugin.json 的 pluginName。和包名不一样是常态：包名是
+# 仓库名（utools-funotp），而用户在 uTools 里看到和搜到的是这个。
+app = "两步验证 FunOTP"
+# 英文一句话简介。和 brew 的 desc 同一个用法：页面上没写标语时拿它顶上。
+desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offline"
+# 上架了 uTools 的「插件应用市场」就改成 true，页面上会多一条从商店装的说明。四个插件
+# 现在都还没上架，所以都不写 —— 写了等于在页面上许一个兑现不了的承诺。
+
+[[source]]
+repo = "farfarfun-utools/utools-funlink"
+keep = 3
+
+[source.utools]
+app = "网址收藏 FunLink"
+desc = "Collect, categorise and search your bookmarks, and open them in the browser you pick"
+
+[[source]]
+repo = "farfarfun-utools/utools-funchat"
+keep = 3
+
+[source.utools]
+app = "好友聊天 FunChat"
+desc = "Chat with multiple AI personas in uTools, with a built-in character market and exportable topics"
+
+[[source]]
+repo = "farfarfun-utools/utools-fundoc"
+keep = 3
+
+[source.utools]
+app = "文档笔记 FunDoc"
+desc = "Local Markdown notes with LaTeX formulas, a multi-level outline and cross-device sync"

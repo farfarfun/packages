@@ -1,0 +1,62 @@
+# utools-funlink 的包页文案。格式见 docs/package-spec.md。
+
+name.zh = "网址收藏 FunLink"
+name.en = "FunLink"
+
+tagline.zh = "把零散书签整理成网址导航：分类、拖拽排序、废纸篓，在 uTools 主搜索框里搜完直接打开。"
+tagline.en = "Turns scattered bookmarks into a navigable board — categories, drag-to-order and a recycle bin — searchable and openable straight from the uTools input box."
+
+description.zh = "FunLink 是一个 uTools 插件，把工作入口、开发文档和常用在线工具收成带分类的网址导航，支持拖拽排序、废纸篓恢复、站内搜索占位符，以及为每张卡片指定用哪个浏览器打开。数据存在本机，不需要账号。"
+description.en = "FunLink is a uTools plugin that collects your work entry points, docs and online tools into a categorised bookmark board, with drag-to-order, a restorable recycle bin, in-site search placeholders and a per-card choice of browser. Data stays on your machine and needs no account."
+
+[[features]]
+title.zh = "两级分类"
+title.en = "Two levels of categories"
+text.zh = "一级分类在顶部，二级在下面一排，卡片可以拖着排。"
+text.en = "Top-level categories along the top, sub-categories below, and cards you can drag into order."
+
+[[features]]
+title.zh = "搜完就开"
+title.en = "Search, then open"
+text.zh = "不进插件界面，在 uTools 主搜索框里搜收藏的网址，回车直接打开。"
+text.en = "Search your bookmarks from the uTools input box without opening the plugin, and press Enter to go."
+
+[[features]]
+title.zh = "站内搜索入口"
+title.en = "In-site search"
+text.zh = "网址里写 {q} 占位符，就能把任意站点的搜索做成一个入口。"
+text.en = "Put a {q} placeholder in a URL to turn any site's search into an entry point."
+
+[[features]]
+title.zh = "删了能找回"
+title.en = "Nothing is lost"
+text.zh = "删掉的卡片进废纸篓，清空废纸篓时才真的没了。"
+text.en = "Deleted cards go to the recycle bin; they are only gone for good once you empty it."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funlink/master/docs/screenshots/home.png"
+alt.zh = "FunLink 的网址导航界面"
+alt.en = "The FunLink bookmark board"
+caption.zh = "一级分类在顶部，二级分类在下面一排，卡片可拖拽排序。"
+caption.en = "Top-level categories along the top, sub-categories below, cards reordered by dragging."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funlink/master/docs/screenshots/edit.png"
+alt.zh = "FunLink 的卡片编辑面板"
+alt.en = "Editing a card in FunLink"
+caption.zh = "图标、分类、打开方式、网页快开都在同一个面板里。"
+caption.en = "Icon, category, how to open it and quick-open are all in the one panel."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funlink/master/docs/screenshots/settings.png"
+alt.zh = "FunLink 的设置界面"
+alt.en = "The FunLink settings"
+caption.zh = "WebDav / 本地备份还原，以及浏览器书签导入。"
+caption.en = "WebDav and local backup or restore, plus importing bookmarks from a browser."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funlink/master/docs/screenshots/dark.png"
+alt.zh = "FunLink 的深色主题"
+alt.en = "FunLink in dark mode"
+caption.zh = "浅色 / 深色 / 跟随系统。"
+caption.en = "Light, dark or follow the system."

@@ -1,0 +1,69 @@
+# utools-funchat 的包页文案。格式见 docs/package-spec.md。
+
+name.zh = "好友聊天 FunChat"
+name.en = "FunChat"
+
+tagline.zh = "把一屋子 AI 好友装进 uTools：多角色切换、内置角色市场、话题回溯、一键导出。"
+tagline.en = "A room full of AI friends inside uTools — switch personas, pick from the built-in market, revisit past topics and export in one click."
+
+description.zh = "FunChat 是一个 uTools 插件，每个「AI 好友」是一套独立的角色设定、模型参数和聊天记录。内置 300 个开箱即用的角色，支持 uTools 内置 AI 和任意 OpenAI 兼容接口，会话和配置默认存在本机。"
+description.en = "FunChat is a uTools plugin where each “AI friend” carries its own persona, model settings and history. It ships with 300 ready-made characters, works with the built-in uTools AI or any OpenAI-compatible endpoint, and keeps conversations and settings on your machine by default."
+
+[[features]]
+title.zh = "一人一套设定"
+title.en = "One persona each"
+text.zh = "每个好友有自己的提示词、模型、上下文长度和历史记录，Shift + ↓ 换人。"
+text.en = "Every friend has its own prompt, model, context length and history; Shift + ↓ switches."
+
+[[features]]
+title.zh = "内置 300 个角色"
+title.en = "300 built-in characters"
+text.zh = "润色、审代码、写正则、调 SQL、模拟面试，点一下「添加并开始」就能用。"
+text.en = "Polishing, code review, regexes, SQL, mock interviews — one click to add and start."
+
+[[features]]
+title.zh = "划词提问"
+title.en = "Ask about a selection"
+text.zh = "在别处选中文字再呼出 uTools，多一条「问 AI 好友」，内容预填进输入框。"
+text.en = "Select text anywhere, call up uTools, and “Ask an AI friend” prefills it into the input box."
+
+[[features]]
+title.zh = "话题存得住"
+title.en = "Topics keep"
+text.zh = "每个好友的历史话题独立存档，可收藏、可全文搜索，整段能导出 Markdown / HTML / PDF。"
+text.en = "Each friend's topics are archived separately — bookmark them, search the full text, export to Markdown, HTML or PDF."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/chat.png"
+alt.zh = "FunChat 的聊天界面"
+alt.en = "The FunChat conversation view"
+caption.zh = "代码高亮、表格、LaTeX 公式都在本地渲染。"
+caption.en = "Syntax highlighting, tables and LaTeX formulas all render locally."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/market.png"
+alt.zh = "FunChat 的 AI 角色市场"
+alt.en = "The FunChat character market"
+caption.zh = "内置 300 个角色，点一下「添加并开始」就能用。"
+caption.en = "300 built-in characters; “add and start” puts one to work immediately."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/history.png"
+alt.zh = "FunChat 的话题记录"
+alt.en = "Past topics in FunChat"
+caption.zh = "每个好友的话题独立存档，可收藏、可搜索。"
+caption.en = "Each friend's topics are archived on their own — bookmark them, search them."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/agent.png"
+alt.zh = "FunChat 的好友编辑面板"
+alt.en = "Editing a friend in FunChat"
+caption.zh = "模型、角色指令、上下文长度、采样参数逐个可调。"
+caption.en = "Model, system prompt, context length and sampling parameters are each adjustable."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/dark.png"
+alt.zh = "FunChat 的深色主题"
+alt.en = "FunChat in dark mode"
+caption.zh = "浅色 / 深色 / 跟随系统。"
+caption.en = "Light, dark or follow the system."

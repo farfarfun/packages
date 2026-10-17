@@ -1,0 +1,69 @@
+# utools-fundoc 的包页文案。格式见 docs/package-spec.md。
+
+name.zh = "文档笔记 FunDoc"
+name.en = "FunDoc"
+
+tagline.zh = "uTools 里的 Markdown 文档：多层目录、三种编辑模式、LaTeX 公式完全离线渲染。"
+tagline.en = "Markdown notes inside uTools: a nested outline, three editing modes and LaTeX formulas rendered fully offline."
+
+description.zh = "FunDoc 是一个 uTools 插件，用多层目录组织文稿，提供所见即所得、即时渲染和左右分屏三种编辑模式。KaTeX 引擎与字体全部打进插件，断网照样渲染公式；文档存在 uTools 数据库里，开启同步后跟着设备走。"
+description.en = "FunDoc is a uTools plugin that organises notes in a nested tree and offers three editing modes: WYSIWYG, instant rendering and side-by-side. The KaTeX engine and its fonts ship inside the plugin, so formulas render with no network at all. Documents live in the uTools database and follow your devices once sync is on."
+
+[[features]]
+title.zh = "公式不靠网"
+title.en = "Formulas without a network"
+text.zh = "KaTeX 引擎与字体全部打进插件，断网照样渲染，另带 mhchem 化学式。"
+text.en = "The KaTeX engine and its fonts are bundled in, so formulas render offline; mhchem is included too."
+
+[[features]]
+title.zh = "三种编辑模式"
+title.en = "Three editing modes"
+text.zh = "所见即所得、即时渲染、左右分屏，分屏时两栏按标题锚点对齐滚动。"
+text.en = "WYSIWYG, instant rendering and split view — in split view the two panes scroll aligned by heading anchors."
+
+[[features]]
+title.zh = "连正文一起搜"
+title.en = "Search the body too"
+text.zh = "主搜索框直搜标题与关键词，插件里 Ctrl/⌘ + Shift + P 连正文一起搜，命中处给上下文。"
+text.en = "Search titles and keywords from the uTools box; inside, Ctrl/⌘ + Shift + P searches the body and shows the surrounding context."
+
+[[features]]
+title.zh = "五种图表，全本地"
+title.en = "Five diagram types, all local"
+text.zh = "mermaid、echarts、mindmap、flowchart、abc 五种围栏，渲染器懒加载，不写就不取。"
+text.en = "mermaid, echarts, mindmap, flowchart and abc fences; each renderer is lazy-loaded and never fetched unless used."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/editor.png"
+alt.zh = "FunDoc 的编辑器界面"
+alt.en = "The FunDoc editor"
+caption.zh = "左边目录树、中间编辑器、右边大纲，标题自动编号。"
+caption.en = "Tree on the left, editor in the middle, outline on the right, headings numbered automatically."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/split.png"
+alt.zh = "FunDoc 的分屏预览"
+alt.en = "FunDoc in split view"
+caption.zh = "分屏模式左右按标题锚点对齐滚动，而不是按总高度等比例。"
+caption.en = "In split view the two panes scroll aligned by heading anchors rather than by total height."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/search.png"
+alt.zh = "FunDoc 的全文搜索面板"
+alt.en = "The FunDoc full-text search panel"
+caption.zh = "Ctrl/⌘ + Shift + P 连正文一起搜，命中处给上下文片段。"
+caption.en = "Ctrl/⌘ + Shift + P searches the body as well and shows a snippet around each hit."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/settings.png"
+alt.zh = "FunDoc 的设置界面"
+alt.en = "The FunDoc settings"
+caption.zh = "编辑模式、外观、代码块配色、标题编号。"
+caption.en = "Editing mode, appearance, code block theme and heading numbering."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/dark.png"
+alt.zh = "FunDoc 的深色主题"
+alt.en = "FunDoc in dark mode"
+caption.zh = "浅色 / 深色 / 跟随 uTools。"
+caption.en = "Light, dark or follow uTools."

@@ -61,10 +61,18 @@ CHANGELOG_MAX = 12
 MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 # 渠道 → 文案键 / 分段标签。顺序由 sitedata.CHANNELS 定。
-CHANNEL_KEYS = {"apt": "installApt", "brew": "installBrew", "cask": "installCask"}
-# 分段控件初选哪一个：JS 按 navigator 猜系统，猜中了就切过去。
-CHANNEL_OS = {"apt": "linux", "brew": "macos", "cask": "macos"}
+CHANNEL_KEYS = {
+    "apt": "installApt",
+    "brew": "installBrew",
+    "cask": "installCask",
+    "utools": "installUtools",
+}
+# 分段控件初选哪一个：JS 按 navigator 猜系统，猜中了就切过去。uTools 插件在三个系统
+# 上是同一个包，没有可猜的，留 None 就不会被自动选中。
+CHANNEL_OS = {"apt": "linux", "brew": "macos", "cask": "macos", "utools": None}
 PLATFORM_OS = {"android": "android", "windows": "windows", "macos": "macos", "linux": "linux"}
+# 包的类别 → 那枚灰 chip 的文案键。sitedata 算出 kind，这里只负责翻译。
+KIND_KEYS = {"cli": "pkgCli", "gui": "pkgGui", "plugin": "pkgPlugin"}
 
 ICON = {
     "copy": '<svg class="ico-copy" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">'
@@ -311,6 +319,18 @@ def _text(value, lang: str, default: str = "") -> str:
     return default
 
 
+def display_name(pkg: dict, lang: str) -> str:
+    """页面上把这个包叫什么。
+
+    默认就是包名，而且用等宽字体 —— 对 apt 和 brew 的包来说那串字正是你要照着敲的
+    东西，没有比它更该显示的。uTools 插件没有这回事：它在 uTools 里叫「两步验证
+    FunOTP」，没有一条命令里会出现 `utools-funotp`，页面上顶着仓库名等于让人自己去
+    对。文案文件里写了 `name.zh` / `name.en` 就用那个，并且不走等宽（等宽排中文是一
+    个字一个格，而等宽的好处在这儿一条都用不上）。
+    """
+    return _text(pkg["page"].get("name"), lang) or pkg["name"]
+
+
 # --------------------------------------------------------------------------------------
 # 首页
 # --------------------------------------------------------------------------------------
@@ -376,8 +396,7 @@ def channel_chips(site: Site, pkg: dict) -> str:
     chips = [
         f'<li class="chip chip-{c}">{esc(site.t(CHANNEL_KEYS[c]))}</li>' for c in pkg["channels"]
     ]
-    kind = site.t("pkgGui") if pkg["gui"] else site.t("pkgCli")
-    chips.append(f'<li class="chip ghost">{esc(kind)}</li>')
+    chips.append(f'<li class="chip ghost">{esc(site.t(KIND_KEYS[pkg["kind"]]))}</li>')
     return "".join(chips)
 
 
@@ -393,11 +412,13 @@ def package_cards(site: Site, up: str) -> str:
         if arches:
             meta.append(" ".join(arches))
         tagline = _text(pkg["page"].get("tagline"), site.lang) or pkg["desc"]
+        shown = display_name(pkg, site.lang)
         cards.append(
             '<li class="card">'
             f'<a class="card-head" href="{esc(up + pkg["name"])}/"'
-            f' aria-label="{esc(site.t("cardView", name=pkg["name"]))}">'
-            f'<span class="card-name">{esc(pkg["name"])}</span>'
+            f' aria-label="{esc(site.t("cardView", name=shown))}">'
+            f'<span class="card-name{"" if shown == pkg["name"] else " plain"}">'
+            f"{esc(shown)}</span>"
             + (f'<span class="ver">{esc(version)}</span>' if version else "")
             + f'<span class="go" aria-hidden="true">{ICON["arrow"]}</span></a>'
             + (f'<p class="card-desc">{esc(tagline)}</p>' if tagline else "")
@@ -438,6 +459,38 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
                 + '<div class="extras">'
                 + site.note_link(
                     site.t("installBrewNeedsTap"), f"{home}#setup", site.t("installSetupLink")
+                )
+                + "</div>"
+            )
+        elif channel == "utools":
+            # 这一节里唯一一个没有命令的面板。uTools 插件的装法是「下一个文件拖进窗
+            # 口」，硬塞一个命令块只会多出一个复制了也没用的按钮 —— 所以这里给的是那
+            # 个文件本身，用的还是下载区同一个文件行（名字、大小、校验和、下载）。
+            app = pkg["app"] or name
+            upx = next(
+                (f for p in pkg["downloads"]["platforms"] for f in p["files"] if f["kind"] == "UPX"),
+                None,
+            )
+            body = (
+                (
+                    f'<p class="pane-hint">{esc(site.t("installUtoolsHint", app=app))}</p>'
+                    + site.file_list([upx], by_arch=False)
+                )
+                if upx
+                # 还没发过版，或者这一版忘了传 .upx。不编一个下载链接出来，指到 Release
+                # 页去 —— 那边有没有东西是看得见的。提示语也要换一句：上面那句说的是
+                # 「下面这个 .upx」，而下面没有。
+                else site.note_link(
+                    site.t("installUtoolsEmpty"),
+                    f"{pkg['url']}/releases",
+                    site.t("installUtoolsReleases"),
+                )
+            ) + (
+                '<div class="extras">'
+                + (
+                    site.tip(site.t("tipUtoolsStoreTitle"), site.t("tipUtoolsStore", app=app))
+                    if pkg["store"]
+                    else ""
                 )
                 + "</div>"
             )
@@ -484,6 +537,22 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
             }
         )
     return site.panes("install", items, site.t("installTitle")), len(items)
+
+
+def shows_downloads(pkg: dict) -> bool:
+    """下载一节出不出。导航上那一条和首屏那个按钮也跟着它走，三处必须是同一个答案。
+
+    有附件就出，但有一个例外：只带一个 .upx 的 uTools 插件。它的安装一节给出的就是那
+    个文件本身 —— 装法只有「下载再拖进窗口」这一种，没有命令 —— 再开一节把同一行列
+    第二遍，看着像页面出了错。别的包不存在这个问题：它们的安装是一条命令，下载区是另
+    一回事。
+    """
+    downloads = pkg["downloads"]
+    if not (downloads["platforms"] or downloads["other"]):
+        return False
+    if pkg["channels"] == ["utools"] and not downloads["other"]:
+        return any(f["kind"] != "UPX" for p in downloads["platforms"] for f in p["files"])
+    return True
 
 
 def download_panes(site: Site, pkg: dict) -> str:
@@ -658,10 +727,15 @@ def figures(site: Site, pkg: dict, up: str) -> str:
             if light.get("width")
             else ""
         )
+        # alt 是写给读屏的，caption 是写给看图的人的 —— 一张截图上有什么，光看图经常
+        # 认不出来（「顶部那一行是分组」）。只有一张图的包不写也行，四五张的就该写。
+        caption = _text(shot.get("caption"), site.lang)
         out.append(
             f'<figure class="shot">{"<picture>" if source else ""}{source}'
             f'<img src="{esc(up + light["href"])}"{dims} loading="lazy" decoding="async"'
-            f' alt="{esc(alt)}">{"</picture>" if source else ""}</figure>'
+            f' alt="{esc(alt)}">{"</picture>" if source else ""}'
+            + (f"<figcaption>{esc(caption)}</figcaption>" if caption else "")
+            + "</figure>"
         )
     return "".join(out)
 
@@ -689,7 +763,7 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
     )
 
     downloads = pkg["downloads"]
-    if downloads["platforms"] or downloads["other"]:
+    if shows_downloads(pkg):
         sums = (
             f'<a href="{esc(downloads["sums"])}">{esc(site.t("downloadSums"))}</a>'
             if downloads["sums"]
@@ -865,16 +939,19 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
         )
         features = f'<ul class="facts">{rows}</ul>'
 
-    has_downloads = bool(pkg["downloads"]["platforms"] or pkg["downloads"]["other"])
+    has_downloads = shows_downloads(pkg)
+    shown = display_name(pkg, lang)
     ctx.update(
         {
-            "pkgName": pkg["name"],
+            "pkgName": shown,
+            # 包名用等宽（那串字是要照着敲的），显示名不用。见 display_name。
+            "heroClass": "display mono" if shown == pkg["name"] else "display",
             "version": version,
             "repoUrl": pkg["url"],
             "releaseUrl": release_url,
             "eyebrow": eyebrow,
             "tagline": _text(pkg["page"].get("tagline"), lang) or pkg["desc"],
-            "pageTitle": site.t("pkgPageTitle", name=pkg["name"]),
+            "pageTitle": site.t("pkgPageTitle", name=shown),
             "pageDescription": _text(pkg["page"].get("description"), lang)
             or _text(pkg["page"].get("tagline"), lang)
             or pkg["desc"],
@@ -891,7 +968,10 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
         {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": pkg["name"],
+            "name": shown,
+            # 显示名和包名不一样时两个都报上去：页面标题里只剩显示名了，而搜
+            # `utools-funotp` 的人找的就是这一页。
+            **({"alternateName": pkg["name"]} if shown != pkg["name"] else {}),
             "url": ctx["canonical"],
             "description": ctx["pageDescription"],
             "applicationCategory": "UtilitiesApplication",
@@ -931,24 +1011,29 @@ def fetch_shots(site: Site, out: Path) -> None:
     raw.githubusercontent 和 Pages 是两套缓存和两套可用性 —— 页面上的图不该因为另一个
     域名挂了而空一块。二进制不进这个仓库的 git，和 .deb 是同一个道理（见 README）。
     """
-    urls = []
+    # 按包分子目录，不平铺。各项目的截图都叫 home.png / dark.png / settings.png 这类
+    # 通名，平铺的话第二个包的 home.png 会盖掉第一个的，而且两边的 href 指向同一个
+    # 文件 —— 页面上两个包显示同一张图，构建全绿。
+    urls: dict[str, str] = {}
     for pkg in site.data["packages"]:
         for shot in pkg["page"].get("shots", []):
-            urls += [shot[k] for k in ("light", "dark") if shot.get(k)]
+            for key in ("light", "dark"):
+                if shot.get(key):
+                    urls.setdefault(shot[key], pkg["name"])
     if not urls:
         return
-    shots = out / "assets" / "shots"
-    shots.mkdir(parents=True, exist_ok=True)
-    for url in dict.fromkeys(urls):
+    for url, pkg_name in urls.items():
         name = url.rsplit("/", 1)[-1]
-        target = shots / name
+        href = f"assets/shots/{pkg_name}/{name}"
+        target = out / href
+        target.parent.mkdir(parents=True, exist_ok=True)
         try:
             with urllib.request.urlopen(url, timeout=30) as response:
                 target.write_bytes(response.read())
         except (urllib.error.URLError, OSError) as e:
             warn(f"截图下不来，跳过：{url}（{e}）")
             continue
-        entry = {"href": f"assets/shots/{name}", "name": name}
+        entry = {"href": href, "name": name}
         dims = png_size(target)
         if dims:
             entry["width"], entry["height"] = dims

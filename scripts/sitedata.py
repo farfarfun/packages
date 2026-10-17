@@ -27,8 +27,10 @@ import manifest
 import tomllib
 
 # 渠道的显示顺序，也是包页上安装分段的顺序。apt 在前：Linux 上加一次源以后全组织的
-# 包都能装，是这个仓库存在的理由。
-CHANNELS = ("apt", "brew", "cask")
+# 包都能装，是这个仓库存在的理由。utools 在后，而且它和前三个不是一类东西 —— 前三个
+# 是包管理器（一条命令，带升级和卸载），它是「下一个文件拖进 uTools 窗口」。放进同一
+# 个分段控件是因为对访客来说问题是同一个：这东西怎么装。
+CHANNELS = ("apt", "brew", "cask", "utools")
 
 # 这些附件不往下载表里放：SHA256SUMS 渲染成一条校验和链接（它不是给人下的包），
 # 签名和 wheel 各有自己的渠道（PyPI），列在这儿只会让人以为该下哪个。
@@ -72,17 +74,24 @@ KINDS = (
     (".rpm", "RPM", "linux"),
     (".msi", "MSI", "windows"),
     (".exe", "EXE", "windows"),
+    # uTools 插件包。里面是纯 JS，一个包在 Windows / macOS / Linux 上都是同一个文件，
+    # 所以平台直接定成 any —— 不定的话它会落进「其它文件」那一栏，而对插件来说那正是
+    # 唯一要下的东西。
+    (".upx", "UPX", "any"),
     (".tar.gz", "TAR.GZ", None),
     (".tgz", "TAR.GZ", None),
     (".zip", "ZIP", None),
 )
 
-# 平台在下载区分段里的顺序，和每个平台里架构的排法。
-PLATFORM_ORDER = ("android", "windows", "macos", "linux")
+# 平台在下载区分段里的顺序，和每个平台里架构的排法。any 在最前：它是「哪个系统都这
+# 一个」，排在具体系统后面的话，一个只有 any 的包（uTools 插件）反而要往下找。
+PLATFORM_ORDER = ("any", "android", "windows", "macos", "linux")
 ARCH_ORDER = ("amd64", "arm64", "arm32", "x86")
 # 同一个架构下多个文件时的排法：装得最省事的在上面。musl 的静态包排在 gnu 前面 ——
 # 它不挑 glibc 版本，是更安全的默认。
-KIND_ORDER = ("DEB", "RPM", "AppImage", "DMG", "PKG", "EXE", "MSI", "APK", "TAR.GZ", "ZIP", "BIN")
+KIND_ORDER = (
+    "UPX", "DEB", "RPM", "AppImage", "DMG", "PKG", "EXE", "MSI", "APK", "TAR.GZ", "ZIP", "BIN",
+)
 
 # 更新日志里 funclash 那种生成式分组的标题 → 类型 id。类型只用来上色和排序，认不出的
 # 分组按原标题显示。
@@ -198,6 +207,8 @@ def note_key(kind: str, platform: str | None, arch: str | None, low: str) -> str
         return "noteMacArm" if arch == "arm64" else "noteMacIntel"
     if platform == "android":
         return {"arm64": "noteApkArm64", "arm32": "noteApkArm32"}.get(arch, "noteApkX64")
+    if kind == "UPX":
+        return "noteUpx"
     if kind == "DEB":
         return "noteDeb"
     if kind == "RPM":
@@ -439,9 +450,12 @@ def collect(
         name = manifest.name_of(source)
         brew = source.get("brew", {})
         cask = source.get("cask", {})
-        # apt 那条线收所有项目，所以有索引时按「索引里有没有」算（某个项目的 release
-        # 里压根没有 .deb 是容忍的，见 collect-debs.sh），没有索引时按清单算。
-        in_apt = name in index if index else True
+        utools = source.get("utools", {})
+        # 有索引时按「索引里有没有」算（某个项目的 release 里压根没有 .deb 是容忍的，
+        # 见 collect-debs.sh）。没有索引时（本地预览、或者上一步跳过了）只能按清单猜，
+        # 而清单已经知道哪些项目不走 apt —— 不问它的话本地渲染出来的页面上会写一条
+        # `sudo apt install utools-funotp`，而那条命令在任何机器上都装不上。
+        in_apt = name in index if index else manifest.in_apt(source)
         channels = [c for c in CHANNELS if (c == "apt" and in_apt) or c in source]
 
         history = [] if offline else releases_of(source["repo"])
@@ -507,12 +521,17 @@ def collect(
                 "name": name,
                 "repo": source["repo"],
                 "url": f"https://github.com/{source['repo']}",
-                "desc": cask.get("desc") or brew.get("desc") or "",
+                "desc": cask.get("desc") or brew.get("desc") or utools.get("desc") or "",
                 "channels": channels,
                 "binary": brew.get("bin", name),
-                "app": cask.get("app", ""),
+                # 显示名：cask 装出来的 `.app` 名，或者插件在 uTools 里的名字。两者都是
+                # 「这东西在它那条渠道里叫什么」，和包名不是一回事。
+                "app": cask.get("app") or utools.get("app") or "",
                 "min_macos": cask.get("min_macos", ""),
-                "gui": not source.get("cli", True),
+                "store": bool(utools.get("store", False)),
+                # 这东西是什么：命令行工具、桌面应用，还是 uTools 插件。页面上那枚灰
+                # chip 用它，CI 的装机验证只认 cli 那一种。
+                "kind": "plugin" if utools else ("cli" if source.get("cli", True) else "gui"),
                 "keep": keep,
                 "latest": latest,
                 "versions": versions,
@@ -563,12 +582,23 @@ def check(data: dict, only: str | None) -> int:
             print("  SHA256SUMS     ! 没有 —— formula 和 cask 的校验和取不到，不会生成")
             bad += 1
 
-        debs = [n for n in names if n.endswith(".deb")]
-        missing = [a for a in ("amd64", "arm64") if not any(f"_{a}.deb" in n for n in debs)]
-        if missing:
-            print(f"  .deb           ! 缺 {', '.join(missing)}（那个架构的机器装不到）")
-        else:
-            print("  .deb           amd64、arm64 都有")
+        # 只对走 apt 那条线的包查 .deb。uTools 插件不发 .deb，对它报「缺 amd64、arm64」
+        # 是一句噪音，而噪音多了这份报告就没人看了。
+        if pkg["in_apt"]:
+            debs = [n for n in names if n.endswith(".deb")]
+            missing = [a for a in ("amd64", "arm64") if not any(f"_{a}.deb" in n for n in debs)]
+            if missing:
+                print(f"  .deb           ! 缺 {', '.join(missing)}（那个架构的机器装不到）")
+            else:
+                print("  .deb           amd64、arm64 都有")
+
+        if "utools" in pkg["channels"]:
+            upx = [n for n in names if n.endswith(".upx")]
+            if upx:
+                print(f"  .upx           {'、'.join(upx)}")
+            else:
+                print("  .upx           ! 没有 —— 安装一节只剩一条指向 Release 的链接")
+                bad += 1
 
         if "cask" in pkg["channels"]:
             app = pkg["app"]
@@ -595,7 +625,8 @@ def check(data: dict, only: str | None) -> int:
         page = pkg["page"]
         if page:
             print(
-                f"  页面文案       标语 {'有' if page.get('tagline') else '无'}"
+                f"  页面文案       显示名 {'有' if page.get('name') else '无（用包名）'}"
+                f"、标语 {'有' if page.get('tagline') else '无'}"
                 f"、功能点 {len(page.get('features', []))} 条"
                 f"、截图 {len(page.get('shots', []))} 张"
                 f"、额外渠道 {len(page.get('install', []))} 条"

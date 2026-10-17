@@ -124,13 +124,32 @@ min_macos = "monterey"
 bundle_id = "com.farfarfun.funclash"   # --zap 按它拼要清的目录
 ```
 
+uTools 插件用 `[source.utools]`。仓库在 `farfarfun-utools` 那个组织下也没关系，`repo`
+写全名就行：
+
+```toml
+[[source]]
+repo = "farfarfun-utools/utools-funotp"
+keep = 3
+
+[source.utools]
+app = "两步验证 FunOTP"   # 插件在 uTools 里的名字，就是 plugin.json 的 pluginName
+desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offline"
+```
+
+这一节和上面两个不是一类东西：它不进 APT 索引、不出 formula、CI 也装不了它（uTools
+是个带界面的宿主程序，无头 runner 上没有「装一个插件」这回事）。它在这张表里只为了
+一件事 —— 让插件也有一页中英双语的说明页，跟着 Release 自动更新。产物是一个
+`<包名>-<版本>.upx`，三个桌面系统共用同一个文件。
+
 `cli = false` 是给 apt 那条线看的：verify 默认拿第二列跑 `--version`，而这个包装出
 来的是个窗口程序，在无头 runner 上跑它只会卡住。标了之后 verify 改成验 `.desktop`
 的 `Exec` 指到的东西在 PATH 上、版本问 `dpkg-query`。
 
 **真的只改这一个文件**：三个装机验证（apt、formula、cask）和站点（包列表、每个包
-自己那一页）都是按这张表遍历的，不用回去改 workflow，也不用改页面。当前收了
-`fundeploy`、`funget` 和 `funclash` 三个。
+自己那一页）都是按这张表遍历的，不用回去改 workflow，也不用改页面。当前收了三个
+能装的包（`fundeploy`、`funget`、`funclash`）和四个 uTools 插件（`utools-funotp`、
+`utools-funlink`、`utools-funchat`、`utools-fundoc`）。
 
 前提是那个项目的 release 附件按约定命名，并且带一份 `SHA256SUMS`：
 
@@ -139,6 +158,7 @@ bundle_id = "com.farfarfun.funclash"   # --zap 按它拼要清的目录
 | apt | `<包名>_<版本>_<架构>.deb`，`amd64`、`arm64` 各一个 |
 | formula | `<包名>-<target>.tar.gz` |
 | cask | `<应用名>-<版本>-macos-<架构>.dmg` |
+| utools | `<包名>-<版本>.upx`，不分平台和架构 |
 
 cask 那一行的前缀是**显示名**而不是包名：包名必须小写（Debian 的要求），而应用在
 所有可见的地方叫 `FunClash`。
@@ -242,7 +262,7 @@ site/
   home.html  package.html   两种页面的模板
   partials/                 页头页脚、各节的骨架
   strings.toml              所有文案，[zh] 和 [en] 两张表，键必须一一对应
-  pages/<包名>.toml         每个包的标语、功能点、截图、额外安装渠道（可选）
+  pages/<包名>.toml         每个包的显示名、标语、功能点、截图、额外渠道（可选）
   assets/                   style.css 和 app.js（JS 里没有一个字的文案）
 ```
 

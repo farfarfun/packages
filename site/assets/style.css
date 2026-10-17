@@ -1020,6 +1020,12 @@ h2 {
   letter-spacing: -0.02em;
 }
 
+/* 显示名（uTools 插件那种中文名）不走等宽：等宽排中文是一个字一个格，而等宽的理由
+   —— 这串字你要照着敲 —— 在显示名上一条都不成立。 */
+.card-name.plain {
+  font-family: inherit;
+}
+
 .card-head .ver {
   padding: 1px 8px;
   border-radius: 999px;
@@ -1573,6 +1579,13 @@ h2 {
   height: auto;
   border-radius: var(--r-lg);
   border: 1px solid var(--line);
+}
+
+.shot figcaption {
+  margin: 10px 2px 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
 }
 
 /* ---- 页脚 ---- */
