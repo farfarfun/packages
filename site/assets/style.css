@@ -962,9 +962,10 @@ h2 {
 
 /* ---- 包卡片 ---- */
 
+/* 260px 的话宽屏上只排得出两列（右列 784px，差几个像素），九个包最后一张落单。 */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 14px;
   margin: 0;
   padding: 0;
@@ -1267,6 +1268,28 @@ h2 {
   width: min(100%, 420px);
 }
 
+/* 认不出结构的更新日志：一行只有版本号和日期，没有右边那条安装命令。按版本一节的
+   行高一行一行铺下去，就是几个大标题吊在一片空白里 —— 铺成几列，紧一点。 */
+.rows.compact {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 2px 20px;
+}
+
+/* 多列之后「第一行不画线」就不成立了：第一列不画、第二第三列画，看着像没对齐。
+   每一格都画，顶上那条横跨右列的线正好当这一节的起笔。 */
+.rows.compact .row {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.rows.compact .ver {
+  font-size: 18px;
+}
+
+.rows.compact .note {
+  margin-top: 2px;
+}
+
 .ver-row {
   display: flex;
   align-items: center;
@@ -1562,12 +1585,28 @@ h2 {
   color: var(--accent);
 }
 
+/* 「索引还没建起来」这类提示。给它一个虚线框而不是一行灰字：空着的这块本来该有东
+   西，看起来得像「这里暂时没有」，而不像页面渲染漏了一段。 */
 .empty {
-  margin: 6px 0 0;
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
   color: var(--ink-2);
+  font-size: 14px;
 }
 
 /* ---- 截图 ---- */
+
+/* 一个包的截图里，手机竖图和桌面横图经常混着来。两种都按右列的宽度铺的话，一张
+   780×1688 的竖图就是 1700px 高 —— 三张能把一页撑到七千像素，而这一节讲的只是
+   「长什么样」。所以竖的并排铺成一行几张，横的占满一行但限高；两种都不许超过一屏。 */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  align-items: start;
+  gap: 22px 16px;
+}
 
 .shot {
   margin: 0;
@@ -1577,8 +1616,46 @@ h2 {
   display: block;
   width: 100%;
   height: auto;
+  margin-inline: auto;
   border-radius: var(--r-lg);
   border: 1px solid var(--line);
+}
+
+.shot.wide {
+  grid-column: 1 / -1;
+}
+
+.shot.wide img {
+  width: auto;
+  max-width: 100%;
+  max-height: min(58vh, 520px);
+}
+
+/* 横图三张以上的包（uTools 插件的截图基本都是桌面窗口）：一张一行要滚三四屏，而这
+   一节只是让人看一眼长什么样。两张一行，看原图还是去项目仓库。 */
+.shots.pairs {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.shots.pairs .shot.wide {
+  grid-column: auto;
+}
+
+.shots.pairs .shot.wide img {
+  max-height: min(42vh, 380px);
+}
+
+/* 竖图自己也有个上限：只有一张截图时列会铺满整个右列，而一张手机图放到 780px 宽
+   没有任何意义 —— 它在手机上也没那么大。 */
+.shot.tall {
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+.shot.tall img {
+  width: auto;
+  max-width: 100%;
+  max-height: min(68vh, 600px);
 }
 
 .shot figcaption {
@@ -1743,6 +1820,15 @@ h2 {
 /* ---- 响应式 ---- */
 
 @media (min-width: 961px) {
+  /* 宽屏上让装饰按自己的比例摆，而不是切一块去填满首屏的高度：`slice` 填高的时候
+     整张图会被放大，三个箱子跟着往左长，1180–1366 这一段正好压在大标题的末尾上。
+     按比例摆之后箱子永远落在右边那一片空地里，和标题多宽无关。窄屏仍旧填满 —— 那
+     边标题是整行的，底下没有空地可留。 */
+  .deco {
+    height: auto;
+    aspect-ratio: 1200 / 460;
+  }
+
   .rail-sticky {
     position: sticky;
     top: calc(var(--nav-h) + 24px);

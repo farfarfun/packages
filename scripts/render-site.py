@@ -253,7 +253,12 @@ class Site:
 
         关掉 JS 时 head 里那段 noscript 样式会把分段藏掉、把所有面板展开 —— 页面少
         了点取舍的便利，但没有一句话是看不到的。
+
+        只有一项时不出分段：一个点不动、也没有另一项可切的胶囊按钮，看着像控件坏了。
+        uTools 插件就是这种包 —— 它只有「在 uTools 里装」这一条路。
         """
+        if len(items) == 1:
+            return f'<div class="panes single" data-group="{esc(group)}">{items[0]["body"]}</div>'
         tabs = []
         panes = []
         for i, item in enumerate(items):
@@ -479,12 +484,15 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
                 if upx
                 # 还没发过版，或者这一版忘了传 .upx。不编一个下载链接出来，指到 Release
                 # 页去 —— 那边有没有东西是看得见的。提示语也要换一句：上面那句说的是
-                # 「下面这个 .upx」，而下面没有。
-                else site.note_link(
+                # 「下面这个 .upx」，而下面没有。摆成空状态那个框：这一格本来该有一个
+                # 文件行，一句飘着的灰字看着像页面没渲染完。
+                else '<div class="empty">'
+                + site.note_link(
                     site.t("installUtoolsEmpty"),
                     f"{pkg['url']}/releases",
                     site.t("installUtoolsReleases"),
                 )
+                + "</div>"
             ) + (
                 '<div class="extras">'
                 + (
@@ -553,6 +561,21 @@ def shows_downloads(pkg: dict) -> bool:
     if pkg["channels"] == ["utools"] and not downloads["other"]:
         return any(f["kind"] != "UPX" for p in downloads["platforms"] for f in p["files"])
     return True
+
+
+def shows_versions(pkg: dict) -> bool:
+    """版本一节出不出。和下载一节同理，导航那条链接也跟着它走。
+
+    这一节讲的是「APT 索引里还留着哪几版」。不进索引又一版都没有的包（uTools 插件就
+    是）出这一节，看到的永远是「源里留着 0 版 / 索引还没建起来」—— 一节空话。包真在
+    索引里只是这次没扫出来的话照旧出：那是构建中途的真实状态，藏起来反而看不见。
+    """
+    return bool(pkg["versions"] or pkg["in_apt"])
+
+
+def shows_shots(site: Site, pkg: dict) -> bool:
+    """截图一节出不出。图没下到站里（离线渲染、或者那张图 404）就整节不出，导航同理。"""
+    return any(shot.get("light") in site.shots for shot in pkg["page"].get("shots", []))
 
 
 def download_panes(site: Site, pkg: dict) -> str:
@@ -677,7 +700,11 @@ def timeline(site: Site, pkg: dict) -> str:
 
 
 def plain_log(site: Site, pkg: dict) -> str:
-    """认不出结构的日志：只列版本和日期，正文留给 GitHub。"""
+    """认不出结构的日志：只列版本和日期，正文留给 GitHub。
+
+    和版本一节共用 `.row`，但多加一个 `compact`：那边每行右边还挂着一条安装命令，
+    这边一行只有版本号和日期，照同样的行高铺开就是几行大字加一片空白。
+    """
     rows = []
     for release in pkg["changelog"]["releases"][:CHANGELOG_MAX]:
         rows.append(
@@ -691,7 +718,7 @@ def plain_log(site: Site, pkg: dict) -> str:
             )
             + "</div></li>"
         )
-    return f'<ul class="rows">{"".join(rows)}</ul>'
+    return f'<ul class="rows compact">{"".join(rows)}</ul>'
 
 
 def search_box(site: Site) -> str:
@@ -708,9 +735,15 @@ def search_box(site: Site) -> str:
     )
 
 
-def figures(site: Site, pkg: dict, up: str) -> str:
-    """截图。路径要带 up —— 图在站点根下的 assets/shots，而包页在下一层。"""
+def figures(site: Site, pkg: dict, up: str) -> tuple[str, str]:
+    """截图，返回 (图, 容器的类)。路径要带 up —— 图在站点根下的 assets/shots，而包页
+    在下一层。
+
+    容器有两种摆法，看这个包的图是什么形状：横图三张以上就两张一行（funchat 那样四
+    张桌面截图，一张一行要滚三屏），否则横图各占一行、竖图并排。
+    """
     out = []
+    wide = 0
     for shot in pkg["page"].get("shots", []):
         light = site.shots.get(shot.get("light", ""))
         if not light:
@@ -727,17 +760,24 @@ def figures(site: Site, pkg: dict, up: str) -> str:
             if light.get("width")
             else ""
         )
+        # 手机竖图和桌面横图不能一个摆法：780×1688 的竖图铺满右列就是一张 1700px 高
+        # 的图，一个包三张能把页面撑到七千像素。竖的并排铺，横的整行但限高（样式在
+        # style.css 的截图一节）。读不到尺寸就按横图走，和以前一样。
+        tall = light.get("width") and light["height"] > light["width"] * 1.2
+        shape = "tall" if tall else "wide"
+        if not tall:
+            wide += 1
         # alt 是写给读屏的，caption 是写给看图的人的 —— 一张截图上有什么，光看图经常
         # 认不出来（「顶部那一行是分组」）。只有一张图的包不写也行，四五张的就该写。
         caption = _text(shot.get("caption"), site.lang)
         out.append(
-            f'<figure class="shot">{"<picture>" if source else ""}{source}'
+            f'<figure class="shot {shape}">{"<picture>" if source else ""}{source}'
             f'<img src="{esc(up + light["href"])}"{dims} loading="lazy" decoding="async"'
             f' alt="{esc(alt)}">{"</picture>" if source else ""}'
             + (f"<figcaption>{esc(caption)}</figcaption>" if caption else "")
             + "</figure>"
         )
-    return "".join(out)
+    return "".join(out), "shots pairs" if wide > 2 else "shots"
 
 
 def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
@@ -755,10 +795,25 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
         return f"{num:02d}"
 
     panes, count = install_panes(site, pkg, ctx["home"])
+    # 「加源」那条链接只对走 apt / brew 的包有意义。uTools 插件的装法是把 .upx 拖进
+    # 窗口，把人送到首页的三行命令那儿纯属添乱。
+    needs_setup = any(channel in ("apt", "brew", "cask") for channel in pkg["channels"])
+    setup_link = (
+        f'<a href="{esc(ctx["home"])}#setup">{esc(site.t("installSetupLink"))}</a>'
+        if needs_setup
+        else ""
+    )
     out.append(
         site.section(
             "sec-install.html",
-            {**ctx, "num": nxt(), "sub": site.t("installSub", count=count), "panes": Raw(panes)},
+            {
+                **ctx,
+                "num": nxt(),
+                "sub": site.t("installSubOne" if count == 1 else "installSub", count=count),
+                "lead": site.t("installLeadOne" if count == 1 else "installLead"),
+                "links": Raw(setup_link),
+                "panes": Raw(panes),
+            },
         )
     )
 
@@ -782,17 +837,18 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
             )
         )
 
-    out.append(
-        site.section(
-            "sec-versions.html",
-            {
-                **ctx,
-                "num": nxt(),
-                "sub": site.t("versionsSub", count=len(pkg["versions"])),
-                "rows": Raw(version_rows(site, pkg)),
-            },
+    if shows_versions(pkg):
+        out.append(
+            site.section(
+                "sec-versions.html",
+                {
+                    **ctx,
+                    "num": nxt(),
+                    "sub": site.t("versionsSub", count=len(pkg["versions"])),
+                    "rows": Raw(version_rows(site, pkg)),
+                },
+            )
         )
-    )
 
     log = pkg["changelog"]
     if log["releases"]:
@@ -804,7 +860,7 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
                 {
                     **ctx,
                     "num": nxt(),
-                    "sub": site.t("changelogSub", count=shown),
+                    "sub": site.t("changelogSubOne" if shown == 1 else "changelogSub", count=shown),
                     "lead": site.t("changelogLead" if structured else "changelogPlain"),
                     "search": Raw(search_box(site) if structured else ""),
                     "body": Raw(timeline(site, pkg) if structured else plain_log(site, pkg)),
@@ -812,7 +868,7 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
             )
         )
 
-    shots = figures(site, pkg, ctx["up"])
+    shots, shots_class = figures(site, pkg, ctx["up"])
     if shots:
         out.append(
             site.section(
@@ -820,7 +876,10 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
                 {
                     **ctx,
                     "num": nxt(),
-                    "sub": site.t("shotsSub", version=ctx["version"]),
+                    # 没发过 Release 的包（uTools 插件多半如此）拿不到版本号，
+                    # 「来自 」后面跟一个空字符串不如不写。空的副标题样式上会隐藏。
+                    "sub": site.t("shotsSub", version=ctx["version"]) if ctx["version"] else "",
+                    "shotsClass": shots_class,
                     "figures": Raw(shots),
                 },
             )
@@ -991,9 +1050,12 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
     nav = [("#install", "navInstall")]
     if has_downloads:
         nav.append(("#download", "navDownload"))
-    nav += [("#versions", "navVersions")]
+    if shows_versions(pkg):
+        nav.append(("#versions", "navVersions"))
     if pkg["changelog"]["releases"]:
         nav.append(("#changelog", "navChangelog"))
+    if shows_shots(site, pkg):
+        nav.append(("#screens", "navScreens"))
     ctx["navLinks"] = Raw(nav_links(site, nav))
     ctx["sections"] = Raw(package_sections(site, pkg, ctx))
     return site.render("package.html", ctx)

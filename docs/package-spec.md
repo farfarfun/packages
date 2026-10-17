@@ -210,6 +210,8 @@ text.en = "Splits a file by range, downloads in parallel and resumes."
 # 截图。只认 PNG —— 宽高是从文件头读出来写进 <img> 的，为的是加载时不跳版。
 # 图放在你自己的项目仓库里，这边构建时下到站点的 assets/shots/<包名>/ 下，不热链。
 # 按包分目录是必须的：各项目的截图都叫 home.png / dark.png 这种通名，平铺会互相覆盖。
+# 怎么摆由宽高比决定，不用操心：手机竖图并排铺成一行几张，桌面横图占满一行；横图超
+# 过两张就改成两张一行。每张都限了高，所以一个包里混着手机图和桌面图不会把页面撑长。
 [[shots]]
 light = "https://raw.githubusercontent.com/<组织>/<仓库>/master/docs/snapshots/preview.png"
 dark = "https://raw.githubusercontent.com/<组织>/<仓库>/master/docs/snapshots/preview-dark.png"   # 可选
