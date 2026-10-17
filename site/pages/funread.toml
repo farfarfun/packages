@@ -34,6 +34,27 @@ title.en = "One token per device"
 text.zh = "存的是设备 token 不是密码，手机丢了在别的设备上就能吊销。"
 text.en = "It stores a device token rather than your password, so a lost phone can be revoked from anywhere else."
 
+# 截图在 funread-web 仓库里，由它的 .github/workflows/shots.yml 在每次打 tag 时
+# 重截一遍（Playwright + 一套写死的假数据，所以界面没改的话图就不会变）。这边
+# 构建时下到站点下面，不热链。
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/shelf-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/shelf-dark.png"
+alt.zh = "funread 的书架，手机上的样子"
+alt.en = "The funread bookshelf on a phone"
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/read-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/read-dark.png"
+alt.zh = "正文阅读界面，右边是夜间配色"
+alt.en = "The reading view, with the night colour scheme on the right"
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/admin-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/admin-dark.png"
+alt.zh = "管理端的采集源列表"
+alt.en = "The collector source list in the admin console"
+
 # apt / brew 之外的渠道。funread light 是同一个仓库的另一套壳：不打包 Web 资源，
 # 启动时问服务器地址，然后把整个窗口交给那台服务器上的页面 —— 登录态和离线缓存
 # 跟在浏览器里打开同一个地址完全一样，代价是启动要有网。

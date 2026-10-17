@@ -45,6 +45,8 @@ DIST="${OUTPUT_DIR}/dists/stable"
 # 首字母从包名的 control 字段取，不从文件名猜：文件名是构建脚本拼的，改个拼法
 # 就和索引对不上了，而 control 是 apt 自己认的那一份。
 declare -A WANT=()
+# 每个架构放进 pool 的相对路径，下面核对对不上时拿来报「少的是哪一个」。
+declare -A PUT=()
 for deb in "${DEBS[@]}"; do
   name="$(dpkg-deb -f "$deb" Package)"
   [[ -n "$name" ]] || die "读不出包名: $deb"
@@ -57,6 +59,7 @@ for deb in "${DEBS[@]}"; do
   cp -f "$deb" "$dest/"
   arch="$(dpkg-deb -f "$deb" Architecture)"
   WANT["$arch"]=$(( ${WANT["$arch"]:-0} + 1 ))
+  PUT["$arch"]+="pool/main/${letter}/${name}/$(basename "$deb")"$'\n'
 done
 
 # 每个架构扫出自己的 Packages。二进制是静态链接的、每个架构一个包，索引共用的话
@@ -75,9 +78,22 @@ for arch in "${ARCHES[@]}"; do
 
   # pool 里放进去几个，索引里就得有几条。漏掉的那种是最难发现的故障：装还是装
   # 得上（最新版在），只是回退悄悄没了。
+  #
+  # 对不上时把少的那几个列出来。**这几乎总是文件名的问题**：dpkg-scanpackages
+  # 是按文件名挑文件的，不叫 `<包名>_<版本>_<架构>.deb` 的直接跳过，不报错也不
+  # 警告 —— 它自己打的那句 "Wrote N entries" 是唯一的线索，而那是条 info。光报
+  # 一句「9 个包 8 条」得把 pool 拖到本地重扫一遍才知道少的是谁。
   got="$(grep -c '^Package:' "${DIST}/main/binary-${arch}/Packages")"
   want="${WANT[$arch]:-0}"
-  [[ "$got" -eq "$want" ]] || die "${arch}: pool 里 ${want} 个包，索引里只有 ${got} 条"
+  if [[ "$got" -ne "$want" ]]; then
+    echo "错误: ${arch}: pool 里 ${want} 个包，索引里只有 ${got} 条" >&2
+    echo "没进索引的是这些（多半是文件名没按 <包名>_<版本>_<架构>.deb 来）:" >&2
+    comm -23 \
+      <(printf '%s' "${PUT[$arch]:-}" | sort) \
+      <(awk '/^Filename:/ {print $2}' "${DIST}/main/binary-${arch}/Packages" | sort) \
+      | sed 's/^/  /' >&2
+    exit 1
+  fi
 
   gzip -9 -c "${DIST}/main/binary-${arch}/Packages" >"${DIST}/main/binary-${arch}/Packages.gz"
 done

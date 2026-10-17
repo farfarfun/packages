@@ -91,9 +91,13 @@ repo = "farfarfun/funread-web"
 # /Applications 的 .app 名全是 funread。这里跟着产物走，不跟仓库名走。
 name = "funread"
 keep = 3
-# 1.1.126 之前的附件不按规范命名（macOS 只出了一个架构，deb 名带 v 前缀）。
-# 收进来的话 render-cask.py 会因为缺一个架构整段跳过 —— 它对半截矩阵是宁可不出。
-min_version = "1.1.126"
+# 1.1.127 是第一个能收的版本，1.1.126 也不行 —— 它同一次 release 里的
+# `funread-light-v1.1.126-linux.deb` 不符合 `<包名>_<版本>_<架构>.deb`，而
+# collect-debs.sh 是按 `*.deb` 收整个 release 的，dpkg-scanpackages 会把它静默
+# 跳过，于是 build-deb-repo.sh 的条数核对判整次构建失败（pool 里 9 个、索引里
+# 8 条）。更早的版本则是 macOS 只出一个架构，cask 整段不生成。
+# 两个毛病都在 funread-web 的 1.1.127 修了。
+min_version = "1.1.127"
 # 装出来是 Tauri 的窗口程序，无头 runner 上跑它只会卡住，和 funclash 同理。
 cli = false
 
@@ -108,8 +112,15 @@ cli = false
 # 那样两者不同。但这个字段仍然要写：render-cask.py 按它拼 DMG 附件名。
 app = "funread"
 desc = "Self-hosted reader for novels and RSS feeds"
-# tauri.conf.json 里 minimumSystemVersion 写的是 10.15。
-min_macos = "catalina"
+# **故意不写 min_macos。** tauri.conf.json 里的 minimumSystemVersion 是 10.15，而
+# `depends_on macos: :catalina` 这个符号已经被 Homebrew 禁掉了（"Calling
+# `depends_on macos: :catalina` is disabled! There is no replacement."，整个 cask
+# 直接加载失败，brew info 都读不出来）。往上抬到 :monterey 又是撒谎 —— 这个应用在
+# Big Sur 上跑得动。
+#
+# 结论是这条约束本来就没用：能装得动新版 Homebrew 的系统全都高于 10.15，写不写
+# 都拦不到人。funclash 那边写了 :monterey 是因为它自己的 README 就要求 macOS 12，
+# 那是个真实存在的下限。
 bundle_id = "com.farfarfun.funread"
 
 # ⚠️ 这一节是注释掉的，解开之前先读完这段。
