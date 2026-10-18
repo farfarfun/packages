@@ -77,7 +77,7 @@ jobs:
         if: steps.config.outputs.signed == 'true'
         env:
           APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
-        run: bash scripts/build-deb-repo.sh debs public/deb "${{ steps.key.outputs.fingerprint }}"
+        run: bash scripts/build-deb-repo.sh debs public/deb "${{ steps.key.outputs.fingerprint }}" packages.toml
 
       - name: 放公钥
         if: steps.config.outputs.signed == 'true'
@@ -90,9 +90,8 @@ jobs:
           echo "=== 索引里有这些包 ==="
           grep -E '^(Package|Version|Architecture):' public/deb/dists/stable/main/binary-amd64/Packages
 
-      # 刻意不挂 `if: signed`：渲染站点不用 GPG，不挂的话 fork 和没配 secret 的 PR
-      # 也会跑一遍渲染器，模板写坏、文案少一种语言当场就是红的。上传 Pages 产物那步
-      # 仍然只在 signed 时跑，发布行为一个字没变。
+      # 渲染站点不用 GPG，没配 secret 时也检查模板；PR 的离线检查在 check.yml。
+      # 上传 Pages 产物只在 signed 时跑。
       #
       # 要在索引生成之后：版本一节读的是刚扫出来的 Packages，它才是 apt 真能装到的
       # 那几版。索引不在（上面跳过了）时渲染器自己退化成按 Release 列。
@@ -365,7 +364,7 @@ jobs:
           done
 
   deploy:
-    needs: build
+    needs: [build, brew]
     if: needs.build.outputs.signed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10

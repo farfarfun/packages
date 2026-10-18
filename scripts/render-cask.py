@@ -59,7 +59,7 @@ def render(source: dict, tag: str, checksums: dict[str, str]) -> str | None:
     # 两个架构缺一个就不出：`arch` + 两分支 `sha256` 是成对的写法，少一边得换成
     # 另一种单架构写法。真缺了更可能是构建矩阵出了岔子，不该悄悄发一个半截的 cask。
     if missing:
-        print(f"  {pkg} {tag}: 附件里缺 {', '.join(missing)}，跳过")
+        print(f"  {pkg} {tag}: 附件里缺 {', '.join(missing)}，无法生成", file=sys.stderr)
         return None
 
     # `sha256 arm:` / `intel:` 两行的键名右对齐，照 homebrew/cask 里的排版。
@@ -106,27 +106,21 @@ def main() -> int:
     outdir = Path(sys.argv[2])
     outdir.mkdir(parents=True, exist_ok=True)
 
-    wrote = 0
     with tempfile.TemporaryDirectory() as tmp:
         for s in sources:
             pkg = manifest.name_of(s)
             tags = manifest.selected(s)
             if not tags:
-                print(f"  {pkg}: 没有够格的 release，跳过")
-                continue
+                print(f"  {pkg}: 没有够格的 release", file=sys.stderr)
+                return 1
             # tap 里一个包只有一份 cask，只能是最新版。想装旧版去 Release 下 DMG。
             tag = tags[0]
             checksums = manifest.fetch_sums(s["repo"], tag, Path(tmp))
             text = render(s, tag, checksums)
             if text is None:
-                continue
+                return 1
             (outdir / f"{pkg}.rb").write_text(text)
             print(f"  {pkg} {tag}: 已生成")
-            wrote += 1
-
-    if sources and not wrote:
-        print("一个 cask 都没生成", file=sys.stderr)
-        return 1
     return 0
 
 

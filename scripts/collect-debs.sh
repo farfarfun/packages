@@ -24,17 +24,21 @@ done
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 
+rows="$(python3 "${HERE}/select-releases.py" "$MANIFEST")"
 while IFS=$'\t' read -r repo tag; do
   [[ -n "$repo" ]] || continue
-  # 老版本可能一个 .deb 都没有（比如某个项目改语言之前）。下不到东西是正常的，
-  # 不该让整次构建失败。
-  if gh release download "$tag" --repo "$repo" --pattern '*.deb' \
-    --dir "$OUT" --clobber 2>/dev/null; then
-    echo "  ${repo} ${tag}: 收到"
-  else
-    echo "  ${repo} ${tag}: 没有 .deb，跳过"
+  if ! assets="$(gh release view "$tag" --repo "$repo" --json assets \
+    --jq '.assets[].name | select(endswith(".deb"))')"; then
+    die "${repo} ${tag}: 附件列表取不到"
   fi
-done < <(python3 "${HERE}/select-releases.py" "$MANIFEST")
+  if [[ -z "$assets" ]]; then
+    echo "  ${repo} ${tag}: 没有 .deb，跳过"
+    continue
+  fi
+  gh release download "$tag" --repo "$repo" --pattern '*.deb' \
+    --dir "$OUT" --clobber || die "${repo} ${tag}: .deb 下载失败"
+  echo "  ${repo} ${tag}: 收到"
+done <<< "$rows"
 
 shopt -s nullglob
 got=("$OUT"/*.deb)

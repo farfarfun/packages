@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 把一批 .deb 组装成一个签名好的 APT 仓库（给 GitHub Pages 托管用）。
 #
-#   build-deb-repo.sh <deb目录> <输出目录> <GPG密钥ID>
+#   build-deb-repo.sh <deb目录> <输出目录> <GPG密钥ID> <packages.toml>
 #
 # 输出目录就是 APT 源地址指向的那一层：
 #   <输出>/dists/stable/...   索引与签名
@@ -11,6 +11,8 @@ set -euo pipefail
 DEB_DIR="${1:-}"
 OUTPUT_DIR="${2:-}"
 GPG_KEY_ID="${3:-}"
+MANIFEST="${4:-}"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ORIGIN="farfarfun"
 ARCHES=(amd64 arm64)
@@ -23,6 +25,7 @@ die() {
 [[ -d "$DEB_DIR" ]] || die "找不到 deb 目录: ${DEB_DIR:-<空>}"
 [[ -n "$OUTPUT_DIR" ]] || die "请指定输出目录"
 [[ -n "$GPG_KEY_ID" ]] || die "请指定 GPG 签名密钥 ID"
+[[ -f "$MANIFEST" ]] || die "找不到清单: ${MANIFEST:-<空>}"
 for c in apt-ftparchive dpkg-scanpackages dpkg-deb gpg gzip; do
   command -v "$c" >/dev/null 2>&1 || die "缺少命令: $c"
 done
@@ -96,6 +99,23 @@ for arch in "${ARCHES[@]}"; do
   fi
 
   gzip -9 -c "${DIST}/main/binary-${arch}/Packages" >"${DIST}/main/binary-${arch}/Packages.gz"
+done
+
+# 清单里的每个 APT 包都必须在两个架构上有同样的版本集合。
+packages="$(python3 "${HERE}/list-packages.py" "$MANIFEST")"
+while IFS=$'\t' read -r pkg _; do
+  [[ -n "$pkg" ]] || continue
+  for arch in "${ARCHES[@]}"; do
+    index="${DIST}/main/binary-${arch}/Packages"
+    grep -Fqx "Package: $pkg" "$index" || die "${pkg}: ${arch} 索引里没有这个包"
+  done
+done <<< "$packages"
+
+for arch in "${ARCHES[@]:1}"; do
+  diff -u \
+    <(awk '/^Package: / {pkg=$2} /^Version: / {print pkg, $2}' "${DIST}/main/binary-${ARCHES[0]}/Packages" | sort) \
+    <(awk '/^Package: / {pkg=$2} /^Version: / {print pkg, $2}' "${DIST}/main/binary-${arch}/Packages" | sort) \
+    || die "${arch} 和 ${ARCHES[0]} 的包版本不一致"
 done
 
 apt-ftparchive \

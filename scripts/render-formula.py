@@ -156,30 +156,24 @@ def main() -> int:
     outdir = Path(sys.argv[2])
     outdir.mkdir(parents=True, exist_ok=True)
 
-    wrote = 0
     with tempfile.TemporaryDirectory() as tmp:
         for s in sources:
             pkg = manifest.name_of(s)
             tags = manifest.selected(s)
             if not tags:
-                print(f"  {pkg}: 没有够格的 release，跳过")
-                continue
+                print(f"  {pkg}: 没有够格的 release", file=sys.stderr)
+                return 1
             # tap 里一个包只有一份 formula，只能是最新版。想装旧版走 apt。
             tag = tags[0]
             checksums = manifest.fetch_sums(s["repo"], tag, Path(tmp))
             want = [f"{pkg}-{t}.tar.gz" for *_, t in PLATFORMS if f"{pkg}-{t}.tar.gz" in checksums]
+            if not want:
+                print(f"  {pkg} {tag}: 附件里没有能用的二进制包", file=sys.stderr)
+                return 1
             mirrors = gitee_mirrors(s["repo"], tag, want)
             text = render(s, tag, checksums, mirrors)
-            if text is None:
-                print(f"  {pkg} {tag}: 附件里没有能用的二进制包，跳过")
-                continue
             (outdir / f"{pkg}.rb").write_text(text)
             print(f"  {pkg} {tag}: 已生成（Gitee 镜像 {'有' if mirrors else '无'}）")
-            wrote += 1
-
-    if sources and not wrote:
-        print("一个 formula 都没生成", file=sys.stderr)
-        return 1
     return 0
 
 

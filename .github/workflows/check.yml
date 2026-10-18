@@ -1,0 +1,19 @@
+name: check
+
+on:
+  pull_request:
+    paths:
+      - packages.toml
+      - scripts/**
+      - site/**
+      - .github/workflows/build.yml
+      - .github/workflows/check.yml
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y apt-utils dpkg-dev
+      - run: python3 -m unittest discover -s tests
+      - run: python3 scripts/render-site.py site /tmp/preview --packages packages.toml --offline

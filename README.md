@@ -248,8 +248,8 @@ arm64 的机器会在列表里看到 amd64 的包，apt 直接判定「没有可
 
 **站点在构建时整个生成，不写死任何包名。** 页面上的版本、附件、校验和、更新日志
 全部来自 `packages.toml`、刚扫出来的 APT 索引和各项目的 Release —— 加一个包只改
-清单，它自己就会多出一页。渲染这一步不挂 `if: signed`：它不用 GPG，让没配 secret
-的 PR 也跑一遍，模板写坏当场就是红的。
+清单，它自己就会多出一页。PR 由 `check.yml` 离线渲染检查模板和文案；正式构建即使
+没配签名密钥也会渲染站点，但不会部署。
 
 **取不到的数据就整块不出。** `gh` 不可用、索引还没建、项目没写 `CHANGELOG.md`，
 对应的那一节直接不渲染，而不是渲染一个空壳。所以页面上「少了一块」永远是数据的
@@ -292,7 +292,7 @@ tap 那条线不需要任何 secret——formula 和 cask 都提交回本仓库�
 
 ```bash
 bash scripts/collect-debs.sh packages.toml debs
-bash scripts/build-deb-repo.sh debs public/deb <GPG密钥ID>
+bash scripts/build-deb-repo.sh debs public/deb <GPG密钥ID> packages.toml
 python3 scripts/render-formula.py packages.toml Formula
 python3 scripts/render-cask.py packages.toml Casks
 python3 scripts/render-site.py site public --packages packages.toml --deb public/deb
