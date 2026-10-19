@@ -1,9 +1,9 @@
 cask "funread" do
   arch arm: "arm64", intel: "amd64"
 
-  version "1.2.4"
-  sha256 arm:   "44d9254383caab2cbf2ec59410d66a53e0199e59f9b95cfcf6e60dba840c7f42",
-         intel: "1a89af429173f3c305856c0c7b0f106a92503ec5e67b855ddfd2f6777b518ed3"
+  version "1.2.5"
+  sha256 arm:   "6dcb85f80758ffe61893ce8580cc894600f309d38d83f430e2869bfc63da5566",
+         intel: "ed440e705d7490af52e9458a5cb246e1886c81a15418eff59ef7abb61818292f"
 
   url "https://github.com/farfarfun/funread-web/releases/download/v#{version}/funread-#{version}-macos-#{arch}.dmg"
   name "funread"
