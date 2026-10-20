@@ -1,4 +1,4 @@
-# fungame-client 的包页文案。格式见 docs/package-spec.md。
+# fungame 的包页文案。格式见 docs/package-spec.md。
 #
 # 这一份对应 farfarfun-game/fungame-client 打出来的桌面应用（deb / DMG）和 Android APK。
 # 它是 FunGame 的封装壳，不是游戏本体：壳只加载一个可配置的服务地址。
@@ -6,8 +6,8 @@
 tagline.zh = "FunGame 的多端封装壳：一个可配置的服务地址，打开就是游戏大厅。"
 tagline.en = "The multi-platform shell for FunGame: one configurable server address, and the game lobby opens."
 
-description.zh = "fungame-client 把 FunGame 的 Web 版本装进桌面（macOS、Linux）和 Android 应用里。壳本身不含业务逻辑，也不打包前端资源，只做一件事：打开一个可配置的服务地址，默认是 https://fungame.farfarfun.com。导航被限制在该地址的同源范围内，外部链接交给系统浏览器。"
-description.en = "fungame-client wraps the FunGame web app as a desktop (macOS, Linux) and Android application. The shell carries no business logic and bundles no front-end assets; it does one thing — open a configurable server address, https://fungame.farfarfun.com by default. Navigation is confined to that origin and external links open in the system browser."
+description.zh = "FunGame 桌面与 Android 客户端把 FunGame 的 Web 版本装进桌面（macOS、Linux）和 Android 应用里。壳本身不含业务逻辑，也不打包前端资源，只做一件事：打开一个可配置的服务地址，默认是 https://fungame.farfarfun.com。导航被限制在该地址的同源范围内，外部链接交给系统浏览器。"
+description.en = "The FunGame apps wrap the FunGame web app as a desktop (macOS, Linux) and Android application. The shell carries no business logic and bundles no front-end assets; it does one thing — open a configurable server address, https://fungame.farfarfun.com by default. Navigation is confined to that origin and external links open in the system browser."
 
 [[features]]
 title.zh = "一个地址"

@@ -105,8 +105,9 @@ bundle_id = "com.farfarfun.funclash"
 
 [[source]]
 repo = "farfarfun-game/fungame-client"
+name = "fungame"
 keep = 2
-min_version = "0.1.0"
+min_version = "0.1.1"
 cli = false
 
 [source.cask]
