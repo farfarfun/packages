@@ -104,6 +104,18 @@ min_macos = "monterey"
 bundle_id = "com.farfarfun.funclash"
 
 [[source]]
+repo = "farfarfun-game/fungame-client"
+keep = 2
+min_version = "0.1.0"
+cli = false
+
+[source.cask]
+app = "FunGame"
+desc = "Desktop shell for FunGame that opens a configurable server address"
+min_macos = "monterey"
+bundle_id = "com.farfarfun.fungame"
+
+[[source]]
 repo = "farfarfun/funread-web"
 # 仓库名带 -web 是因为它同时是 npm 包 @farfarfun/funread-web 的源码，而它打出来的
 # 桌面客户端对用户就叫 funread：deb 的 Package 字段、Tauri 的 productName、装进
