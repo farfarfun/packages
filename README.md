@@ -148,8 +148,11 @@ desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offlin
 
 **真的只改这一个文件**：三个装机验证（apt、formula、cask）和站点（包列表、每个包
 自己那一页）都是按这张表遍历的，不用回去改 workflow，也不用改页面。当前收了三个
-能装的包（`fundeploy`、`funget`、`funclash`）和四个 uTools 插件（`utools-funotp`、
-`utools-funlink`、`utools-funchat`、`utools-fundoc`）。
+能装的包（`fundeploy`、`funget`、`funclash`）和五个 uTools 插件（`utools-funotp`、
+`utools-funlink`、`utools-funchat`、`utools-fundoc`、`utools-funcalendar`）。
+
+[时光常伴 FunCalendar](https://farfarfun.github.io/packages/utools-funcalendar/) 提供离线双历、
+节气与黄历宜忌查询；当前可从源码构建，尚未发布正式 UPX 安装包。
 
 前提是那个项目的 release 附件按约定命名，并且带一份 `SHA256SUMS`：
 

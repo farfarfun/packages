@@ -1,0 +1,62 @@
+name.zh = "时光常伴"
+name.en = "FunCalendar"
+
+tagline.zh = "阳历、农历、节气与黄历宜忌，一页看清每一个日子。"
+tagline.en = "Gregorian dates, the Chinese lunar calendar, solar terms and a traditional almanac in one view."
+
+description.zh = "时光常伴 FunCalendar 是一款完全离线的 uTools 日历插件，支持 1901–2100 年阳历、农历、闰月、传统节日与二十四节气查询，按嫁娶、入宅、开市等事项筛选日期。提供浅色、深色和跟随系统主题；黄历宜忌来自 lunar-typescript，仅作民俗参考。"
+description.en = "FunCalendar is a fully offline uTools plugin covering Gregorian and Chinese lunar dates, leap months, festivals and solar terms from 1901 to 2100. Filter dates by traditional activities and switch between light, dark and system themes. Almanac entries come from lunar-typescript and are cultural references only."
+
+[[features]]
+title.zh = "双历同屏"
+title.en = "Two calendars together"
+text.zh = "阳历与农历同屏显示，标注闰月、节日和节气。选择年月、输入日期或使用方向键快速浏览。"
+text.en = "See Gregorian and lunar dates together, including leap months, festivals and solar terms. Browse by month, type a date or use the arrow keys."
+
+[[features]]
+title.zh = "按事择吉"
+title.en = "Filter by activity"
+text.zh = "查看每日宜忌，按嫁娶、入宅搬家、开市、出行、动土筛选当月日期。黄道日与事项宜忌分别筛选，仅作民俗参考。"
+text.en = "View daily almanac entries and filter dates for weddings, moving, opening a business, travel or construction. Auspicious-day classifications and activity filters are separate cultural references."
+
+[[features]]
+title.zh = "完全离线"
+title.en = "Fully offline"
+text.zh = "历法与宜忌数据随插件打包，无账号、无接口、无远程字体；仅在本机保存主题偏好。"
+text.en = "Calendar data ships with the plugin. No account, remote API or web fonts; only your theme preference is stored locally."
+
+[[features]]
+title.zh = "日夜相伴"
+title.en = "Light and dark"
+text.zh = "松绿色与暖白纸感，支持浅色、深色和跟随系统；窗口缩小时自动调整布局。"
+text.en = "Sage green and warm paper tones, with light, dark and system themes and a layout that adapts to smaller windows."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/home.png"
+dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/dark.png"
+alt.zh = "时光常伴的双历月视图与每日黄历"
+alt.en = "FunCalendar month view and daily almanac"
+caption.zh = "左侧双历月视图，右侧查看所选日期的农历、宜忌、冲煞和下个节气。"
+caption.en = "The dual-calendar month on the left, with the selected date's lunar details, almanac and next solar term on the right."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/auspicious.png"
+alt.zh = "时光常伴按嫁娶事项筛选当月日期"
+alt.en = "FunCalendar filtering dates for weddings"
+caption.zh = "选择一项事情，以「宜」标记当月符合条件的日期，点击即可查看每日详情。"
+caption.en = "Choose an activity to highlight matching dates, then select a day to read its details."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/mobile.png"
+alt.zh = "时光常伴的窄屏布局"
+alt.en = "FunCalendar in a narrow window"
+caption.zh = "窄屏下月历与黄历纵向排列，保持日期和宜忌完整可读。"
+caption.en = "In a narrow window, the calendar and almanac stack vertically so their details remain readable."
+
+[[install]]
+id = "source"
+title.zh = "开发者模式"
+title.en = "Developer mode"
+cmd = "git clone https://github.com/farfarfun-utools/utools-funcalendar.git\ncd utools-funcalendar\npnpm install\nsh build.sh"
+note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm。构建后在 uTools 开发者工具中导入 utools/plugin.json，输入「时光常伴」打开日历。当前可从源码构建，尚未发布正式 UPX 安装包。"
+note.en = "Requires Node.js 22.22.2 or newer and pnpm. After building, import utools/plugin.json in the uTools developer tools and launch FunCalendar. Source builds are available; a stable UPX package has not been published yet."

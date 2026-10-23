@@ -190,9 +190,9 @@ bundle_id = "com.farfarfun.funread"
 # uTools 插件。仓库在 farfarfun-utools 那个组织下，不在 farfarfun 下 —— repo 写全名就行，
 # 这张表本来就不假设是同一个组织。
 #
-# 四个插件共同的事实，不在每一节里重复：产物是一个 `.upx`（其实就是个 zip，根目录放
-# plugin.json），三个桌面系统共用同一个文件，装法是拖进 uTools 窗口；数据都存在 uTools
-# 自己的 dbStorage 里。keep 对它们只影响页面上「版本」那一节列几行 —— 插件的包不进
+# 插件正式发布时的产物是一个 `.upx`（其实就是个 zip，根目录放 plugin.json），三个
+# 桌面系统共用同一个文件，装法是拖进 uTools 窗口；存储方式见各插件说明。
+# keep 对它们只影响页面上「版本」那一节列几行 —— 插件的包不进
 # APT pool，不占 Pages 那 1 GB。
 # ---------------------------------------------------------------------------------------
 
@@ -232,3 +232,11 @@ keep = 3
 [source.utools]
 app = "文档笔记 FunDoc"
 desc = "Local Markdown notes with LaTeX formulas, a multi-level outline and cross-device sync"
+
+[[source]]
+repo = "farfarfun-utools/utools-funcalendar"
+keep = 3
+
+[source.utools]
+app = "时光常伴"
+desc = "Offline Gregorian and Chinese lunar calendar with solar terms, almanac and auspicious date filtering"
