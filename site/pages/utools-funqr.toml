@@ -1,0 +1,61 @@
+name.zh = "码上生花"
+name.en = "FunQR"
+
+tagline.zh = "文字与二维码轻松互转，让每次分享都多一点美好。"
+tagline.en = "Turn text into beautiful QR codes, and QR images back into text."
+
+description.zh = "码上生花 FunQR 是一款完全离线的 uTools 二维码工具。支持文字、网址生成二维码，通过图片、粘贴或截图识别原始文本，提供配色、渐变、三种码点和中心 Logo 美化，可导出 PNG / SVG 或复制图片。暖白与紫藤色界面，支持深色与跟随系统主题。"
+description.en = "FunQR is an offline uTools plugin for creating and reading QR codes. Encode text or URLs, decode an image, clipboard paste or screenshot, and customise colours, gradients, module shapes and a centre logo. Export PNG or SVG, or copy an image, in a warm purple interface with light, dark and system themes."
+
+[[features]]
+title.zh = "双向互转"
+title.en = "Encode and decode"
+text.zh = "输入文字或网址生成二维码；选择、拖入、粘贴图片或在 uTools 中截图识别，复制文本或继续美化。保留原始空白、换行、中文与 Emoji。"
+text.en = "Create a QR code from text or a URL. Pick, drop or paste an image, or capture your screen in uTools, then copy the decoded text or generate a new code. Whitespace, line breaks, Chinese and emoji are preserved."
+
+[[features]]
+title.zh = "为方寸添色"
+title.en = "Make it your own"
+text.zh = "六套精选配色，方块、圆角、圆点三种码点，双色渐变与中心 Logo；支持自定义码点和背景颜色。"
+text.en = "Six colour palettes, square, rounded or dotted modules, two-colour gradients and a centre logo. Choose custom foreground and background colours."
+
+[[features]]
+title.zh = "校验后再导出"
+title.en = "Checked before export"
+text.zh = "生成后反向识别并核对原文，通过后才能导出 PNG / SVG 或复制图片。PNG 提供 512、1024、2048 px；印刷前仍建议用实际设备试扫。"
+text.en = "Each generated code is decoded locally and checked against its source before export or copying. Choose 512, 1024 or 2048 px PNG, or SVG. Test with your actual scanner before printing."
+
+[[features]]
+title.zh = "完全离线"
+title.en = "Fully offline"
+text.zh = "图片与文本均在本机处理，无账号、无上传、无内容历史，仅保存主题偏好。识别结果作为文本展示，不会自动打开链接。"
+text.en = "Images and text stay on your device. No account, uploads or saved content history; only your theme preference is persisted. Decoded links are displayed as text and never opened automatically."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/styled.png"
+dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/dark.png"
+alt.zh = "码上生花的二维码美化界面"
+alt.en = "FunQR styling a QR code"
+caption.zh = "文字输入、配色与码点设置、实时预览和导出同屏呈现。"
+caption.en = "Text, colours, module shapes, live preview and export in one view."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/scan.png"
+alt.zh = "码上生花从图片识别原始文本"
+alt.en = "FunQR decoding text from an image"
+caption.zh = "拖入或粘贴图片，识别结果可复制、保存文本或转回二维码。"
+caption.en = "Drop or paste an image, then copy or save its text, or turn it into a new QR code."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/home.png"
+alt.zh = "码上生花的浅色生成界面"
+alt.en = "FunQR in light mode"
+caption.zh = "暖白纸感与紫藤色，让文字分享有一点设计感。"
+caption.en = "Warm paper tones and soft purple colours for everyday sharing."
+
+[[install]]
+id = "source"
+title = "开发者模式 / Source"
+cmd = "git clone https://github.com/farfarfun-utools/utools-funqr.git\ncd utools-funqr\npnpm install\nsh build.sh"
+note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm。构建后在 uTools 开发者工具中导入 utools/plugin.json，输入「码上生花」或「扫码」。当前提供源码构建，尚未发布正式 UPX 安装包。单次生成最多 1200 UTF-8 字节，图片上限 20 MB / 2400 万像素，每次识别一个二维码。"
+note.en = "Requires Node.js 22.22.2 or newer and pnpm. Build and import utools/plugin.json into the uTools developer tools, then launch FunQR. Source builds are available; a stable UPX package has not been published yet. Generation is limited to 1200 UTF-8 bytes; images to 20 MB / 24 megapixels, with one QR code decoded at a time."

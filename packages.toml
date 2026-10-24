@@ -240,3 +240,11 @@ keep = 3
 [source.utools]
 app = "时光常伴"
 desc = "Offline Gregorian and Chinese lunar calendar with solar terms, almanac and auspicious date filtering"
+
+[[source]]
+repo = "farfarfun-utools/utools-funqr"
+keep = 3
+
+[source.utools]
+app = "码上生花"
+desc = "Offline QR code generation, image decoding and styling with colours, gradients, module shapes and logos"
