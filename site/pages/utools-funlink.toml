@@ -1,12 +1,12 @@
 # utools-funlink 的包页文案。格式见 docs/package-spec.md。
 
-name.zh = "网址收藏 FunLink"
+name.zh = "一链即达"
 name.en = "FunLink"
 
 tagline.zh = "把零散书签整理成网址导航：分类、拖拽排序、废纸篓，在 uTools 主搜索框里搜完直接打开。"
 tagline.en = "Turns scattered bookmarks into a navigable board — categories, drag-to-order and a recycle bin — searchable and openable straight from the uTools input box."
 
-description.zh = "FunLink 是一个 uTools 插件，把工作入口、开发文档和常用在线工具收成带分类的网址导航，支持拖拽排序、废纸篓恢复、站内搜索占位符，以及为每张卡片指定用哪个浏览器打开。数据存在本机，不需要账号。"
+description.zh = "一链即达 FunLink 是一个 uTools 插件，把工作入口、开发文档和常用在线工具收成带分类的网址导航，支持拖拽排序、废纸篓恢复、站内搜索占位符，以及为每张卡片指定用哪个浏览器打开。数据存在本机，不需要账号。"
 description.en = "FunLink is a uTools plugin that collects your work entry points, docs and online tools into a categorised bookmark board, with drag-to-order, a restorable recycle bin, in-site search placeholders and a per-card choice of browser. Data stays on your machine and needs no account."
 
 [[features]]

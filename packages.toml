@@ -203,7 +203,7 @@ keep = 3
 [source.utools]
 # 插件在 uTools 里的名字，就是 plugin.json 的 pluginName。和包名不一样是常态：包名是
 # 仓库名（utools-funotp），而用户在 uTools 里看到和搜到的是这个。
-app = "两步验证 FunOTP"
+app = "密钥随行"
 # 英文一句话简介。和 brew 的 desc 同一个用法：页面上没写标语时拿它顶上。
 desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offline"
 # 上架了 uTools 的「插件应用市场」就改成 true，页面上会多一条从商店装的说明。四个插件
@@ -214,7 +214,7 @@ repo = "farfarfun-utools/utools-funlink"
 keep = 3
 
 [source.utools]
-app = "网址收藏 FunLink"
+app = "一链即达"
 desc = "Collect, categorise and search your bookmarks, and open them in the browser you pick"
 
 [[source]]
@@ -222,7 +222,7 @@ repo = "farfarfun-utools/utools-funchat"
 keep = 3
 
 [source.utools]
-app = "好友聊天 FunChat"
+app = "言来语往"
 desc = "Chat with multiple AI personas in uTools, with a built-in character market and exportable topics"
 
 [[source]]
@@ -230,7 +230,7 @@ repo = "farfarfun-utools/utools-fundoc"
 keep = 3
 
 [source.utools]
-app = "文档笔记 FunDoc"
+app = "落笔成章"
 desc = "Local Markdown notes with LaTeX formulas, a multi-level outline and cross-device sync"
 
 [[source]]

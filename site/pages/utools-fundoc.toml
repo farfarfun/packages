@@ -1,12 +1,12 @@
 # utools-fundoc 的包页文案。格式见 docs/package-spec.md。
 
-name.zh = "文档笔记 FunDoc"
+name.zh = "落笔成章"
 name.en = "FunDoc"
 
 tagline.zh = "uTools 里的 Markdown 文档：多层目录、三种编辑模式、LaTeX 公式完全离线渲染。"
 tagline.en = "Markdown notes inside uTools: a nested outline, three editing modes and LaTeX formulas rendered fully offline."
 
-description.zh = "FunDoc 是一个 uTools 插件，用多层目录组织文稿，提供所见即所得、即时渲染和左右分屏三种编辑模式。KaTeX 引擎与字体全部打进插件，断网照样渲染公式；文档存在 uTools 数据库里，开启同步后跟着设备走。"
+description.zh = "落笔成章 FunDoc 是一个 uTools 插件，用多层目录组织文稿，提供所见即所得、即时渲染和左右分屏三种编辑模式。KaTeX 引擎与字体全部打进插件，断网照样渲染公式；文档存在 uTools 数据库里，开启同步后跟着设备走。"
 description.en = "FunDoc is a uTools plugin that organises notes in a nested tree and offers three editing modes: WYSIWYG, instant rendering and side-by-side. The KaTeX engine and its fonts ship inside the plugin, so formulas render with no network at all. Documents live in the uTools database and follow your devices once sync is on."
 
 [[features]]

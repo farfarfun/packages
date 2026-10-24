@@ -133,7 +133,7 @@ repo = "farfarfun-utools/utools-funotp"
 keep = 3
 
 [source.utools]
-app = "两步验证 FunOTP"   # 插件在 uTools 里的名字，就是 plugin.json 的 pluginName
+app = "密钥随行"   # 插件在 uTools 里的名字，就是 plugin.json 的 pluginName
 desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offline"
 ```
 
@@ -148,8 +148,8 @@ desc = "Manage two-factor accounts locally and generate TOTP / HOTP codes offlin
 
 **真的只改这一个文件**：三个装机验证（apt、formula、cask）和站点（包列表、每个包
 自己那一页）都是按这张表遍历的，不用回去改 workflow，也不用改页面。当前收了三个
-能装的包（`fundeploy`、`funget`、`funclash`）和五个 uTools 插件（`utools-funotp`、
-`utools-funlink`、`utools-funchat`、`utools-fundoc`、`utools-funcalendar`）。
+能装的包（`fundeploy`、`funget`、`funclash`）和六个 uTools 插件（`utools-funotp`、
+`utools-funlink`、`utools-funchat`、`utools-fundoc`、`utools-funcalendar`、`utools-funqr`）。
 
 [时光常伴 FunCalendar](https://farfarfun.github.io/packages/utools-funcalendar/) 提供离线双历、
 节气与黄历宜忌查询；当前可从源码构建，尚未发布正式 UPX 安装包。

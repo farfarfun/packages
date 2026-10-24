@@ -1,12 +1,12 @@
 # utools-funchat 的包页文案。格式见 docs/package-spec.md。
 
-name.zh = "好友聊天 FunChat"
+name.zh = "言来语往"
 name.en = "FunChat"
 
 tagline.zh = "把一屋子 AI 好友装进 uTools：多角色切换、内置角色市场、话题回溯、一键导出。"
 tagline.en = "A room full of AI friends inside uTools — switch personas, pick from the built-in market, revisit past topics and export in one click."
 
-description.zh = "FunChat 是一个 uTools 插件，每个「AI 好友」是一套独立的角色设定、模型参数和聊天记录。内置 300 个开箱即用的角色，支持 uTools 内置 AI 和任意 OpenAI 兼容接口，会话和配置默认存在本机。"
+description.zh = "言来语往 FunChat 是一个 uTools 插件，每个「AI 好友」是一套独立的角色设定、模型参数和聊天记录。内置 300 个开箱即用的角色，支持 uTools 内置 AI 和任意 OpenAI 兼容接口，会话和配置默认存在本机。"
 description.en = "FunChat is a uTools plugin where each “AI friend” carries its own persona, model settings and history. It ships with 300 ready-made characters, works with the built-in uTools AI or any OpenAI-compatible endpoint, and keeps conversations and settings on your machine by default."
 
 [[features]]

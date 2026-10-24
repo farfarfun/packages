@@ -1,15 +1,15 @@
 # utools-funotp 的包页文案。格式见 docs/package-spec.md。
 #
-# 页面上写「两步验证 FunOTP」而不是 utools-funotp：后者是仓库名，而没有任何一条命令
+# 页面上写「密钥随行」而不是 utools-funotp：后者是仓库名，而没有任何一条命令
 # 里会出现它 —— 用户在 uTools 里看到和搜到的是前者。
 
-name.zh = "两步验证 FunOTP"
+name.zh = "密钥随行"
 name.en = "FunOTP"
 
 tagline.zh = "uTools 里的两步验证器：本地离线算 TOTP / HOTP 动态码，主搜索框搜账号回车就复制。"
 tagline.en = "A two-factor authenticator inside uTools: TOTP / HOTP codes computed offline, searchable straight from the main input box."
 
-description.zh = "FunOTP 是一个 uTools 插件，在本机离线生成兼容 Google Authenticator 的动态验证码，支持 TOTP、HOTP 与 Steam 令牌，可用截屏扫码、图片、剪贴板或 otpauth 链接添加账号，并支持本地与 WebDav 备份。"
+description.zh = "密钥随行 FunOTP 是一个 uTools 插件，在本机离线生成兼容 Google Authenticator 的动态验证码，支持 TOTP、HOTP 与 Steam 令牌，可用截屏扫码、图片、剪贴板或 otpauth 链接添加账号，并支持本地与 WebDav 备份。"
 description.en = "FunOTP is a uTools plugin that generates Google Authenticator–compatible one-time codes locally and offline. It supports TOTP, HOTP and Steam tokens, adds accounts by screen capture, image, clipboard or otpauth link, and backs up locally or over WebDav."
 
 [[features]]
