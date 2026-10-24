@@ -1,32 +1,32 @@
 class Funbuild < Formula
   desc "One-command release pipeline for Python, frontend, Flutter and Rust repos"
   homepage "https://github.com/farfarfun/funbuild"
-  version "1.6.108"
+  version "1.6.109"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-aarch64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-aarch64-apple-darwin.tar.gz"
-      sha256 "f50d7cfe3894f99d5f1783a6aea10359e95d5f407532539a570bf6fd381fd268"
+      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-aarch64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-aarch64-apple-darwin.tar.gz"
+      sha256 "6213ec2d9a91d33396a97ea05f2bd07439c29d8fe835ac4f670af9834e9b7277"
     end
     on_intel do
-      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-x86_64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-x86_64-apple-darwin.tar.gz"
-      sha256 "52a471dda95ea4c0fbf9f64af989fd3f0442f4b2a2346d276c0dfdc86aa454f7"
+      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-x86_64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-x86_64-apple-darwin.tar.gz"
+      sha256 "4674ef62f051f6893631ad77ef13e4a366c3bf2a643f870ea879bcfcbb07a295"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-aarch64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-aarch64-unknown-linux-musl.tar.gz"
-      sha256 "00d8c52b04a601f9add4da2e7248961e34f4ec60720a5032a848a11f803b41a4"
+      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-aarch64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-aarch64-unknown-linux-musl.tar.gz"
+      sha256 "8318b204deb3cafe47e4388af12d87f0140370f1fcb3c35fc4c8782855795ec4"
     end
     on_intel do
-      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-x86_64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.108/funbuild-x86_64-unknown-linux-musl.tar.gz"
-      sha256 "abc1c7a59cc4a3ebcf709112dbafecbef9318d8d49edcd6da8f36807b5eeb535"
+      url "https://github.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-x86_64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funbuild/releases/download/v1.6.109/funbuild-x86_64-unknown-linux-musl.tar.gz"
+      sha256 "9a2311d1c8e2effc315e569f49d2c95a290afb7d1ab49609b4b56f1353c20cd0"
     end
   end
 
