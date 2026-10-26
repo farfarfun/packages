@@ -5,7 +5,7 @@ farfarfun 所有项目共用的包仓库。**用户只加一次源**，以后新
 
 站点: <https://farfarfun.github.io/packages>（每个包还有自己的一页，中英各一份）
 
-普通下载链接直接指向各项目的 GitHub Release，安装包只由项目仓库保存。只有选择加入 APT 的项目会把 `.deb` 复制到 Pages 软件源；只需要下载导航的项目设置 `apt = false`，例如 [funtools](https://farfarfun.github.io/packages/funtools/)。
+普通下载链接直接指向各项目的 GitHub Release，安装包只由项目仓库保存。只有选择加入 APT 的项目会把 `.deb` 复制到 Pages 软件源；只需要下载导航的项目设置 `apt = false`。
 
 接一个新项目进来：**[docs/package-spec.md](docs/package-spec.md)** —— 发布约定、
 清单字段、页面文案格式和自检命令都在里面，那份文档可以直接丢给项目维护者。
@@ -103,7 +103,7 @@ apt 那半边没有这条路：deb 树是 Actions 部署到 GitHub Pages 的，�
 
 ```toml
 [[source]]
-repo = "farfarfun/funtools"
+repo = "your-org/your-app"
 keep = 3
 apt = false
 cli = false
