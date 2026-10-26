@@ -21,7 +21,7 @@ class DownloadLinksTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.manifest = self.root / "packages.toml"
-        self.manifest.write_text('[[source]]\nrepo = "farfarfun/funtools"\napt = false\ncli = false\n')
+        self.manifest.write_text('[[source]]\nrepo = "example/desktop-app"\napt = false\ncli = false\n')
 
     def test_existing_channels_keep_their_apt_behavior(self):
         self.assertTrue(manifest.in_apt({"repo": "org/cli"}))
@@ -30,11 +30,11 @@ class DownloadLinksTests(unittest.TestCase):
         self.assertFalse(manifest.in_apt({"repo": "org/plugin", "utools": {}}))
 
     def test_download_page_uses_release_urls_even_with_stale_apt_index(self):
-        names = ["funtools_0.1.1_amd64.deb", "funtools_0.1.1_x64-setup.exe", "funtools-0.1.1-macos-arm64.dmg", "SHA256SUMS"]
+        names = ["desktop-app_0.1.1_amd64.deb", "desktop-app_0.1.1_x64-setup.exe", "desktop-app-0.1.1-macos-arm64.dmg", "SHA256SUMS"]
         assets = [{"name": name, "size": 123, "sha256": "a" * 64,
-                   "url": f"https://github.com/farfarfun/funtools/releases/download/v0.1.1/{name}"}
+                   "url": f"https://github.com/example/desktop-app/releases/download/v0.1.1/{name}"}
                   for name in names]
-        for index in ({}, {"funtools": [{"version": "0.0.1"}]}):
+        for index in ({}, {"desktop-app": [{"version": "0.0.1"}]}):
             with self.subTest(index=index), \
                     patch.object(sitedata, "packages_index", return_value=index), \
                     patch.object(sitedata, "releases_of", return_value=[{"tag": "v0.1.1", "date": "2026-10-26"}]), \
@@ -51,7 +51,7 @@ class DownloadLinksTests(unittest.TestCase):
                 page = renderer.render_package(site, pkg, *language)
                 self.assertNotIn('href="#install"', page)
                 self.assertNotIn('id="install"', page)
-                self.assertNotIn("sudo apt install funtools", page)
+                self.assertNotIn("sudo apt install desktop-app", page)
                 self.assertIn('class="btn primary" href="#download"', page)
                 for asset in assets:
                     self.assertIn(asset["url"], page)
@@ -62,4 +62,4 @@ class DownloadLinksTests(unittest.TestCase):
         page = renderer.render_package(site, data["packages"][0], *renderer.LANGS[0])
         self.assertNotIn('id="install"', page)
         self.assertNotIn('href="#install"', page)
-        self.assertIn('class="btn primary" href="https://github.com/farfarfun/funtools/releases"', page)
+        self.assertIn('class="btn primary" href="https://github.com/example/desktop-app/releases"', page)

@@ -70,12 +70,6 @@ desc = "One-command release pipeline for Python, frontend, Flutter and Rust repo
 checks = [["--help", "build"]]
 
 [[source]]
-repo = "farfarfun/funtools"
-keep = 3
-apt = false
-cli = false
-
-[[source]]
 repo = "farfarfun/funclash"
 # 一个 .deb 45 MB，两个架构，所以 keep=2 就占了 180 MB，而 Pages 整站上限 1 GB。
 # 留两版而不是三版：能回退是留多版的全部理由，两版就够用，第三版只是再占 90 MB。
