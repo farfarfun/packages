@@ -803,19 +803,20 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
         if needs_setup
         else ""
     )
-    out.append(
-        site.section(
-            "sec-install.html",
-            {
-                **ctx,
-                "num": nxt(),
-                "sub": site.t("installSubOne" if count == 1 else "installSub", count=count),
-                "lead": site.t("installLeadOne" if count == 1 else "installLead"),
-                "links": Raw(setup_link),
-                "panes": Raw(panes),
-            },
+    if count:
+        out.append(
+            site.section(
+                "sec-install.html",
+                {
+                    **ctx,
+                    "num": nxt(),
+                    "sub": site.t("installSubOne" if count == 1 else "installSub", count=count),
+                    "lead": site.t("installLeadOne" if count == 1 else "installLead"),
+                    "links": Raw(setup_link),
+                    "panes": Raw(panes),
+                },
+            )
         )
-    )
 
     downloads = pkg["downloads"]
     if shows_downloads(pkg):
@@ -999,6 +1000,7 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
         features = f'<ul class="facts">{rows}</ul>'
 
     has_downloads = shows_downloads(pkg)
+    has_install = bool(pkg["channels"] or pkg["page"].get("install"))
     shown = display_name(pkg, lang)
     ctx.update(
         {
@@ -1016,9 +1018,12 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
             or pkg["desc"],
             "chips": Raw(channel_chips(site, pkg)),
             "features": Raw(features),
+            "contentAnchor": "#install" if has_install else ("#download" if has_downloads else "#top"),
+            "primaryHref": "#install" if has_install else ("#download" if has_downloads else release_url),
+            "primaryLabel": site.t("pkgCtaInstall" if has_install else "pkgCtaDownload"),
             "ctaDownload": Raw(
                 f'<a class="btn quiet" href="#download">{esc(site.t("pkgCtaDownload"))}</a>'
-                if has_downloads
+                if has_install and has_downloads
                 else ""
             ),
         }
@@ -1047,7 +1052,7 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
             "sameAs": [pkg["url"]],
         }
     )
-    nav = [("#install", "navInstall")]
+    nav = [("#install", "navInstall")] if has_install else []
     if has_downloads:
         nav.append(("#download", "navDownload"))
     if shows_versions(pkg):

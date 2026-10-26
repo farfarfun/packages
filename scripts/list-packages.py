@@ -5,7 +5,7 @@
 
 每行 `包名<TAB>第二列`，用 TAB 分隔是为了 `while IFS=$'\t' read` 直接读。
 不带开关就是 apt 那条线，它收所有发 .deb 的项目（带 `[source.utools]` 的除外 ——
-那是 uTools 插件，不进 apt）；`--brew` 只列带 `[source.brew]` 的，`--cask` 只列带
+那是 uTools 插件，不进 apt；apt = false 的项目也跳过）；`--brew` 只列带 `[source.brew]` 的，`--cask` 只列带
 `[source.cask]` 的。uTools 插件没有对应的开关：CI 装不了它，装机验证也就没有它
 那一条线。
 

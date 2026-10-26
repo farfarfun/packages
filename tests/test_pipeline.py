@@ -93,6 +93,22 @@ class PipelineTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0, result.stdout)
                 self.assertEqual(old.read_text(), "old version")
 
+    def test_download_only_skips_apt_collection_and_verification(self):
+        manifest = self.path / "packages.toml"
+        manifest.write_text(
+            '[[source]]\nrepo = "org/good"\n'
+            '[[source]]\nrepo = "org/bad"\napt = false\ncli = false\n'
+        )
+        selected = self.run_script("select-releases.py", manifest, failure="list")
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertEqual(selected.stdout.strip(), "org/good\tv1.0.0")
+        listed = self.run_script("list-packages.py", manifest)
+        self.assertEqual(listed.stdout.strip(), "good\tgood")
+        out = self.path / "downloads"
+        collected = self.run_script("collect-debs.sh", manifest, out, failure="download")
+        self.assertEqual(collected.returncode, 0, collected.stderr)
+        self.assertEqual([p.name for p in out.iterdir()], ["good_1.0.0_amd64.deb"])
+
     @unittest.skipUnless(all(shutil.which(c) for c in ("dpkg-deb", "dpkg-scanpackages", "apt-ftparchive")), "APT tools unavailable")
     def test_apt_rejects_package_missing_arm64(self):
         manifest = self.path / "packages.toml"
