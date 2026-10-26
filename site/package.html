@@ -4,7 +4,7 @@
 <!-- include head.html -->
 </head>
 <body>
-  <a class="skip" href="#install">{{t.skip}}</a>
+  <a class="skip" href="{{contentAnchor}}">{{t.skip}}</a>
 <!-- include nav.html -->
 
   <main id="top">
@@ -20,7 +20,7 @@
         <p class="lede">{{tagline}}</p>
         <ul class="chips">{{%chips}}</ul>
         <div class="cta">
-          <a class="btn primary" href="#install">{{t.pkgCtaInstall}}</a>
+          <a class="btn primary" href="{{primaryHref}}">{{primaryLabel}}</a>
 {{%ctaDownload}}
         </div>
 {{%features}}

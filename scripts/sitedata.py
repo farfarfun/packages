@@ -455,8 +455,8 @@ def collect(
         # 见 collect-debs.sh）。没有索引时（本地预览、或者上一步跳过了）只能按清单猜，
         # 而清单已经知道哪些项目不走 apt —— 不问它的话本地渲染出来的页面上会写一条
         # `sudo apt install utools-funotp`，而那条命令在任何机器上都装不上。
-        in_apt = name in index if index else manifest.in_apt(source)
-        channels = [c for c in CHANNELS if (c == "apt" and in_apt) or c in source]
+        in_apt = manifest.in_apt(source) and (name in index if index else True)
+        channels = [c for c in CHANNELS if (in_apt if c == "apt" else c in source)]
 
         history = [] if offline else releases_of(source["repo"])
         floor = source.get("min_version")
@@ -472,7 +472,7 @@ def collect(
 
         # 版本一节优先用索引：它是 apt 真能装到的那几版。索引不在（本地渲染、或者
         # 还没跑 build-deb-repo.sh）就退到清单选中的 tag，页面结构不塌。
-        if name in index:
+        if in_apt and name in index:
             versions = index[name][:keep]
             for v in versions:
                 # 索引里的版本和 tag 不是逐字相等的：funclash 的 deb 把构建号留在

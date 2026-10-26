@@ -110,6 +110,16 @@ e0980a95...b7efd7  fundeploy-aarch64-apple-darwin.tar.gz
 
 ## 2. 在 `packages.toml` 里加一节
 
+如果只需要展示各平台的 Release 下载链接，设置 `apt = false`，不配置 `brew` / `cask`。站点会显示下载与版本信息，不下载安装包、不生成 APT 安装命令。`cli = false` 可将桌面项目标记为 GUI：
+
+```toml
+[[source]]
+repo = "farfarfun/funtools"
+keep = 3
+apt = false
+cli = false
+```
+
 ```toml
 [[source]]
 repo = "farfarfun/funget"
@@ -151,6 +161,7 @@ store = true                    # 可选，上架了「插件应用市场」才�
 | `keep` | 索引里留最近几版 | 3 |
 | `min_version` | 收版本的下限。管的是「收哪几版进源」，不管「这个项目有过哪些版本」—— 页面上的更新日志不受它影响 | 无 |
 | `cli` | 装出来有没有能跑 `--version` 的命令行入口 | `true` |
+| `apt` | 是否将 `.deb` 收入 APT 软件源；`false` 时仅索引 Release，不复制安装包 | `true`（uTools 插件始终不进 APT） |
 | `[source.brew]` | 有这一节才出 formula | 无 |
 | `[source.cask]` | 有这一节才出 cask | 无 |
 | `[source.utools]` | 有这一节就是 uTools 插件，见下 | 无 |
