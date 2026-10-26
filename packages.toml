@@ -248,3 +248,11 @@ keep = 3
 [source.utools]
 app = "码上生花"
 desc = "Offline QR code generation, image decoding and styling with colours, gradients, module shapes and logos"
+
+[[source]]
+repo = "farfarfun-utools/utools-funcalc"
+keep = 3
+
+[source.utools]
+app = "算有所得"
+desc = "Offline calculation notebook with variables, matrices, LaTeX rendering and persistent history"
