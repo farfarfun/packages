@@ -1,8 +1,8 @@
 tagline.zh = "随时呼出，即刻行动。Rust 驱动的本地桌面启动器与工具箱。"
 tagline.en = "A shortcut away from your apps and tools. A local-first desktop launcher powered by Rust."
 
-description.zh = "funtools 支持 Linux、Windows 和 macOS，提供全局快捷呼出、应用搜索启动、收藏、剪贴板历史，以及计算器、JSON、Base64 和时间戳工具。无需账号，数据保存在本地。"
-description.en = "funtools brings global shortcuts, application search and launch, favorites, clipboard history, and calculator, JSON, Base64 and timestamp tools to Linux, Windows and macOS. No account required; data stays local."
+description.zh = "funtools 支持 Linux、Windows 和 macOS，提供全局快捷呼出、应用搜索启动、收藏、剪贴板历史，以及七个内置插件和独立插件仓库。无需账号，数据保存在本地。"
+description.en = "funtools brings global shortcuts, application search and launch, favorites, clipboard history, and seven built-in plugins backed by an independent plugin repository to Linux, Windows and macOS. No account required; data stays local."
 
 [[features]]
 title.zh = "快捷启动"
@@ -13,8 +13,8 @@ text.en = "Open with a global shortcut, search apps and tools, then press Enter.
 [[features]]
 title.zh = "常用工具"
 title.en = "Everyday tools"
-text.zh = "计算器、JSON 格式化与校验、Base64 编解码、时间戳转换，都在同一个窗口里。"
-text.en = "Calculator, JSON formatting and validation, Base64 encoding and decoding, and timestamp conversion in one window."
+text.zh = "计算器、JSON、Base64、时间戳、URL 编解码、UUID v4、SHA-256，全部由 Rust 执行。"
+text.en = "Calculator, JSON, Base64, timestamps, URL encoding, UUID v4 and SHA-256, all powered by Rust."
 
 [[features]]
 title.zh = "本地优先"
@@ -27,3 +27,9 @@ title.zh = "多平台分发"
 title.en = "Cross-platform packages"
 text.zh = "提供 Linux x64 / ARM64、Windows x64，以及 Apple Silicon / Intel Mac 安装包。"
 text.en = "Installers for Linux x64 and ARM64, Windows x64, and Apple Silicon and Intel Macs."
+
+[[features]]
+title.zh = "独立插件仓库"
+title.en = "Independent plugin catalog"
+text.zh = "在插件管理中刷新官方目录、安装或导入 JSON 清单，按需启用、停用和卸载。已安装插件离线可用。"
+text.en = "Refresh the official catalog, install or import JSON manifests, and enable, disable or remove plugins. Installed plugins work offline."
