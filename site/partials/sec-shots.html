@@ -1,4 +1,4 @@
-    <section class="section wrap product-screens" id="screens" aria-labelledby="screens-title">
+    <section class="section wrap product-screens" id="screens" aria-labelledby="screens-title" data-select="{{t.shotsSelect}}">
       <div class="screens-heading">
         <h2 id="screens-title">{{t.shotsTitle}}</h2>
         <p class="section-sub">{{t.shotsHint}}</p>
@@ -6,4 +6,11 @@
       <div class="{{shotsClass}}">
 {{%figures}}
       </div>
+      <div class="gallery-tools" hidden>
+        <button class="tool gallery-prev" type="button" aria-label="{{t.shotsPrev}}">←</button>
+        <output class="gallery-count" aria-live="off"></output>
+        <button class="tool gallery-next" type="button" aria-label="{{t.shotsNext}}">→</button>
+        <button class="tool gallery-play" type="button" data-play="{{t.shotsPlay}}" data-pause="{{t.shotsPause}}">{{t.shotsPause}}</button>
+      </div>
+      <div class="gallery-thumbs" role="group" aria-label="{{t.shotsThumbnails}}" hidden></div>
     </section>

@@ -109,6 +109,19 @@ jobs:
             --deb public/deb \
             --fingerprint "${{ steps.key.outputs.fingerprint }}"
 
+      - name: Check screenshot gallery in Chrome
+        run: |
+          node --check site/assets/app.js
+          python3 -m pip install playwright==1.55.0
+          python3 tests/browser_gallery.py public
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gallery-screenshots
+          path: /tmp/gallery-screenshots/
+          if-no-files-found: ignore
+
       - uses: actions/upload-pages-artifact@v3
         if: steps.config.outputs.signed == 'true'
         with:
