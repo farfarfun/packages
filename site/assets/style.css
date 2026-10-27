@@ -1690,10 +1690,6 @@ h2 {
   grid-column: auto;
 }
 
-.shots.pairs .shot.wide img {
-  max-height: min(42vh, 380px);
-}
-
 /* 竖图自己也有个上限：只有一张截图时列会铺满整个右列，而一张手机图放到 780px 宽
    没有任何意义 —— 它在手机上也没那么大。 */
 .shot.tall {
