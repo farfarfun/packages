@@ -39,7 +39,7 @@ def name_of(source: dict) -> str:
 def in_apt(source: dict) -> bool:
     """这个项目走不走 apt 那条线。
 
-    apt = false 的项目只索引 Release，不下载 .deb；uTools 插件也不进 APT。插件发的是 .upx，
+    apt = false 的项目只索引 Release，不下载 .deb；uTools 插件也不进 APT。插件发的是 .upxs，
     装法是拖进 uTools 窗口，apt 里根本没有它这个东西：收 release 的时候不用去翻它的
     附件，装机验证也不该对它 `apt-get install`（那个 job 对表里每一行都装一遍，不排
     掉就是必红）。

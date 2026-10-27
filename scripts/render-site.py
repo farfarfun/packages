@@ -473,7 +473,7 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
             # 个文件本身，用的还是下载区同一个文件行（名字、大小、校验和、下载）。
             app = pkg["app"] or name
             upx = next(
-                (f for p in pkg["downloads"]["platforms"] for f in p["files"] if f["kind"] == "UPX"),
+                (f for p in pkg["downloads"]["platforms"] for f in p["files"] if f["kind"] in ("UPXS", "UPX")),
                 None,
             )
             body = (
@@ -482,9 +482,9 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
                     + site.file_list([upx], by_arch=False)
                 )
                 if upx
-                # 还没发过版，或者这一版忘了传 .upx。不编一个下载链接出来，指到 Release
+                # 还没发过版，或者这一版忘了传 .upxs。不编一个下载链接出来，指到 Release
                 # 页去 —— 那边有没有东西是看得见的。提示语也要换一句：上面那句说的是
-                # 「下面这个 .upx」，而下面没有。摆成空状态那个框：这一格本来该有一个
+                # 「下面这个 .upxs」，而下面没有。摆成空状态那个框：这一格本来该有一个
                 # 文件行，一句飘着的灰字看着像页面没渲染完。
                 else '<div class="empty">'
                 + site.note_link(
@@ -550,7 +550,7 @@ def install_panes(site: Site, pkg: dict, home: str) -> tuple[str, int]:
 def shows_downloads(pkg: dict) -> bool:
     """下载一节出不出。导航上那一条和首屏那个按钮也跟着它走，三处必须是同一个答案。
 
-    有附件就出，但有一个例外：只带一个 .upx 的 uTools 插件。它的安装一节给出的就是那
+    有附件就出，但有一个例外：只带一个 .upxs 的 uTools 插件。它的安装一节给出的就是那
     个文件本身 —— 装法只有「下载再拖进窗口」这一种，没有命令 —— 再开一节把同一行列
     第二遍，看着像页面出了错。别的包不存在这个问题：它们的安装是一条命令，下载区是另
     一回事。
@@ -559,7 +559,7 @@ def shows_downloads(pkg: dict) -> bool:
     if not (downloads["platforms"] or downloads["other"]):
         return False
     if pkg["channels"] == ["utools"] and not downloads["other"]:
-        return any(f["kind"] != "UPX" for p in downloads["platforms"] for f in p["files"])
+        return any(f["kind"] not in ("UPXS", "UPX") for p in downloads["platforms"] for f in p["files"])
     return True
 
 
@@ -795,7 +795,7 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
         return f"{num:02d}"
 
     panes, count = install_panes(site, pkg, ctx["home"])
-    # 「加源」那条链接只对走 apt / brew 的包有意义。uTools 插件的装法是把 .upx 拖进
+    # 「加源」那条链接只对走 apt / brew 的包有意义。uTools 插件的装法是把 .upxs 拖进
     # 窗口，把人送到首页的三行命令那儿纯属添乱。
     needs_setup = any(channel in ("apt", "brew", "cask") for channel in pkg["channels"])
     setup_link = (

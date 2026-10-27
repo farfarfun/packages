@@ -43,5 +43,5 @@ caption.en = "Expressions, results and variables together, with searchable, reus
 id = "source"
 title = "源码构建 / Source"
 cmd = "git clone https://github.com/farfarfun-utools/utools-funcalc.git\ncd utools-funcalc\nsh build.sh"
-note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm 12。构建后在 uTools 开发者工具中载入 utools/plugin.json。也可在仓库最新成功的 GitHub Actions CI 中下载 utools-funcalc-plugin，解压后将 UPX 拖入 uTools；正式 Release 尚未发布。"
-note.en = "Requires Node.js 22.22.2 or newer and pnpm 12. Build, then load utools/plugin.json in uTools developer tools. Alternatively, download utools-funcalc-plugin from the latest successful CI run, extract it and drag the UPX into uTools. A stable release has not been published yet."
+note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm 12。构建后在 uTools 开发者工具中载入 utools/plugin.json。直接安装请下载本页的 .upxs 正式安装包，拖入 uTools，无需构建或解压。"
+note.en = "Requires Node.js 22.22.2 or newer and pnpm 12. Build, then load utools/plugin.json in uTools developer tools. To install directly, download the stable .upxs package on this page and drag it into uTools; no build or extraction is needed."

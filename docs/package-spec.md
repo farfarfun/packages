@@ -48,7 +48,7 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 | apt | `<包名>_<版本>_<架构>.deb` | `amd64`、`arm64` | 那个架构的机器在 `apt list` 里看不到这个包 |
 | formula | `<包名>-<target>.tar.gz` | 见下 | 少一个平台就不渲染那一块（不是错） |
 | cask | `<应用名>-<版本>-macos-<架构>.dmg` | `arm64`、`amd64` | **两个缺一个，整份 cask 都不生成** |
-| utools | `<包名>-<版本>.upx` | 没有架构 | 安装一节只剩一条指向 Release 的链接 |
+| utools | `<包名>-<版本>.upxs` | 没有架构 | 安装一节只剩一条指向 Release 的链接 |
 
 - `<包名>` 一律小写（Debian 对 `Package` 字段的要求），默认**等于 GitHub 仓库名**。
   不一样的话在 `packages.toml` 里写 `name`（见第 2 节）—— **能不写就不写**，多一个
@@ -56,7 +56,7 @@ release。**剩下的是在 [farfarfun/packages](https://github.com/farfarfun/pa
 - `<版本>` 不带 `v`。
 - `<应用名>` 是桌面应用的显示名，通常和包名不一样（`FunClash` 对 `funclash`）：
   它既是 DMG 名的前缀，也是装进 `/Applications` 的 `.app` 名。
-- `.upx` 是 uTools 插件包（其实就是个 zip，`plugin.json` 必须在压缩包根目录）。它不分
+- `.upxs` 是 uTools 插件包，由共享 `utools-devtools` 按 UPXS 格式打包；不能把 ZIP 改后缀当作安装包。它不分
   架构也不分平台：Windows、macOS、Linux 上是同一个文件，页面上归在「全平台」那一栏。
 - formula 的 target 认这四个：
   `aarch64-apple-darwin`、`x86_64-apple-darwin`、
@@ -95,7 +95,7 @@ e0980a95...b7efd7  fundeploy-aarch64-apple-darwin.tar.gz
 
 | 看什么 | 怎么认 |
 | --- | --- |
-| 扩展名定平台 | `.apk`→Android，`.dmg`/`.pkg`→macOS，`.exe`/`.msi`→Windows，`.deb`/`.rpm`/`.AppImage`→Linux，`.upx`→全平台 |
+| 扩展名定平台 | `.apk`→Android，`.dmg`/`.pkg`→macOS，`.exe`/`.msi`→Windows，`.deb`/`.rpm`/`.AppImage`→Linux，`.upxs`→全平台 |
 | 名字里的关键字定平台 | `android`、`apple-darwin`/`macos`/`darwin`、`pc-windows`/`windows`、`linux` |
 | 架构 | `arm64-v8a`、`armeabi-v7a`、`aarch64`/`arm64`、`x86_64`/`amd64`/`x64`、`i686`/`i386` |
 | 链接方式 | 名字里有 `musl` 标成静态链接，有 `-gnu` 标成动态链接 |
@@ -174,10 +174,10 @@ store = true                    # 可选，上架了「插件应用市场」才�
   `scripts/list-packages.py` 和 `scripts/select-releases.py` 都会跳过它（判断在
   `manifest.in_apt`，三个地方共用一个答案）。
 - **CI 不装它。** uTools 是个带界面的宿主程序，无头 runner 上没有「装一个插件」这回
-  事，所以没有对应的 verify job。`.upx` 里有什么、装上去能不能用，由插件仓库自己的
+  事，所以没有对应的 verify job。`.upxs` 里有什么、装上去能不能用，由插件仓库自己的
   `build.sh` 和 `ci.yml` 保证。
-- **安装一节没有命令。** 页面上给的是那个 `.upx` 文件本身（名字、大小、校验和、下载），
-  外加一句「拖进 uTools 窗口」。只带一个 `.upx` 的插件不会再单独出一节「下载」——
+- **安装一节没有命令。** 页面上给的是那个 `.upxs` 文件本身（名字、大小、校验和、下载），
+  外加一句「拖进 uTools 窗口」。只带一个 `.upxs` 的插件不会再单独出一节「下载」——
   那会把同一行列第二遍。
 - `store = true` 才会多出一条「在插件应用市场里搜 `<app>`」的说明。**没上架就别写**：
   写了等于在页面上许一个兑现不了的承诺。
@@ -327,8 +327,8 @@ gh workflow run build.yml -R farfarfun/packages
 命令行工具的 `--version` 必须打出版本号本身（`brew test` 的默认断言就是它）。
 
 **uTools 插件一个 job 都不占**：无头 runner 上装不了 uTools，也就没有可验的东西。
-`.upx` 里该有什么、装上去能不能用，由插件仓库自己的 `build.sh` 和 `ci.yml` 保证 ——
-这边只核对「这次 release 里有没有那个 `.upx`」，在下面的自检报告里看。
+`.upxs` 里该有什么、装上去能不能用，由插件仓库自己的 `build.sh` 和 `ci.yml` 保证 ——
+这边只核对「这次 release 里有没有那个 `.upxs`」，在下面的自检报告里看。
 
 ---
 
@@ -357,14 +357,14 @@ funclash  farfarfun/funclash
   页面文案       显示名 无（用包名）、标语 有、功能点 4 条、截图 1 张、额外渠道 0 条
 ```
 
-uTools 插件的那一份长这样 —— 不查 `.deb`（它不发），改查 `.upx`：
+uTools 插件的那一份长这样 —— 不查 `.deb`（它不发），改查 `.upxs`：
 
 ```
 utools-funotp  farfarfun-utools/utools-funotp
   最新 release   v1.0.0（2026-10-17）
   渠道           utools
   SHA256SUMS     有
-  .upx           utools-funotp-1.0.0.upx
+  uTools         utools-funotp-1.0.0.upxs
   下载区 any      1 个文件
   更新日志       只列版本（格式认不出），1 个版本
   页面文案       显示名 有、标语 有、功能点 4 条、截图 4 张、额外渠道 0 条

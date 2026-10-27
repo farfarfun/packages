@@ -5,6 +5,7 @@ on:
     paths:
       - packages.toml
       - scripts/**
+      - tests/**
       - site/**
       - .github/workflows/build.yml
       - .github/workflows/check.yml

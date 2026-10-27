@@ -10,6 +10,7 @@ on:
     paths:
       - packages.toml
       - scripts/**
+      - tests/**
       - site/**
       - .github/workflows/build.yml
   # 定时扫。对不发 dispatch 的项目（funget 就是，它刻意不存 PAT）这是唯一的发现
@@ -51,6 +52,9 @@ jobs:
       - name: 装工具
         if: steps.config.outputs.signed == 'true'
         run: sudo apt-get update && sudo apt-get install -y apt-utils dpkg-dev
+
+      - name: Test site and release links
+        run: python3 -m unittest discover -s tests
 
       - id: key
         name: 导入签名密钥

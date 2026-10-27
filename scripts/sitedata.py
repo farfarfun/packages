@@ -77,6 +77,7 @@ KINDS = (
     # uTools 插件包。里面是纯 JS，一个包在 Windows / macOS / Linux 上都是同一个文件，
     # 所以平台直接定成 any —— 不定的话它会落进「其它文件」那一栏，而对插件来说那正是
     # 唯一要下的东西。
+    (".upxs", "UPXS", "any"),
     (".upx", "UPX", "any"),
     (".tar.gz", "TAR.GZ", None),
     (".tgz", "TAR.GZ", None),
@@ -90,7 +91,7 @@ ARCH_ORDER = ("amd64", "arm64", "arm32", "x86")
 # 同一个架构下多个文件时的排法：装得最省事的在上面。musl 的静态包排在 gnu 前面 ——
 # 它不挑 glibc 版本，是更安全的默认。
 KIND_ORDER = (
-    "UPX", "DEB", "RPM", "AppImage", "DMG", "PKG", "EXE", "MSI", "APK", "TAR.GZ", "ZIP", "BIN",
+    "UPXS", "UPX", "DEB", "RPM", "AppImage", "DMG", "PKG", "EXE", "MSI", "APK", "TAR.GZ", "ZIP", "BIN",
 )
 
 # 更新日志里 funclash 那种生成式分组的标题 → 类型 id。类型只用来上色和排序，认不出的
@@ -207,7 +208,7 @@ def note_key(kind: str, platform: str | None, arch: str | None, low: str) -> str
         return "noteMacArm" if arch == "arm64" else "noteMacIntel"
     if platform == "android":
         return {"arm64": "noteApkArm64", "arm32": "noteApkArm32"}.get(arch, "noteApkX64")
-    if kind == "UPX":
+    if kind in ("UPXS", "UPX"):
         return "noteUpx"
     if kind == "DEB":
         return "noteDeb"
@@ -593,11 +594,11 @@ def check(data: dict, only: str | None) -> int:
                 print("  .deb           amd64、arm64 都有")
 
         if "utools" in pkg["channels"]:
-            upx = [n for n in names if n.endswith(".upx")]
+            upx = [n for n in names if n.endswith((".upxs", ".upx"))]
             if upx:
-                print(f"  .upx           {'、'.join(upx)}")
+                print(f"  uTools         {'、'.join(upx)}")
             else:
-                print("  .upx           ! 没有 —— 安装一节只剩一条指向 Release 的链接")
+                print("  uTools         ! 没有 —— 安装一节只剩一条指向 Release 的链接")
                 bad += 1
 
         if "cask" in pkg["channels"]:

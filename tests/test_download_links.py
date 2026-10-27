@@ -63,3 +63,34 @@ class DownloadLinksTests(unittest.TestCase):
         self.assertNotIn('id="install"', page)
         self.assertNotIn('href="#install"', page)
         self.assertIn('class="btn primary" href="https://github.com/example/desktop-app/releases"', page)
+
+    def test_utools_upxs_is_the_install_download_in_both_languages(self):
+        self.manifest.write_text(
+            '[[source]]\nrepo = "example/plugin"\n[source.utools]\napp = "Example"\n'
+        )
+        for extensions in (("upxs",), ("upx", "upxs")):
+            assets = [{"name": f"plugin-1.0.1.{ext}", "size": 123, "sha256": "a" * 64,
+                       "url": f"https://github.com/example/plugin/releases/download/v1.0.1/plugin-1.0.1.{ext}"}
+                      for ext in extensions]
+            with self.subTest(extensions=extensions), \
+                    patch.object(sitedata, "packages_index", return_value={}), \
+                    patch.object(sitedata, "releases_of", return_value=[{"tag": "v1.0.1", "date": "2026-10-27"}]), \
+                    patch.object(sitedata, "release_assets", return_value=assets), \
+                    patch.object(sitedata, "fetch_changelog", return_value=""):
+                data = sitedata.collect(str(self.manifest), deb_dir=self.root)
+                pkg = data["packages"][0]
+                self.assertEqual(pkg["channels"], ["utools"])
+                self.assertFalse(pkg["downloads"]["other"])
+                platform = pkg["downloads"]["platforms"][0]
+                self.assertEqual(platform["id"], "any")
+                self.assertEqual(platform["files"][0]["kind"], "UPXS")
+                site = renderer.Site(ROOT / "site", self.root / "site", data, renderer.SITE_URL)
+                for language in renderer.LANGS:
+                    page = renderer.render_package(site, pkg, *language)
+                    self.assertIn('id="install"', page)
+                    self.assertIn(assets[-1]["url"], page)
+                    self.assertIn("UPXS", page)
+                    self.assertIn("a" * 64, page)
+                    self.assertNotIn('id="download"', page)
+                    self.assertNotIn('href="#download"', page)
+                    self.assertNotIn('plugin-1.0.1.upx"', page)
