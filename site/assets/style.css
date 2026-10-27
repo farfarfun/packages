@@ -1749,7 +1749,7 @@ h2 {
   height: 100%;
 }
 
-.is-carousel .shot img {
+.is-carousel .shots .shot img {
   width: 100%;
   height: 100%;
   max-height: none;

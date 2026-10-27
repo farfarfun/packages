@@ -51,7 +51,7 @@ jobs:
 
       - name: 装工具
         if: steps.config.outputs.signed == 'true'
-        run: sudo apt-get update && sudo apt-get install -y apt-utils dpkg-dev
+        run: sudo apt-get update && sudo apt-get install -y apt-utils dpkg-dev fonts-noto-cjk
 
       - name: Test site and release links
         run: python3 -m unittest discover -s tests

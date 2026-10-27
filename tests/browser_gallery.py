@@ -11,7 +11,7 @@ from playwright.sync_api import expect, sync_playwright
 
 root = Path(sys.argv[1]).resolve()
 pages = list(root.glob("*/index.html"))
-multi = next(p for p in pages if p.read_text().count('class="shot ') > 1)
+multi = next(p for p in pages if 'class="shots pairs"' in p.read_text())
 single = next(p for p in pages if p.read_text().count('class="shot ') == 1)
 server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory=str(root)))
 Thread(target=server.serve_forever, daemon=True).start()
@@ -38,6 +38,7 @@ try:
         page.clock.fast_forward(6100)
         expect(count).to_have_text(f"2 / {total}")
         expect(gallery.locator(".shot:visible")).to_have_count(1)
+        expect(gallery.locator(".shot:visible img")).to_have_css("max-height", "none")
 
         gallery.locator(".shot-link:visible").hover()
         page.clock.fast_forward(13000)
@@ -70,6 +71,7 @@ try:
         expect(play).to_have_text("自动播放")
         page.clock.fast_forward(13000)
         expect(count).to_have_text(f"1 / {total}")
+        page.wait_for_function("[...document.querySelectorAll('.gallery-thumbs img')].every(img => img.complete && img.naturalWidth > 0)")
         page.screenshot(path=str(shots / "desktop.png"))
 
         for width in (390, 320):
