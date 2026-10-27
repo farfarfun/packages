@@ -771,9 +771,14 @@ def figures(site: Site, pkg: dict, up: str) -> tuple[str, str]:
         # 认不出来（「顶部那一行是分组」）。只有一张图的包不写也行，四五张的就该写。
         caption = _text(shot.get("caption"), site.lang)
         out.append(
-            f'<figure class="shot {shape}">{"<picture>" if source else ""}{source}'
-            f'<img src="{esc(up + light["href"])}"{dims} loading="lazy" decoding="async"'
-            f' alt="{esc(alt)}">{"</picture>" if source else ""}'
+            f'<figure class="shot {shape}">'
+            f'<a class="shot-link" href="{esc(up + light["href"])}" target="_blank" rel="noopener"'
+            f' aria-label="{esc(site.t("shotsOpen", name=alt))}">'
+            f'{"<picture>" if source else ""}{source}'
+            f'<img src="{esc(up + light["href"])}"{dims}'
+            + (' loading="eager" fetchpriority="high"' if not out else ' loading="lazy"')
+            + ' decoding="async"'
+            + f' alt="{esc(alt)}">{"</picture>" if source else ""}</a>'
             + (f"<figcaption>{esc(caption)}</figcaption>" if caption else "")
             + "</figure>"
         )
@@ -793,6 +798,20 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
         nonlocal num
         num += 1
         return f"{num:02d}"
+
+    shots, shots_class = figures(site, pkg, ctx["up"])
+    if shots:
+        out.append(
+            site.section(
+                "sec-shots.html",
+                {
+                    **ctx,
+                    "shotsClass": shots_class,
+                    "figures": Raw(shots),
+                },
+            )
+        )
+    out.append(site.section("sec-overview.html", {**ctx, "num": nxt()}))
 
     panes, count = install_panes(site, pkg, ctx["home"])
     # 「加源」那条链接只对走 apt / brew 的包有意义。uTools 插件的装法是把 .upxs 拖进
@@ -869,22 +888,6 @@ def package_sections(site: Site, pkg: dict, ctx: dict) -> str:
             )
         )
 
-    shots, shots_class = figures(site, pkg, ctx["up"])
-    if shots:
-        out.append(
-            site.section(
-                "sec-shots.html",
-                {
-                    **ctx,
-                    "num": nxt(),
-                    # 没发过 Release 的包（uTools 插件多半如此）拿不到版本号，
-                    # 「来自 」后面跟一个空字符串不如不写。空的副标题样式上会隐藏。
-                    "sub": site.t("shotsSub", version=ctx["version"]) if ctx["version"] else "",
-                    "shotsClass": shots_class,
-                    "figures": Raw(shots),
-                },
-            )
-        )
     return "".join(out)
 
 
@@ -1023,7 +1026,7 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
             or pkg["desc"],
             "chips": Raw(channel_chips(site, pkg)),
             "features": Raw(features),
-            "contentAnchor": "#install" if has_install else ("#download" if has_downloads else "#top"),
+            "contentAnchor": "#screens" if shows_shots(site, pkg) else "#overview",
             "primaryHref": "#install" if has_install else ("#download" if has_downloads else release_url),
             "primaryLabel": site.t("pkgCtaInstall" if has_install else "pkgCtaDownload"),
             "ctaDownload": Raw(
@@ -1032,6 +1035,10 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
                 else ""
             ),
         }
+    )
+    ctx["description"] = Raw(
+        f'<p class="overview-description">{esc(ctx["pageDescription"])}</p>'
+        if ctx["pageDescription"] != ctx["tagline"] else ""
     )
     ctx["jsonld"] = jsonld(
         {
@@ -1057,15 +1064,16 @@ def render_package(site: Site, pkg: dict, lang: str, locale: str, og: str, prefi
             "sameAs": [pkg["url"]],
         }
     )
-    nav = [("#install", "navInstall")] if has_install else []
+    nav = [("#screens", "navScreens")] if shows_shots(site, pkg) else []
+    nav.append(("#overview", "overviewTitle"))
+    if has_install:
+        nav.append(("#install", "navInstall"))
     if has_downloads:
         nav.append(("#download", "navDownload"))
     if shows_versions(pkg):
         nav.append(("#versions", "navVersions"))
     if pkg["changelog"]["releases"]:
         nav.append(("#changelog", "navChangelog"))
-    if shows_shots(site, pkg):
-        nav.append(("#screens", "navScreens"))
     ctx["navLinks"] = Raw(nav_links(site, nav))
     ctx["sections"] = Raw(package_sections(site, pkg, ctx))
     return site.render("package.html", ctx)

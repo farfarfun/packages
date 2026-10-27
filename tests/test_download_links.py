@@ -91,6 +91,50 @@ class DownloadLinksTests(unittest.TestCase):
         self.assertNotIn('href="#install"', page)
         self.assertIn('class="btn primary" href="https://github.com/example/desktop-app/releases"', page)
 
+    def test_package_shows_images_then_overview_then_install(self):
+        self.manifest.write_text(
+            '[[source]]\nrepo = "example/plugin"\n[source.utools]\napp = "Example"\n'
+        )
+        data = sitedata.collect(str(self.manifest), offline=True)
+        pkg = data["packages"][0]
+        pkg["page"] = {
+            "tagline": {"zh": "一句话简介", "en": "Short introduction"},
+            "description": {"zh": "详细产品介绍", "en": "Detailed product description"},
+            "features": [{"title": "Feature title", "text": "Feature detail"}],
+            "shots": [{"light": key, "dark": "dark", "alt": "Product screenshot"}
+                      for key in ("missing", "desktop", "phone")],
+        }
+        site = renderer.Site(ROOT / "site", self.root / "site", data, renderer.SITE_URL)
+        for available in (False, True):
+            site.shots = {
+                "desktop": {"href": "assets/shots/desktop.png", "width": 1280, "height": 800},
+                "phone": {"href": "assets/shots/phone.png", "width": 390, "height": 844},
+                "dark": {"href": "assets/shots/dark.png", "width": 1280, "height": 800},
+            } if available else {}
+            for language in renderer.LANGS:
+                with self.subTest(shots=available, language=language[0]):
+                    page = renderer.render_package(site, pkg, *language)
+                    overview = page.index('id="overview"')
+                    self.assertLess(overview, page.index('id="install"'))
+                    self.assertGreater(page.index("Feature detail"), overview)
+                    self.assertGreater(page.index("Detailed product description" if language[0] == "en"
+                                                  else "详细产品介绍", overview), overview)
+                    nav = re.search(r'<nav .*?</nav>', page, re.S).group(0)
+                    self.assertLess(nav.index('#overview'), nav.index('#install'))
+                    if available:
+                        self.assertLess(page.index('id="screens"'), overview)
+                        self.assertLess(nav.index('#screens'), nav.index('#overview'))
+                        self.assertIn('class="skip" href="#screens"', page)
+                        self.assertEqual(page.count('loading="eager" fetchpriority="high"'), 1)
+                        self.assertEqual(page.count('loading="lazy"'), 1)
+                        self.assertIn('width="1280" height="800"', page)
+                        self.assertIn('media="(prefers-color-scheme: dark)"', page)
+                        self.assertRegex(page, r'class="shot-link" href="(?:\.\./)+assets/shots/desktop.png"')
+                    else:
+                        self.assertNotIn('id="screens"', page)
+                        self.assertNotIn('href="#screens"', page)
+                        self.assertIn('class="skip" href="#overview"', page)
+
     def test_utools_upxs_is_the_install_download_in_both_languages(self):
         self.manifest.write_text(
             '[[source]]\nrepo = "example/plugin"\n[source.utools]\napp = "Example"\n'

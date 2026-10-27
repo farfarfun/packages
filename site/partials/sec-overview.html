@@ -1,0 +1,18 @@
+    <section class="section wrap product-overview" id="overview" aria-labelledby="overview-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>{{num}}</p>
+          <h2 id="overview-title">{{t.overviewTitle}}</h2>
+          <p class="rail-links"><a href="{{repoUrl}}">{{t.pkgRepo}}</a></p>
+        </div>
+        <div class="col">
+          <p class="lede">{{tagline}}</p>
+{{%description}}
+{{%features}}
+          <div class="cta">
+            <a class="btn primary" href="{{primaryHref}}">{{primaryLabel}}</a>
+{{%ctaDownload}}
+          </div>
+        </div>
+      </div>
+    </section>

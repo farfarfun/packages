@@ -374,6 +374,31 @@ code {
   gap: 26px;
 }
 
+.hero-pkg {
+  padding-top: clamp(24px, 4vw, 44px);
+}
+
+.hero-pkg .hero-inner {
+  gap: 14px;
+}
+
+.hero-pkg .display {
+  font-size: clamp(30px, 4vw, 48px);
+  overflow-wrap: anywhere;
+}
+
+.product-overview .facts {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  margin-top: 0;
+}
+
+.overview-description {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--ink-2);
+  line-height: 1.8;
+}
+
 .deco {
   position: absolute;
   top: 0;
@@ -1599,6 +1624,29 @@ h2 {
 
 /* ---- 截图 ---- */
 
+.section.product-screens {
+  padding-top: 28px;
+}
+
+.screens-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.screens-heading h2 {
+  font-size: 20px;
+}
+
+.shot-link {
+  display: block;
+  border-radius: var(--r-lg);
+  cursor: zoom-in;
+}
+
 /* 一个包的截图里，手机竖图和桌面横图经常混着来。两种都按右列的宽度铺的话，一张
    780×1688 的竖图就是 1700px 高 —— 三张能把一页撑到七千像素，而这一节讲的只是
    「长什么样」。所以竖的并排铺成一行几张，横的占满一行但限高；两种都不许超过一屏。 */
@@ -1635,7 +1683,7 @@ h2 {
 /* 横图三张以上的包（uTools 插件的截图基本都是桌面窗口）：一张一行要滚三四屏，而这
    一节只是让人看一眼长什么样。两张一行，看原图还是去项目仓库。 */
 .shots.pairs {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
 }
 
 .shots.pairs .shot.wide {
@@ -1657,6 +1705,19 @@ h2 {
   width: auto;
   max-width: 100%;
   max-height: min(68vh, 600px);
+}
+
+.product-screens .shot.wide:first-child {
+  grid-column: 1 / -1;
+  padding: clamp(12px, 2.5vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--r-lg) + 8px);
+  background: var(--surface);
+}
+
+.product-screens .shot.wide:first-child img {
+  max-height: min(68vh, 680px);
+  box-shadow: 0 12px 32px var(--line);
 }
 
 .shot figcaption {
