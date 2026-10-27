@@ -1703,17 +1703,8 @@ h2 {
   max-height: min(68vh, 600px);
 }
 
-.product-screens:not(.is-carousel) .shot.wide:first-child {
-  grid-column: 1 / -1;
-  padding: clamp(12px, 2.5vw, 28px);
-  border: 1px solid var(--line);
-  border-radius: calc(var(--r-lg) + 8px);
-  background: var(--surface);
-}
-
 .product-screens:not(.is-carousel) .shot.wide:first-child img {
   max-height: min(68vh, 680px);
-  box-shadow: 0 12px 32px var(--line);
 }
 
 .shot figcaption {
@@ -1725,10 +1716,6 @@ h2 {
 
 .is-carousel .shots {
   display: block;
-  padding: clamp(12px, 2vw, 24px);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--surface);
 }
 
 .is-carousel .shot {
