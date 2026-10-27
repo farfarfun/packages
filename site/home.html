@@ -21,6 +21,7 @@
         <div class="cta">
           <a class="btn primary" href="#setup">{{t.homeCtaSetup}}</a>
           <a class="btn quiet" href="#packages">{{t.homeCtaPackages}}</a>
+          <a class="btn quiet" href="#utools">{{t.pluginsTitle}}</a>
         </div>
         <ul class="facts">
           <li><b>{{t.fact1Title}}</b><span>{{t.fact1}}</span></li>
@@ -60,10 +61,22 @@
       </div>
     </section>
 
-    <section class="section wrap" id="how" aria-labelledby="how-title">
+    <section class="section wrap" id="utools" aria-labelledby="utools-title">
       <div class="rail-grid">
         <div class="rail">
           <p class="kicker" aria-hidden="true"><span class="cap"></span>03</p>
+          <h2 id="utools-title">{{t.pluginsTitle}}</h2>
+          <p class="section-sub">{{pluginsSub}}</p>
+          <p class="rail-text">{{t.pluginsLead}}</p>
+        </div>
+{{%pluginCards}}
+      </div>
+    </section>
+
+    <section class="section wrap" id="how" aria-labelledby="how-title">
+      <div class="rail-grid">
+        <div class="rail">
+          <p class="kicker" aria-hidden="true"><span class="cap"></span>04</p>
           <h2 id="how-title">{{t.howTitle}}</h2>
           <p class="section-sub">{{t.howSub}}</p>
           <p class="rail-text">{{t.howLead}}</p>

@@ -405,9 +405,9 @@ def channel_chips(site: Site, pkg: dict) -> str:
     return "".join(chips)
 
 
-def package_cards(site: Site, up: str) -> str:
+def package_cards(site: Site, packages: list[dict], up: str) -> str:
     cards = []
-    for pkg in site.data["packages"]:
+    for pkg in packages:
         latest = pkg["latest"]
         version = latest["tag"].lstrip("vV") if latest else ""
         meta = []
@@ -933,6 +933,8 @@ def render_home(site: Site, lang: str, locale: str, og: str, prefix: str) -> str
     site.lang = lang
     ctx = head_ctx(site, lang, locale, og, prefix, None)
     packages = site.data["packages"]
+    apps = [p for p in packages if "utools" not in p["channels"]]
+    plugins = [p for p in packages if "utools" in p["channels"]]
     dates = [p["latest"]["date"] for p in packages if p["latest"] and p["latest"]["date"]]
     eyebrow = (
         site.t("homeEyebrow", count=len(packages), date=date_text(max(dates), lang))
@@ -956,11 +958,13 @@ def render_home(site: Site, lang: str, locale: str, og: str, prefix: str) -> str
             "navLinks": Raw(
                 nav_links(
                     site,
-                    [("#setup", "navSetup"), ("#packages", "navPackages"), ("#how", "navHow")],
+                    [("#setup", "navSetup"), ("#packages", "navPackages"),
+                     ("#utools", "pluginsTitle"), ("#how", "navHow")],
                 )
             ),
             "eyebrow": eyebrow,
-            "packagesSub": site.t("packagesSub", count=len(packages)),
+            "packagesSub": site.t("packagesSub", count=len(apps)),
+            "pluginsSub": site.t("pluginsSub", count=len(plugins)),
             "fingerprint": Raw(
                 f'<p class="rail-note">{esc(site.t("setupFingerprint"))}'
                 f'<code>{esc(fingerprint_text(site.data["fingerprint"]))}</code></p>'
@@ -968,7 +972,8 @@ def render_home(site: Site, lang: str, locale: str, og: str, prefix: str) -> str
                 else ""
             ),
             "setupPanes": Raw(setup_panes(site)),
-            "cards": Raw(package_cards(site, ctx["up"])),
+            "cards": Raw(package_cards(site, apps, ctx["home"])),
+            "pluginCards": Raw(package_cards(site, plugins, ctx["home"])),
         }
     )
     return site.render("home.html", ctx)

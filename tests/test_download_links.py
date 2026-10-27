@@ -1,4 +1,5 @@
 import importlib.util
+import re
 import sys
 import tempfile
 import unittest
@@ -28,6 +29,32 @@ class DownloadLinksTests(unittest.TestCase):
         self.assertTrue(manifest.in_apt({"repo": "org/cli", "apt": True}))
         self.assertFalse(manifest.in_apt({"repo": "org/app", "apt": False}))
         self.assertFalse(manifest.in_apt({"repo": "org/plugin", "utools": {}}))
+
+    def test_home_separates_utools_plugins_in_both_languages(self):
+        data = sitedata.collect(str(ROOT / "packages.toml"), offline=True)
+        site = renderer.Site(ROOT / "site", self.root / "site", data, renderer.SITE_URL)
+        plugins = [p for p in data["packages"] if "utools" in p["channels"]]
+        apps = [p for p in data["packages"] if "utools" not in p["channels"]]
+        self.assertTrue(plugins)
+        self.assertTrue(apps)
+        for language in renderer.LANGS:
+            with self.subTest(language=language[0]):
+                page = renderer.render_home(site, *language)
+                sections = {
+                    name: re.search(rf'<section[^>]* id="{name}"[^>]*>(.*?)</section>', page, re.S).group(1)
+                    for name in ("packages", "utools")
+                }
+                self.assertIn('href="#utools"', page)
+                self.assertIn('aria-labelledby="utools-title"', page)
+                self.assertIn(site.t("pluginsSub", count=len(plugins)), sections["utools"])
+                self.assertIn(site.t("packagesSub", count=len(apps)), sections["packages"])
+                self.assertIn(".upxs", sections["utools"])
+                for pkg in data["packages"]:
+                    section = "utools" if "utools" in pkg["channels"] else "packages"
+                    other = "packages" if section == "utools" else "utools"
+                    link = f'href="./{pkg["name"]}/"'
+                    self.assertEqual(sections[section].count(link), 1)
+                    self.assertNotIn(link, sections[other])
 
     def test_download_page_uses_release_urls_even_with_stale_apt_index(self):
         names = ["desktop-app_0.1.1_amd64.deb", "desktop-app_0.1.1_x64-setup.exe", "desktop-app-0.1.1-macos-arm64.dmg", "SHA256SUMS"]
