@@ -6,8 +6,8 @@ name.en = "FunLink"
 tagline.zh = "把零散书签整理成网址导航：分类、拖拽排序、废纸篓，在 uTools 主搜索框里搜完直接打开。"
 tagline.en = "Turns scattered bookmarks into a navigable board — categories, drag-to-order and a recycle bin — searchable and openable straight from the uTools input box."
 
-description.zh = "一链即达 FunLink 是一个 uTools 插件，把工作入口、开发文档和常用在线工具收成带分类的网址导航，支持拖拽排序、废纸篓恢复、站内搜索占位符，以及为每张卡片指定用哪个浏览器打开。数据存在本机，不需要账号。"
-description.en = "FunLink is a uTools plugin that collects your work entry points, docs and online tools into a categorised bookmark board, with drag-to-order, a restorable recycle bin, in-site search placeholders and a per-card choice of browser. Data stays on your machine and needs no account."
+description.zh = "一链即达 FunLink 是一个 uTools 插件，把工作入口、开发文档和常用在线工具收成带分类的网址导航，支持拖拽排序、废纸篓恢复、站内搜索占位符，以及为每张卡片指定用哪个浏览器打开。数据保存在 uTools 中，可随 uTools 同步，不需要单独注册账号。"
+description.en = "FunLink is a uTools plugin that collects your work entry points, docs and online tools into a categorised bookmark board, with drag-to-order, a restorable recycle bin, in-site search placeholders and a per-card choice of browser. Data is stored in uTools and can sync with it; no separate account is needed."
 
 [[features]]
 title.zh = "两级分类"
@@ -18,14 +18,14 @@ text.en = "Top-level categories along the top, sub-categories below, and cards y
 [[features]]
 title.zh = "搜完就开"
 title.en = "Search, then open"
-text.zh = "不进插件界面，在 uTools 主搜索框里搜收藏的网址，回车直接打开。"
-text.en = "Search your bookmarks from the uTools input box without opening the plugin, and press Enter to go."
+text.zh = "在 uTools 主搜索框按名称搜索收藏，或用自定义正则匹配输入，回车直接打开。"
+text.en = "Search bookmarks by name or match the input with a custom regex in uTools, then press Enter to open."
 
 [[features]]
 title.zh = "站内搜索入口"
 title.en = "In-site search"
-text.zh = "网址里写 {q} 占位符，就能把任意站点的搜索做成一个入口。"
-text.en = "Put a {q} placeholder in a URL to turn any site's search into an entry point."
+text.zh = "网址里写 {q} 占位符，就能把主搜索框的完整输入填入目标网址。"
+text.en = "Put a {q} placeholder in a URL to insert the full input from the uTools search box."
 
 [[features]]
 title.zh = "删了能找回"
