@@ -6,8 +6,8 @@ name.en = "FunChat"
 tagline.zh = "把一屋子 AI 好友装进 uTools：多角色切换、内置角色市场、话题回溯、一键导出。"
 tagline.en = "A room full of AI friends inside uTools — switch personas, pick from the built-in market, revisit past topics and export in one click."
 
-description.zh = "言来语往 FunChat 是一个 uTools 插件，每个「AI 好友」是一套独立的角色设定、模型参数和聊天记录。内置 300 个开箱即用的角色，支持 uTools 内置 AI 和任意 OpenAI 兼容接口，会话和配置默认存在本机。"
-description.en = "FunChat is a uTools plugin where each “AI friend” carries its own persona, model settings and history. It ships with 300 ready-made characters, works with the built-in uTools AI or any OpenAI-compatible endpoint, and keeps conversations and settings on your machine by default."
+description.zh = "言来语往 FunChat 是一个 uTools 插件，每个「AI 好友」都有独立的角色设定、模型参数和聊天记录。内置 300 个角色，支持 uTools AI 与 OpenAI 兼容接口；图片生成结果保存在 uTools 数据库，开启同步后可跨设备同步。"
+description.en = "FunChat gives each AI friend its own persona, model settings and chat history. It includes 300 characters and supports uTools AI and OpenAI-compatible endpoints. Generated images live in the uTools database and may sync across devices when enabled."
 
 [[features]]
 title.zh = "一人一套设定"
@@ -32,6 +32,12 @@ title.zh = "话题存得住"
 title.en = "Topics keep"
 text.zh = "每个好友的历史话题独立存档，可收藏、可全文搜索，整段能导出 Markdown / HTML / PDF。"
 text.en = "Each friend's topics are archived separately — bookmark them, search the full text, export to Markdown, HTML or PDF."
+
+[[features]]
+title.zh = "生成图片"
+title.en = "Generate images"
+text.zh = "通过支持图片生成的 API 线路作图，生成结果随话题保存并纳入整库备份。"
+text.en = "Create images with a compatible image API; results stay with the conversation and are included in full backups."
 
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/chat.png"
