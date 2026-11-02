@@ -39,6 +39,12 @@ title.en = "Generate images"
 text.zh = "通过支持图片生成的 API 线路作图，生成结果随话题保存并纳入整库备份。"
 text.en = "Create images with a compatible image API; results stay with the conversation and are included in full backups."
 
+[[features]]
+title.zh = "AI 角色目录"
+title.en = "Persona directory for AI"
+text.zh = "AI/MCP 工具只列出角色名称和 ID，不暴露提示词、模型配置、聊天记录或 API 密钥。"
+text.en = "The AI/MCP tool lists persona names and IDs without exposing prompts, model settings, chats or API keys."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funchat/master/docs/screenshots/chat.png"
 alt.zh = "FunChat 的聊天界面"

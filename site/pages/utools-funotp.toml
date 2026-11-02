@@ -38,6 +38,12 @@ text.en = "Local JSON, WebDav, or export otpauth links to any other authenticato
 
 # 截图在插件自己的仓库里，构建时下到站点下面（见 render-site.py 的 fetch_shots）。
 # 只认 PNG：宽高是从文件头读出来写进 <img> 的，为的是图片加载时不跳版。
+[[features]]
+title.zh = "AI 仅看账号标签"
+title.en = "Account labels for AI"
+text.zh = "AI/MCP 工具只列出账号名称与服务商，不返回密钥、动态验证码、备注或备份。"
+text.en = "The AI/MCP tool lists account names and issuers without returning secrets, one-time codes, notes or backups."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funotp/master/docs/screenshots/home.png"
 alt.zh = "FunOTP 的账号列表"

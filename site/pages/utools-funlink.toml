@@ -33,6 +33,12 @@ title.en = "Nothing is lost"
 text.zh = "删掉的卡片进废纸篓，清空废纸篓时才真的没了。"
 text.en = "Deleted cards go to the recycle bin; they are only gone for good once you empty it."
 
+[[features]]
+title.zh = "AI 管理书签"
+title.en = "Bookmarks for AI"
+text.zh = "AI/MCP 工具可搜索书签、列出分类、添加网址并打开书签；调用前可在插件说明中核对数据边界。"
+text.en = "AI/MCP tools can search bookmarks, list categories, add URLs and open saved links; the plugin documentation explains data access."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funlink/master/docs/screenshots/home.png"
 alt.zh = "FunLink 的网址导航界面"

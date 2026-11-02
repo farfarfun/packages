@@ -29,6 +29,12 @@ title.en = "Separate output folders"
 text.zh = "每次处理创建秒级命名的文件夹，避免结果冲突；视频不上传。"
 text.en = "Each run creates a timestamped folder to avoid collisions. Videos are never uploaded."
 
+[[features]]
+title.zh = "AI 加入视频队列"
+title.en = "Queue videos from AI"
+text.zh = "AI/MCP 工具校验本机视频并加入队列，后续处理仍由用户选择；不自动运行 FFmpeg。"
+text.en = "The AI/MCP tool validates local videos and queues them; you choose the operation, with no automatic FFmpeg run."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funvideo/main/docs/screenshots/home.png"
 alt.zh = "视频工坊的分类轨道、紧凑队列与处理参数"

@@ -31,6 +31,12 @@ title.en = "Fully offline"
 text.zh = "图片与文本均在本机处理，无账号、无上传、无内容历史，仅保存主题偏好。识别结果作为文本展示，不会自动打开链接。"
 text.en = "Images and text stay on your device. No account, uploads or saved content history; only your theme preference is persisted. Decoded links are displayed as text and never opened automatically."
 
+[[features]]
+title.zh = "AI 双向互转"
+title.en = "QR tools for AI"
+text.zh = "AI/MCP 工具可离线生成二维码 PNG，或识别图片 Data URL 与本机图片中的原文。"
+text.en = "AI/MCP tools create QR PNGs or decode image Data URLs and local files offline."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/styled.png"
 dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/dark.png"

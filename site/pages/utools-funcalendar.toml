@@ -31,6 +31,12 @@ title.en = "Light and dark"
 text.zh = "松绿色与暖白纸感，支持浅色、深色和跟随系统；窗口缩小时自动调整布局。"
 text.en = "Sage green and warm paper tones, with light, dark and system themes and a layout that adapts to smaller windows."
 
+[[features]]
+title.zh = "AI 查询日期"
+title.en = "Calendar queries for AI"
+text.zh = "AI/MCP 工具可离线查询指定日期或按月份与事项筛选吉日，结果仅供民俗参考。"
+text.en = "AI/MCP tools look up a date or filter a month by traditional activity offline; results are cultural references only."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/home.png"
 dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalendar/master/docs/screenshots/dark.png"
