@@ -9,6 +9,7 @@ on:
       - site/**
       - .github/workflows/build.yml
       - .github/workflows/check.yml
+      - .github/workflows/verify-brew-gitee.yml
 
 jobs:
   site:

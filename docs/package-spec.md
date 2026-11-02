@@ -315,14 +315,15 @@ gh workflow run build.yml -R farfarfun/packages
 
 ## 6. CI 会验什么
 
-每次构建都真装一遍。接进来之后，这几个 job 红了就是你的发布出了问题：
+构建时验证 APT、Homebrew 和 cask；Gitee Homebrew 镜像每天独立验证一次，让新发
+Release 的附件有时间同步。接进来之后，这些 job 红了就需要排查：
 
 | job | 做什么 | 常见红法 |
 | --- | --- | --- |
 | `verify` | 加源、`apt install`、再退一版装一遍 | 少了某个架构的 `.deb`；版本号和 tag 对不上 |
 | `verify-brew` | 真 tap 一遍再 `brew install`，跑 `brew test` | `.tar.gz` 里不是单个二进制；`--version` 不打版本号；`checks` 的断言不成立 |
 | `verify-cask` | macOS runner 上装 cask，读 `.app` 的 `Info.plist` 跟声明的版本对账 | DMG 里的 `.app` 名字和 `app =` 不一致；`CFBundleShortVersionString` 不是这一版 |
-| `verify-brew-gitee` | 掐掉 GitHub，从 Gitee 镜像 tap 再装一遍 | 项目没有 Gitee 镜像（这时不写 mirror，不会红）；镜像落后一版 |
+| `verify-brew-gitee`（每日） | 掐掉 GitHub，从 Gitee 镜像 tap 再装一遍 | 镜像缺少最新版附件；tap 落后一版 |
 
 命令行工具的 `--version` 必须打出版本号本身（`brew test` 的默认断言就是它）。
 

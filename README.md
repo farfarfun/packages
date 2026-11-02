@@ -84,10 +84,11 @@ Gitee 了」。后者看着更准，实际是个必然探空的判据：各项�
 同步完的附件和压根没写这一行是同一个结局，而附件一到位，formula 不用重渲染就自己
 成立了。
 
-这三行不是写在这儿就算数的：每次构建都有一个 `verify-brew-gitee`，把 github 的几
-个域名指到 127.0.0.1、清掉下载缓存，再照上面这三行装一遍。装不上就是红的。它跑在
-`sync` 之后，而且装之前先 `diff` 一遍 tap 下来的 `Formula/` 和这一轮推上去的那份
-——Gitee 落后一版的话这儿就红了，不会装着上一版的包报绿。
+这三行由每日一次的 `verify-brew-gitee` 验证：把 github 的几个域名指到
+127.0.0.1、清掉下载缓存，再照上面这三行装一遍。它和构建共用串行组，先等本仓库
+的 tap 同步完成；装之前还会 `diff` Gitee 和 GitHub 的 `Formula/`。各项目的
+Release 附件需要另行同步，刚发版时可能暂时没有，所以不在每次构建里验它。
+需要立即检查时可运行 `gh workflow run verify-brew-gitee.yml -R farfarfun/packages`。
 
 cask 也没有这条路的后半截。Cask 的 `url` 不认 `mirror`——那是 Formula 的 DSL，cask
 的 `url` 只收 `verified:`/`using:` 这类参数。`brew tap` 从 Gitee 来是可以的（cask
@@ -229,10 +230,10 @@ packages.toml ──┬─► collect-debs.sh    按清单从各项目 Release �
                     verify-brew        真 tap 一遍再 brew install
                     verify-cask        macOS runner 上装 cask，读 .app 的 Info.plist
                                        跟声明的版本对账
-                    verify-brew-gitee  把 github 指到 127.0.0.1、清掉下载缓存，
-                                       从 Gitee tap 再装一遍（三个 verify 都先 diff
-                                       一遍 tap 到的文件是不是这一轮那份）
 ```
+
+每日独立运行的 `verify-brew-gitee` 会把 github 指到 127.0.0.1、清掉下载缓存，
+从 Gitee tap 再装一遍；三个 Homebrew 验证都会先 `diff` tap 到的文件和仓库版本。
 
 三条线都只收正式版，草稿和预发布不要。apt 那边留最近几版，tap 里一个包只有一份
 formula 或 cask，只能是最新的——想装旧版走 apt，或者去项目的 Release 下 DMG。

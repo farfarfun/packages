@@ -175,9 +175,8 @@ jobs:
   # 通不通的路。每轮都打的话它跟着定时构建两小时跑一遍，哪天权限或命令不对当场就是
   # 红的。sync-gitee 本身是幂等的，没变化时它自己就什么都不做。
   #
-  # 打完要等它跑完，而不是打完就撒手：下面 verify-brew-gitee tap 的就是 Gitee 那份，
-  # 撒手的话两个 job 几乎同时开始，它验的是上一轮的 formula——那种绿是空绿，真出事
-  # （比如这一轮的 formula 漏了 mirror）它一声不响地放过去。
+  # 打完要等它跑完：每日 verify-brew-gitee 与本 workflow 共用 concurrency group，
+  # 只有这次同步完成后才会从 Gitee tap 读取 formula。
   sync:
     needs: brew
     runs-on: ubuntu-latest
@@ -317,68 +316,6 @@ jobs:
 
             brew uninstall --cask "$pkg"
           done 3</tmp/casks
-
-  # 「GitHub 连不上也能 brew install」是对国内用户的承诺，而上面那个 job 验不到它：
-  # 那边 url 一次就通了，mirror 那行压根没被读过。真把 github 掐掉装一遍。
-  #
-  # 这一环没法靠读代码定下来。mirror 是 Homebrew 自己的 DSL，照理 url 失败就轮到
-  # 它，但「照理」和「这个版本在这条路径上真会退」之间差着一次实跑；而且这个承诺
-  # 一旦不成立，发现它的人恰好是最没法反馈回来的那批。
-  verify-brew-gitee:
-    # 等 sync 而不是 brew：Gitee 上那份 formula 要先跟上，否则验的是上一轮的。
-    needs: sync
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: master
-
-      - name: 掐掉 GitHub，从 Gitee 装一遍
-        env:
-          # 掐网之后 brew 自动更新只会卡住，而且它要更新的东西跟这次要验的事无关。
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_ANALYTICS: 1
-        run: |
-          set -euxo pipefail
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-          # tap 本身也从 Gitee 来——国内那条路第一步就是它，`brew tap` 是 git clone，
-          # formula 里写多少 mirror 都救不了它。
-          brew tap farfarfun/packages https://gitee.com/farfarfun/packages
-          brew trust farfarfun/packages
-
-          # Gitee 那份和这一轮推上去的必须一字不差。上一轮这个 job 是绿的，装的却是
-          # 上一个版本的 formula（sync 还没跑完就开始 tap）——没有这条断言，镜像落后
-          # 多久都看不出来。
-          diff -r Formula "$(brew --repository farfarfun/packages)/Formula"
-
-          # 等 tap 落地再掐。objects.githubusercontent.com 是 release 附件 302 过去
-          # 的地方，只掐 github.com 的话附件照样下得到，等于没掐。
-          for h in github.com objects.githubusercontent.com \
-                   codeload.github.com raw.githubusercontent.com; do
-            echo "127.0.0.1 $h" | sudo tee -a /etc/hosts
-          done
-          # 确认真掐上了，否则下面整个 job 是一场空绿。
-          ! curl -fsS --max-time 10 -o /dev/null https://github.com/farfarfun/fundeploy
-
-          # 清掉下载缓存。少了这一步，万一包已经躺在缓存里，装是能装上，但走没走
-          # mirror 完全没验到——而那正是这个 job 唯一想证明的事。
-          #
-          # 清完之后这事就不用再断言了：github 的四个域名都指向 127.0.0.1，缓存是
-          # 空的，装得上就只可能是从 Gitee 下来的。比 grep 输出里有没有 "gitee.com"
-          # 结实——brew 6 的进度显示压根不打 URL，只打一行 "✔︎ Formula xxx"。
-          rm -rf "$(brew --cache)"
-
-          mapfile -t rows < <(python3 scripts/list-packages.py packages.toml --brew)
-          for row in "${rows[@]}"; do
-            pkg="${row%%$'\t'*}"
-            bin="${row##*$'\t'}"
-            brew install "$pkg"
-            "$bin" --version
-            brew test "$pkg"
-            brew uninstall "$pkg"
-          done
 
   deploy:
     needs: [build, brew]

@@ -1,0 +1,49 @@
+name: verify-brew-gitee
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 3 * * *'
+
+# 等 build 的 formula 提交和 Gitee tap 同步都完成后再验证。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verify-brew-gitee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: 掐掉 GitHub，从 Gitee 装一遍
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_ANALYTICS: 1
+        run: |
+          set -euxo pipefail
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          brew tap farfarfun/packages https://gitee.com/farfarfun/packages
+          brew trust farfarfun/packages
+          diff -r Formula "$(brew --repository farfarfun/packages)/Formula"
+
+          for h in github.com objects.githubusercontent.com \
+                   codeload.github.com raw.githubusercontent.com; do
+            echo "127.0.0.1 $h" | sudo tee -a /etc/hosts
+          done
+          ! curl -fsS --max-time 10 -o /dev/null https://github.com/farfarfun/fundeploy
+          rm -rf "$(brew --cache)"
+
+          mapfile -t rows < <(python3 scripts/list-packages.py packages.toml --brew)
+          for row in "${rows[@]}"; do
+            pkg="${row%%$'\t'*}"
+            bin="${row##*$'\t'}"
+            brew install "$pkg"
+            "$bin" --version
+            brew test "$pkg"
+            brew uninstall "$pkg"
+          done
