@@ -33,6 +33,12 @@ title.en = "Five diagram types, all local"
 text.zh = "mermaid、echarts、mindmap、flowchart、abc 五种围栏，渲染器懒加载，不写就不取。"
 text.en = "mermaid, echarts, mindmap, flowchart and abc fences; each renderer is lazy-loaded and never fetched unless used."
 
+[[features]]
+title.zh = "AI 搜索与新建"
+title.en = "Search and create with AI"
+text.zh = "AI/MCP 工具可搜索文档片段、列出目录并新建 Markdown 文档；新文档可能随 uTools 同步。"
+text.en = "AI/MCP tools search document snippets, list folders and create Markdown notes; new notes may sync through uTools."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundoc/master/docs/screenshots/editor.png"
 alt.zh = "FunDoc 的编辑器界面"

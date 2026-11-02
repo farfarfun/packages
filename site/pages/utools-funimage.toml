@@ -29,6 +29,12 @@ title.en = "Local processing"
 text.zh = "图片不上传，结果另存新文件；同名文件自动加序号。"
 text.en = "Images stay local. Results are saved as new files, with numbered names on collisions."
 
+[[features]]
+title.zh = "AI 加入图片队列"
+title.en = "Queue images from AI"
+text.zh = "AI/MCP 工具校验本机图片并加入队列，后续处理仍由用户在插件中选择；不自动写文件。"
+text.en = "The AI/MCP tool validates local images and queues them; you choose the operation in the plugin, with no automatic file writes."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funimage/main/docs/screenshots/home.png"
 alt.zh = "图片工坊的分类轨道、图片预览与文件队列"

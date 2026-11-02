@@ -31,6 +31,12 @@ title.en = "Ready from uTools"
 text.zh = "输入「算有所得」或原有 FunCalc 关键词打开，也可选中表达式后调用计算。保留键盘操作，支持日夜主题与窄屏布局。"
 text.en = "Launch from uTools using FunCalc or its new Chinese name, or pass a selected expression into the notebook. Keyboard controls, light and dark themes and a compact layout are included."
 
+[[features]]
+title.zh = "AI 单次计算"
+title.en = "One-off calculations for AI"
+text.zh = "AI/MCP 工具计算表达式并返回结果与 LaTeX，不读取或改写笔记本变量和历史。"
+text.en = "The AI/MCP tool returns a result and LaTeX for one expression without reading or changing notebook variables or history."
+
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalc/master/docs/screenshots/light.png"
 dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funcalc/master/docs/screenshots/dark.png"
