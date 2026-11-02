@@ -1,0 +1,47 @@
+name.zh = "视频工坊"
+name.en = "FunVideo"
+tagline.zh = "本地批量加工视频，处理结果按批次整理。"
+tagline.en = "Process local videos in batches and keep each run organised."
+description.zh = "视频工坊基于 uTools FFmpeg 扩展，在本机批量压缩、转换、裁剪和调整视频。支持水印、变速、GIF、封面、抽帧及音频处理；每次处理在目标目录新建独立批次文件夹。"
+description.en = "FunVideo uses the uTools FFmpeg extension to compress, convert, trim and edit local videos in batches. Add watermarks, change speed, export GIFs, covers or frames, and process audio. Each run gets its own output folder."
+
+[[features]]
+title.zh = "批量处理"
+title.en = "Batch processing"
+text.zh = "添加多个视频，查看逐项进度，取消任务或重试失败项。"
+text.en = "Queue multiple videos, track each job, cancel processing or retry failures."
+
+[[features]]
+title.zh = "画面与格式"
+title.en = "Video editing"
+text.zh = "压缩、时长与画面裁剪、调整尺寸、转换格式、变速和添加图片水印。"
+text.en = "Compress, trim, crop, resize, convert, change speed and add image watermarks."
+
+[[features]]
+title.zh = "提取与导出"
+title.en = "Extract and export"
+text.zh = "导出 GIF、封面、定时抽帧，或提取、静音和调整音频。"
+text.en = "Export GIFs, covers and timed frames, or extract, mute and adjust audio."
+
+[[features]]
+title.zh = "独立批次目录"
+title.en = "Separate output folders"
+text.zh = "每次处理创建秒级命名的文件夹，避免结果冲突；视频不上传。"
+text.en = "Each run creates a timestamped folder to avoid collisions. Videos are never uploaded."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funvideo/main/docs/screenshots/home.png"
+alt.zh = "视频工坊的分类轨道、紧凑队列与处理参数"
+alt.en = "FunVideo category rail, compact queue and processing options"
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funvideo/main/docs/screenshots/tools.png"
+alt.zh = "视频工坊的画面裁剪工具"
+alt.en = "FunVideo crop tool"
+
+[[install]]
+id = "source"
+title = "开发者模式 / Source"
+cmd = "git clone https://github.com/farfarfun-utools/utools-funvideo.git\ncd utools-funvideo"
+note.zh = "在 uTools 开发者工具中导入 utools/plugin.json。直接安装请下载本页的 .upxs；视频处理需要 uTools FFmpeg 扩展。"
+note.en = "Import utools/plugin.json in the uTools developer tools, or download the .upxs package on this page. Video processing requires the uTools FFmpeg extension."

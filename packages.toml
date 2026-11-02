@@ -190,8 +190,8 @@ bundle_id = "com.farfarfun.funread"
 # uTools 插件。仓库在 farfarfun-utools 那个组织下，不在 farfarfun 下 —— repo 写全名就行，
 # 这张表本来就不假设是同一个组织。
 #
-# 插件正式发布时的产物是一个 `.upx`（其实就是个 zip，根目录放 plugin.json），三个
-# 桌面系统共用同一个文件，装法是拖进 uTools 窗口；存储方式见各插件说明。
+# 插件正式发布时的产物是 `.upxs`，三个桌面系统共用同一个文件，
+# 导入 uTools 安装；存储方式见各插件说明。
 # keep 对它们只影响页面上「版本」那一节列几行 —— 插件的包不进
 # APT pool，不占 Pages 那 1 GB。
 # ---------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ keep = 3
 
 [source.utools]
 app = "言来语往"
-desc = "Chat with multiple AI personas in uTools, with a built-in character market and exportable topics"
+desc = "Chat with AI personas and generate images in uTools, with saved topics and full backups"
 
 [[source]]
 repo = "farfarfun-utools/utools-fundoc"
@@ -256,3 +256,19 @@ keep = 3
 [source.utools]
 app = "算有所得"
 desc = "Offline calculation notebook with variables, matrices, LaTeX rendering and persistent history"
+
+[[source]]
+repo = "farfarfun-utools/utools-funvideo"
+keep = 3
+
+[source.utools]
+app = "视频工坊"
+desc = "Batch-process local videos with compression, trimming, conversion and frame extraction"
+
+[[source]]
+repo = "farfarfun-utools/utools-funimage"
+keep = 3
+
+[source.utools]
+app = "图片工坊"
+desc = "Batch-edit local images with compression, conversion, watermarks and merging"

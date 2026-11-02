@@ -1,0 +1,47 @@
+name.zh = "图片工坊"
+name.en = "FunImage"
+tagline.zh = "批量编辑图片，随时预览并安全另存结果。"
+tagline.en = "Edit images in batches, preview changes and save new copies."
+description.zh = "图片工坊在本机压缩、转换和编辑图片。支持粘贴、拖放、单张效果预览、文字或图片水印、裁剪、旋转、边框与圆角，还可合并为图片、PDF 或 GIF。"
+description.en = "FunImage compresses, converts and edits images locally. Paste or drop files, preview changes, add text or image watermarks, crop, rotate, add borders or rounded corners, and merge images into a picture, PDF or GIF."
+
+[[features]]
+title.zh = "批量优化"
+title.en = "Batch optimisation"
+text.zh = "按质量或目标 KB 压缩，转换格式并调整尺寸。"
+text.en = "Compress by quality or target size, convert formats and resize images."
+
+[[features]]
+title.zh = "预览与编辑"
+title.en = "Preview and edit"
+text.zh = "粘贴或拖放图片，预览效果，裁剪、旋转、翻转和添加水印。"
+text.en = "Paste or drop images, preview changes, then crop, rotate, flip or add watermarks."
+
+[[features]]
+title.zh = "合并导出"
+title.en = "Merge and export"
+text.zh = "横向或纵向拼图，也可按队列顺序合并 PDF 或 GIF。"
+text.en = "Stitch images horizontally or vertically, or merge them into a PDF or GIF."
+
+[[features]]
+title.zh = "本地处理"
+title.en = "Local processing"
+text.zh = "图片不上传，结果另存新文件；同名文件自动加序号。"
+text.en = "Images stay local. Results are saved as new files, with numbered names on collisions."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funimage/main/docs/screenshots/home.png"
+alt.zh = "图片工坊的分类轨道、图片预览与文件队列"
+alt.en = "FunImage category rail, image preview and file queue"
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funimage/main/docs/screenshots/tools.png"
+alt.zh = "图片工坊的水印工具和效果预览"
+alt.en = "FunImage watermark tool and effect preview"
+
+[[install]]
+id = "source"
+title = "开发者模式 / Source"
+cmd = "git clone https://github.com/farfarfun-utools/utools-funimage.git\ncd utools-funimage"
+note.zh = "在 uTools 开发者工具中导入 utools/plugin.json。直接安装请下载本页的 .upxs 正式包。"
+note.en = "Import utools/plugin.json in the uTools developer tools, or download the stable .upxs package on this page."
