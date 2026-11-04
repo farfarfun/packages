@@ -1,9 +1,9 @@
 cask "fungame" do
   arch arm: "arm64", intel: "amd64"
 
-  version "0.1.2"
-  sha256 arm:   "8af98bbd580023c5a446f372baa2041ec535853f58605c1e448b6a7ccc9f550f",
-         intel: "c4565aec1060356e69a12df298e0dd5c5e7437caa524d12c79586dde9b603b1d"
+  version "0.1.68"
+  sha256 arm:   "65d2f03c85a3549d2c26be86a0fc37ad83dd3daa009ed4fb31ecdb08b75c8766",
+         intel: "00bd751d8370d438d8f2f52497d300dc78434ff141c8d25faef1eb916d73eb9f"
 
   url "https://github.com/farfarfun-game/fungame-client/releases/download/v#{version}/FunGame-#{version}-macos-#{arch}.dmg"
   name "FunGame"
