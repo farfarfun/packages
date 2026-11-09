@@ -1,9 +1,9 @@
 cask "funclash" do
   arch arm: "arm64", intel: "amd64"
 
-  version "1.0.15"
-  sha256 arm:   "fa592d471335d426eb8612fadcc38dc3e950ff42e713321e47d5a45724410848",
-         intel: "f7a3886fe1bad6cf588935af9f1145e11128530a8959c8cb4d9e345005eeb060"
+  version "1.0.17"
+  sha256 arm:   "b320ef7e06fb16e62c14ce050db3a16fc2f2cd055657a3c6a4c1f8b3a45458b5",
+         intel: "d905d578d54423a016eb8955877387ecf95aec689e45c7df070480bf38a2b310"
 
   url "https://github.com/farfarfun/funclash/releases/download/v#{version}/FunClash-#{version}-macos-#{arch}.dmg"
   name "FunClash"
