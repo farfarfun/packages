@@ -22,14 +22,14 @@ text.en = "Reuse named variables and the previous result, ans. Calculate matrix 
 [[features]]
 title.zh = "历史在本机"
 title.en = "History stays local"
-text.zh = "历史和变量保存在本机 IndexedDB，不自动清理；支持导出 JSON 存档。运行时不联网，清除插件数据前请先导出。"
-text.en = "History and variables are stored in local IndexedDB without automatic deletion. Export a JSON archive before clearing plugin data. No network connection is required at runtime."
+text.zh = "历史和变量保存在本机 IndexedDB；相同表达式和结果只保留最近一次，支持导出 JSON 存档。运行时不联网，清除插件数据前请先导出。"
+text.en = "History and variables stay in local IndexedDB. Identical expressions and results keep only the latest entry. Export a JSON archive before clearing plugin data; no network connection is required at runtime."
 
 [[features]]
 title.zh = "随手唤起"
 title.en = "Ready from uTools"
-text.zh = "输入「算有所得」或原有 FunCalc 关键词打开，也可选中表达式后调用计算。保留键盘操作，支持日夜主题与窄屏布局。"
-text.en = "Launch from uTools using FunCalc or its new Chinese name, or pass a selected expression into the notebook. Keyboard controls, light and dark themes and a compact layout are included."
+text.zh = "在 uTools 主搜索框输入数字算式即可查看并复制结果；输入「算有所得」或 FunCalc 打开笔记本，也可选中表达式后调用计算。"
+text.en = "Type a numeric expression in the uTools main search box to preview and copy its result. Open the notebook with FunCalc or its Chinese name, or pass in selected text."
 
 [[features]]
 title.zh = "AI 单次计算"
