@@ -4,8 +4,8 @@ name.en = "FunQR"
 tagline.zh = "文字与二维码轻松互转，让每次分享都多一点美好。"
 tagline.en = "Turn text into beautiful QR codes, and QR images back into text."
 
-description.zh = "码上生花 FunQR 是一款完全离线的 uTools 二维码工具。支持文字、网址生成二维码，通过图片、粘贴或截图识别原始文本，提供配色、渐变、三种码点和中心 Logo 美化，可导出 PNG / SVG 或复制图片。暖白与紫藤色界面，支持深色与跟随系统主题。"
-description.en = "FunQR is an offline uTools plugin for creating and reading QR codes. Encode text or URLs, decode an image, clipboard paste or screenshot, and customise colours, gradients, module shapes and a centre logo. Export PNG or SVG, or copy an image, in a warm purple interface with light, dark and system themes."
+description.zh = "码上生花 FunQR 是一款完全离线的 uTools 二维码工具。支持文字、网址生成二维码，通过图片、粘贴或截图识别原始文本，提供八套配色、五种码点、渐变、中心 Logo 或短文字、底部说明文字，可导出 PNG / SVG 或复制图片。支持深色与跟随系统主题。"
+description.en = "FunQR is an offline uTools plugin for creating and reading QR codes. Encode text or URLs, decode an image, clipboard paste or screenshot, and customise eight palettes, five module shapes, gradients, a centre logo or short text, and a bottom caption. Export PNG or SVG, or copy an image."
 
 [[features]]
 title.zh = "双向互转"
@@ -16,8 +16,8 @@ text.en = "Create a QR code from text or a URL. Pick, drop or paste an image, or
 [[features]]
 title.zh = "为方寸添色"
 title.en = "Make it your own"
-text.zh = "六套精选配色，方块、圆角、圆点三种码点，双色渐变与中心 Logo；支持自定义码点和背景颜色。"
-text.en = "Six colour palettes, square, rounded or dotted modules, two-colour gradients and a centre logo. Choose custom foreground and background colours."
+text.zh = "八套精选配色，方块、圆角、圆点、胶囊、菱形五种码点，双色渐变、中心 Logo 或短文字、底部说明文字；支持自定义码点和背景颜色。"
+text.en = "Eight palettes, five module shapes, two-colour gradients, a centre logo or short text, and a bottom caption. Choose custom foreground and background colours."
 
 [[features]]
 title.zh = "校验后再导出"
@@ -58,6 +58,13 @@ alt.zh = "码上生花的浅色生成界面"
 alt.en = "FunQR in light mode"
 caption.zh = "暖白纸感与紫藤色，让文字分享有一点设计感。"
 caption.en = "Warm paper tones and soft purple colours for everyday sharing."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funqr/master/docs/screenshots/caption.png"
+alt.zh = "二维码中心短文字与底部说明文字"
+alt.en = "QR code with centre text and a bottom caption"
+caption.zh = "中心可放短文字或 Logo，底部可加说明；导出图片包含这些内容。"
+caption.en = "Add short text or a logo in the centre and a caption below the code; both appear in exports."
 
 [[install]]
 id = "source"
