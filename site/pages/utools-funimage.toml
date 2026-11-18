@@ -20,8 +20,8 @@ text.en = "Paste or drop images, preview changes, then crop, rotate, flip or add
 [[features]]
 title.zh = "合并导出"
 title.en = "Merge and export"
-text.zh = "横向或纵向拼图，也可按队列顺序合并 PDF 或 GIF。"
-text.en = "Stitch images horizontally or vertically, or merge them into a PDF or GIF."
+text.zh = "在队列中上移或下移图片，再横向或纵向拼接。导出 PDF 或 GIF 时，同一顺序决定页序或帧序。"
+text.en = "Move images up or down in the queue before stitching them horizontally or vertically. The same order sets the PDF pages or GIF frames."
 
 [[features]]
 title.zh = "本地处理"
@@ -37,8 +37,8 @@ text.en = "The AI/MCP tool validates local images and queues them; you choose th
 
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funimage/main/docs/screenshots/home.png"
-alt.zh = "图片工坊的分类轨道、图片预览与文件队列"
-alt.en = "FunImage category rail, image preview and file queue"
+alt.zh = "图片工坊的工具侧栏、图片预览和带排序按钮的队列"
+alt.en = "FunImage tool sidebar, image preview and queue with reorder controls"
 
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funimage/main/docs/screenshots/tools.png"
