@@ -8,8 +8,8 @@ description.en = "FunVideo uses the uTools FFmpeg extension to compress, convert
 [[features]]
 title.zh = "批量处理"
 title.en = "Batch processing"
-text.zh = "添加多个视频，查看逐项进度，取消任务或重试失败项。"
-text.en = "Queue multiple videos, track each job, cancel processing or retry failures."
+text.zh = "拖入多个视频，查看逐项进度，取消任务或重试失败项。"
+text.en = "Drop multiple videos into the queue, track each job, cancel processing or retry failures."
 
 [[features]]
 title.zh = "画面与格式"
@@ -20,8 +20,8 @@ text.en = "Compress, trim, crop, resize, convert, change speed and add image wat
 [[features]]
 title.zh = "提取与导出"
 title.en = "Extract and export"
-text.zh = "导出 GIF、封面、定时抽帧，或提取、静音和调整音频。"
-text.en = "Export GIFs, covers and timed frames, or extract, mute and adjust audio."
+text.zh = "导出 GIF、封面或定时截帧。按指定时间间隔取帧，可将每个视频拼成一张 2×2、3×3 或 4×4 的 JPG 缩略图。也可提取、静音和调整音频。"
+text.en = "Export GIFs, covers or individual frames. Sample frames at a chosen interval to make a 2×2, 3×3 or 4×4 JPEG contact sheet for each video. You can also extract, mute or adjust the audio."
 
 [[features]]
 title.zh = "独立批次目录"
@@ -37,8 +37,8 @@ text.en = "The AI/MCP tool validates local videos and queues them; you choose th
 
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funvideo/main/docs/screenshots/home.png"
-alt.zh = "视频工坊的分类轨道、紧凑队列与处理参数"
-alt.en = "FunVideo category rail, compact queue and processing options"
+alt.zh = "视频工坊的顶部分组工具栏、文件队列和处理参数"
+alt.en = "FunVideo toolbar above the file queue and processing options"
 
 [[shots]]
 light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funvideo/main/docs/screenshots/tools.png"
