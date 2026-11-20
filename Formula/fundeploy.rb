@@ -1,32 +1,32 @@
 class Fundeploy < Formula
   desc "Manage development toolchains, local services and package mirrors from one CLI"
   homepage "https://github.com/farfarfun/fundeploy"
-  version "0.3.30"
+  version "0.3.31"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-aarch64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-aarch64-apple-darwin.tar.gz"
-      sha256 "c45d852ff1cb79975de0da040c5e1ea6b01f88e723640418aaf8d3f369137dc8"
+      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-aarch64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-aarch64-apple-darwin.tar.gz"
+      sha256 "b8894db05b6bcca0d276bcfa97a1ac1cd35d3fbccec7b63b9fcba464f73ba159"
     end
     on_intel do
-      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-x86_64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-x86_64-apple-darwin.tar.gz"
-      sha256 "d30647be1075bd31ee92bf7dd5c3c96f0ac498991c91fcd4624e6e6dc6d92106"
+      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-x86_64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-x86_64-apple-darwin.tar.gz"
+      sha256 "64f4ae4e903300ee44aa12721ab305ef388328421119c10ce511c1371cd1de60"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-aarch64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-aarch64-unknown-linux-musl.tar.gz"
-      sha256 "be17f15a9109550f90b7230ee771659c430b0c62a25e2cc1dfa97ad7ef3f5436"
+      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-aarch64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-aarch64-unknown-linux-musl.tar.gz"
+      sha256 "eaddb5813b29f7bd7e83489457e3e8a2c2997ca8ec6f61976fcaa8dcca981964"
     end
     on_intel do
-      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-x86_64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.30/fundeploy-x86_64-unknown-linux-musl.tar.gz"
-      sha256 "edd5247288e0f93d06c840b3b37f497a51b80c859f47a623b76a15a4fccf3b54"
+      url "https://github.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-x86_64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/fundeploy/releases/download/v0.3.31/fundeploy-x86_64-unknown-linux-musl.tar.gz"
+      sha256 "3a7a8ab76890ef86c9632e6fcd252831057ae32590001fa8fd521020f33c065d"
     end
   end
 
