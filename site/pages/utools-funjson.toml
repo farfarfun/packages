@@ -1,0 +1,74 @@
+name.zh = "JSON工坊"
+name.en = "FunJSON"
+
+tagline.zh = "离线 JSON 五视图工作台：编辑、树形、递归嵌套表格、栏列与语义对比一应俱全。"
+tagline.en = "An offline five-view JSON workbench with editor, tree, nested table, columns and semantic diff."
+
+description.zh = "JSON工坊 FunJSON 是一款离线 uTools JSON 工作台插件，原生支持 JSON / JSONC / JSON5 / NDJSON，提供编辑、树形、3 级递归嵌套表格、栏列与语义对比五种视图，内置 RFC 9535 JSONPath、智能检视条、离线 JSON 修复、9 语言类型生成与键名风格批量转换。"
+description.en = "FunJSON is an offline uTools workbench for JSON, JSONC, JSON5 and NDJSON. Switch seamlessly between CodeMirror 6 editor, interactive tree, recursive nested table, Miller columns and semantic diff, with built-in RFC 9535 JSONPath, smart inspector, offline JSON repair, 9-language type generation and key case conversion."
+
+[[features]]
+title.zh = "五视图自由切换"
+title.en = "Five views in one workbench"
+text.zh = "编辑（CodeMirror 6）、树形、递归嵌套表格、栏列（Miller Columns）与忽略键序的语义差异对比一键切换，支持多标签与历史快照回溯。"
+text.en = "Switch between a CodeMirror 6 editor, interactive tree, recursive nested table, Miller columns and key-order-insensitive semantic diff, with multi-tab editing and snapshot history."
+
+[[features]]
+title.zh = "递归嵌套表格"
+title.en = "Recursive nested tables"
+text.zh = "将嵌套对象与数组直接展开为可交互子表，支持列头排序、列值多选筛选、JSONPath 面包屑导航与 CSV / TSV / Markdown / JSON 导出。"
+text.en = "Inspect nested objects and arrays as expandable inline tables with column sorting, value filtering, JSONPath breadcrumbs and export to CSV, TSV, Markdown or JSON."
+
+[[features]]
+title.zh = "RFC 9535 JSONPath 与检视条"
+title.en = "JSONPath and smart inspector"
+text.zh = "编辑器内置可折叠 JSONPath 查询栏与精选示例，光标停留自动识别时间戳、色值色块、Base64、URL、Unicode 及内嵌 JSON 字符串。"
+text.en = "Run RFC 9535 JSONPath queries right inside the editor, and let the cursor inspector decode timestamps, colour swatches, Base64, URLs, Unicode and embedded JSON strings."
+
+[[features]]
+title.zh = "JSON 专属工具箱"
+title.en = "Built-in JSON toolbox"
+text.zh = "离线 JSON 修复（可选接入自定义 AI 接口）、9 种语言类型定义与 JSON Schema 生成、JSONPath 实验室与 6 种键名风格批量转换。"
+text.en = "Repair broken JSON offline (with optional user-configured AI), generate types for 9 languages plus JSON Schema, test JSONPath queries and batch-convert key casing."
+
+[[features]]
+title.zh = "离线优先与 AI 工具"
+title.en = "Offline-first with AI tools"
+text.zh = "默认 100% 本机离线运行，无账号无埋点；注册 format_json、query_jsonpath、json_to_types 三个纯本地 AI/MCP 工具。"
+text.en = "Runs 100% offline by default with no account or telemetry, and registers three local AI/MCP tools: format_json, query_jsonpath and json_to_types."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funjson/master/docs/screenshots/home.png"
+dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-funjson/master/docs/screenshots/dark.png"
+alt.zh = "JSON工坊的编辑器工作台、JSONPath 查询栏与深色模式"
+alt.en = "FunJSON editor workbench with JSONPath query bar in light and dark themes"
+caption.zh = "多标签代码编辑器、内置 JSONPath 查询栏与光标智能检视条，支持浅色 / 深色 / 跟随系统。"
+caption.en = "Multi-tab code editor with inline JSONPath query bar and smart cursor inspector in light and dark modes."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funjson/master/docs/screenshots/table.png"
+alt.zh = "JSON工坊的递归嵌套表格视图"
+alt.en = "FunJSON recursive nested table view"
+caption.zh = "支持嵌套子表展开、列排序与筛选、JSONPath 面包屑与多格式表格导出。"
+caption.en = "Expand nested subtables inline with column sorting, filtering, JSONPath breadcrumbs and multi-format export."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funjson/master/docs/screenshots/tree.png"
+alt.zh = "JSON工坊的交互式树形视图"
+alt.en = "FunJSON interactive tree view"
+caption.zh = "树形节点支持关键字过滤、内联编辑、增删节点与一键复制 JSONPath。"
+caption.en = "Filter tree nodes by keyword, edit values inline, add or remove entries and copy JSONPath in one click."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-funjson/master/docs/screenshots/toolbox.png"
+alt.zh = "JSON工坊的工具箱与多语言类型生成"
+alt.en = "FunJSON toolbox generating types from JSON"
+caption.zh = "4 合 1 工具箱支持 JSON 修复、9 语言类型生成、JSONPath 实验与键名批量转换。"
+caption.en = "The 4-in-1 toolbox covers JSON repair, 9-language type generation, JSONPath testing and key case conversion."
+
+[[install]]
+id = "source"
+title = "源码构建 / Source"
+cmd = "git clone https://github.com/farfarfun-utools/utools-funjson.git\ncd utools-funjson\npnpm install\nsh build.sh"
+note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm。构建后在 uTools 开发者工具中载入 utools/plugin.json。直接安装请下载本页的 .upxs 正式安装包并拖入 uTools，无需构建或解压。"
+note.en = "Requires Node.js 22.22.2 or newer and pnpm. Build and load utools/plugin.json in uTools developer tools. To install directly, download the stable .upxs package on this page and drag it into uTools; no build or extraction is needed."

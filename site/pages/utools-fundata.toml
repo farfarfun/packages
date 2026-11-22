@@ -1,0 +1,74 @@
+name.zh = "数形万变"
+name.en = "FunData"
+
+tagline.zh = "离线 10 合 1 开发者数据工具箱：格式互转、SQL、JWT、正则、Cron 与哈希一站搞定。"
+tagline.en = "An offline 10-in-1 developer data studio for formats, SQL, JWT, regex, Cron and hashes."
+
+description.zh = "数形万变 FunData 是一款完全离线的 uTools 开发者数据工具箱，集成 10 格式双向互转、6 方言 SQL 美化、Protobuf 安全重编号、编解码与多时区时间戳、JWT 验签签发、哈希/HMAC 与 UUID/密钥生成、正则实验室、Cron 解析预测、色值进制字节换算以及双行号文本对比。"
+description.en = "FunData is a fully offline 10-in-1 uTools developer data studio covering 10-format conversion, 6-dialect SQL formatting, safe Protobuf renumbering, encoding and timezone timestamps, JWT verification and signing, hash/HMAC and UUID/key generation, a regex lab, Cron schedule analysis, colour/base/byte conversion and side-by-side text diff."
+
+[[features]]
+title.zh = "格式、SQL 与 Protobuf"
+title.en = "Formats, SQL and Protobuf"
+text.zh = "支持 JSON / JSON5 / YAML / TOML / XML / CSV / TSV / INI / NDJSON / URL Query 10 格式互转、6 方言 SQL 美化压缩与 Protobuf 安全重编号。"
+text.en = "Convert across 10 formats (JSON, JSON5, YAML, TOML, XML, CSV, TSV, INI, NDJSON, URL Query), format or minify 6 SQL dialects and safely renumber Protobuf definitions."
+
+[[features]]
+title.zh = "编解码、JWT 与哈希密钥"
+title.en = "Encoding, JWT and crypto helpers"
+text.zh = "Base64 / URL / Unicode / HTML / Hex 编解码与 5 时区时间戳；大整数保真 JWT 解析与 Web Crypto HS256/384/512 验签签发；MD5 / SHA / HMAC 与 UUID / ULID / NanoID 批量生成。"
+text.en = "Encode/decode Base64, URL, Unicode, HTML and Hex with multi-timezone timestamps; verify and sign HS256/384/512 JWTs with Web Crypto; compute MD5/SHA/HMAC and batch-generate UUIDs, ULIDs and NanoIDs."
+
+[[features]]
+title.zh = "正则、Cron 与单位换算"
+title.en = "Regex, Cron and unit converters"
+text.zh = "正则实时高亮、捕获组表与替换预览；5/6 位 Cron 中英语义解析与未来 10 次触发预测；颜色 WCAG 对比度、BigInt 多进制与 IEC/SI 字节换算。"
+text.en = "Test regexes with live highlights, capture tables and replacement previews; parse 5/6-field Cron schedules with the next 10 runs; convert colours with WCAG checks, BigInt bases and IEC/SI byte units."
+
+[[features]]
+title.zh = "文本对比与高效导航"
+title.en = "Text diff and fast navigation"
+text.zh = "双行号并排文本对比与去重/排序/词频批处理；支持 ⌘K 快速跳转面板，选中常见文件或文本时自动识别并直达对应工具。"
+text.en = "Compare text side by side with batch deduplication, sorting and frequency stats; jump anywhere with ⌘K or route selected text and files straight to the right tool."
+
+[[features]]
+title.zh = "完全离线与 5 个 AI 工具"
+title.en = "Fully offline with 5 AI tools"
+text.zh = "100% 本机运行，无账号无联网请求；注册 convert_data_format、decode_jwt、format_sql、parse_cron、compute_hash 五个纯本地 AI/MCP 工具。"
+text.en = "Runs 100% offline with zero network calls, and registers five local AI/MCP tools: convert_data_format, decode_jwt, format_sql, parse_cron and compute_hash."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundata/master/docs/screenshots/home.png"
+dark = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundata/master/docs/screenshots/dark.png"
+alt.zh = "数形万变 10 合 1 开发者工作室总览与深色模式"
+alt.en = "FunData 10-in-1 developer studio overview and dark theme"
+caption.zh = "左侧分类侧栏与 10 款工具卡片总览，支持 ⌘K 快速跳转与浅色 / 深色 / 跟随系统。"
+caption.en = "Categorised sidebar and 10-tool studio overview with ⌘K quick jump in light and dark themes."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundata/master/docs/screenshots/convert.png"
+alt.zh = "数形万变的 10 格式万能互转界面"
+alt.en = "FunData 10-format converter"
+caption.zh = "支持 10 种主流数据格式自动识别、双向无损互转与一键互换。"
+caption.en = "Auto-detect and convert losslessly across 10 common data formats with one-click swap."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundata/master/docs/screenshots/regex.png"
+alt.zh = "数形万变的正则表达式实验室"
+alt.en = "FunData regex laboratory"
+caption.zh = "实时匹配高亮、捕获组明细表、常用预设与替换结果预览。"
+caption.en = "Live match highlighting, capture group table, presets and replacement preview."
+
+[[shots]]
+light = "https://raw.githubusercontent.com/farfarfun-utools/utools-fundata/master/docs/screenshots/cron.png"
+alt.zh = "数形万变的 Cron 表达式解析器"
+alt.en = "FunData Cron schedule parser"
+caption.zh = "支持 5 位与 6 位 Cron 语义拆解，并纯离线计算指定时区未来 10 次触发时间。"
+caption.en = "Explain 5- and 6-field Cron expressions and calculate the next 10 trigger times offline in any timezone."
+
+[[install]]
+id = "source"
+title = "源码构建 / Source"
+cmd = "git clone https://github.com/farfarfun-utools/utools-fundata.git\ncd utools-fundata\npnpm install\nsh build.sh"
+note.zh = "需要 Node.js ≥ 22.22.2 和 pnpm。构建后在 uTools 开发者工具中载入 utools/plugin.json。直接安装请下载本页的 .upxs 正式安装包并拖入 uTools，无需构建或解压。"
+note.en = "Requires Node.js 22.22.2 or newer and pnpm. Build and load utools/plugin.json in uTools developer tools. To install directly, download the stable .upxs package on this page and drag it into uTools; no build or extraction is needed."

@@ -272,3 +272,19 @@ keep = 3
 [source.utools]
 app = "图片工坊"
 desc = "Batch-edit local images with compression, conversion, watermarks and merging"
+
+[[source]]
+repo = "farfarfun-utools/utools-funjson"
+keep = 3
+
+[source.utools]
+app = "JSON工坊"
+desc = "Offline five-view JSON workbench with editor, tree, recursive nested table, Miller columns, semantic diff, JSONPath and type generation"
+
+[[source]]
+repo = "farfarfun-utools/utools-fundata"
+keep = 3
+
+[source.utools]
+app = "数形万变"
+desc = "Offline 10-in-1 developer data studio for format conversion, SQL, Protobuf, encoding, JWT, hashes, regex, Cron, colour/base units and text diff"
