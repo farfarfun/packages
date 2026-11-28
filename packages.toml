@@ -56,6 +56,16 @@ desc = "HTTP file transfer tool with ranged concurrency and resume"
 checks = [["--help", "download"]]
 
 [[source]]
+repo = "farfarfun/funsecret"
+keep = 3
+# 2.0.0 起核心与 CLI 改为 Rust 原生实现并发布 .deb / tarball / SHA256SUMS。
+min_version = "2.0.0"
+
+[source.brew]
+desc = "Local-first encrypted secret manager CLI with SQLite, MySQL and PostgreSQL sync"
+checks = [["--help", "read"]]
+
+[[source]]
 repo = "farfarfun/funbuild"
 keep = 3
 # 1.6.104 及更早的 release 里没有二进制附件：那时只发 PyPI wheel（里面装的是同一个
@@ -288,3 +298,11 @@ keep = 3
 [source.utools]
 app = "数形万变"
 desc = "Offline 10-in-1 developer data studio for format conversion, SQL, Protobuf, encoding, JWT, hashes, regex, Cron, colour/base units and text diff"
+
+[[source]]
+repo = "farfarfun-utools/utools-funsecret"
+keep = 3
+
+[source.utools]
+app = "密藏随行"
+desc = "Manage multi-level local encrypted secrets via the native funsecret CLI with quick search, clipboard auto-clear and SQLite/MySQL/PostgreSQL sync"
