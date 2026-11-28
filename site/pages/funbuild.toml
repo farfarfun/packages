@@ -1,0 +1,45 @@
+# funbuild 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "Python / 前端 / Flutter / Rust 仓库的一键发版工具：版本递增、构建、发布与打标签。"
+tagline.en = "One-command release pipeline for Python, frontend, Flutter and Rust repositories."
+
+description.zh = "funbuild 根据仓库布局自动匹配 uv、Poetry、npm、Flutter、maturin 或 Cargo 等构建策略，一条命令完成版本递增、依赖升级、构建校验、发布与 Git 标签。命令行由 Rust 编译为独立静态二进制，不依赖 Python 环境。"
+description.en = "funbuild detects your repository layout and runs the right build strategy for uv, Poetry, npm, Flutter, maturin or Cargo, chaining version bumping, builds, publishing and Git tagging in one command. The CLI is a standalone Rust static binary that needs no Python."
+
+[[features]]
+title.zh = "多策略自动探测"
+title.en = "Auto-detected strategies"
+text.zh = "按仓库结构自动匹配 uv、Poetry、npm、Flutter、maturin、Cargo 与子模块工作区。"
+text.en = "Automatically matches uv, Poetry, npm, Flutter, maturin, Cargo and submodule workspaces."
+
+[[features]]
+title.zh = "版本与依赖同步"
+title.en = "Version & dep sync"
+text.zh = "同步仓内多份清单版本号，并按需把指定依赖抬升到最新已发布版本。"
+text.en = "Syncs versions across nested manifests and bumps configured dependencies to latest releases."
+
+[[features]]
+title.zh = "单文件独立二进制"
+title.en = "Standalone static binary"
+text.zh = "Rust 原生实现，不依赖 Python 或第三方运行时，各渠道装出同一份命令。"
+text.en = "Native Rust static binary with no Python runtime needed, identical across every channel."
+
+[[features]]
+title.zh = "发版流水线闭环"
+title.en = "End-to-end release"
+text.zh = "串联校验、提交、打 tag 与推送，任一步骤失败即中止，避免发出坏版本。"
+text.en = "Chains checks, commits, tagging and pushing, aborting immediately on any failure."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install funbuild --locked"
+note.zh = "有 Rust 工具链的话。"
+note.en = "If you have a Rust toolchain."
+
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funbuild"
+note.zh = "仅包含历史兼容的 funbuild.tool Python 模块，不安装 funbuild 命令 —— 命令行请走上面任意一条渠道。"
+note.en = "Installs only the legacy funbuild.tool Python module without the funbuild command. Use one of the channels above for the CLI."
