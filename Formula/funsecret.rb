@@ -1,32 +1,32 @@
 class Funsecret < Formula
   desc "Local-first encrypted secret manager CLI with SQLite, MySQL and PostgreSQL sync"
   homepage "https://github.com/farfarfun/funsecret"
-  version "2.0.2"
+  version "2.1.0"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-aarch64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-aarch64-apple-darwin.tar.gz"
-      sha256 "594f9cddc40638a09b342e22a6f8698a2f37c41e5c00664d0834cf35ede39a92"
+      url "https://github.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-aarch64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-aarch64-apple-darwin.tar.gz"
+      sha256 "be7bb6f5af66cb5588805bd654fb1225cc999324481c06df4d5bebd7094520b9"
     end
     on_intel do
-      url "https://github.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-x86_64-apple-darwin.tar.gz"
-      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-x86_64-apple-darwin.tar.gz"
-      sha256 "695e8c47b698c498633337e6e307e2a04e5d377a5e54bb3ded37841c2a44486e"
+      url "https://github.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-x86_64-apple-darwin.tar.gz"
+      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-x86_64-apple-darwin.tar.gz"
+      sha256 "ce37197d0dbac729fe0b1ad0cf155c65fd4329d82ba9cdf2f5eeb95743746d3c"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-aarch64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-aarch64-unknown-linux-musl.tar.gz"
-      sha256 "c23cdf3c9c368f1b8563396d7bacc5c3ec1b4e7f047b40d1e20cb845761973ab"
+      url "https://github.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-aarch64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-aarch64-unknown-linux-musl.tar.gz"
+      sha256 "333f2fc3e03930652944b662706f18900dc278d1343d2baf0d929cec5d1a9788"
     end
     on_intel do
-      url "https://github.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-x86_64-unknown-linux-musl.tar.gz"
-      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.0.2/funsecret-x86_64-unknown-linux-musl.tar.gz"
-      sha256 "49d51162c99fa47aedffc6450a5d39194892ec81fc4f8c66a61e90bd3de5be4c"
+      url "https://github.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-x86_64-unknown-linux-musl.tar.gz"
+      mirror "https://gitee.com/farfarfun/funsecret/releases/download/v2.1.0/funsecret-x86_64-unknown-linux-musl.tar.gz"
+      sha256 "8497f38b8bf81b884ade367130e4af6a3b9222a3cbc85da297396a4d321147fa"
     end
   end
 
