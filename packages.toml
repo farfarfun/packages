@@ -127,7 +127,7 @@ min_macos = "monterey"
 bundle_id = "com.farfarfun.fungame"
 
 [[source]]
-repo = "farfarfun/funread-web"
+repo = "farfarfun-read/funread-web"
 # 仓库名带 -web 是因为它同时是 npm 包 @farfarfun/funread-web 的源码，而它打出来的
 # 桌面客户端对用户就叫 funread：deb 的 Package 字段、Tauri 的 productName、装进
 # /Applications 的 .app 名全是 funread。这里跟着产物走，不跟仓库名走。
@@ -188,7 +188,7 @@ bundle_id = "com.farfarfun.funread"
 # 报告里没有 `!` 再解开。
 #
 # [[source]]
-# repo = "farfarfun/funread"
+# repo = "farfarfun-read/funread"
 # name = "funread-cli"
 # keep = 3
 #

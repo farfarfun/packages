@@ -1,6 +1,6 @@
 # funread 桌面客户端的包页文案。格式见 docs/package-spec.md。
 #
-# 这一份对应 farfarfun/funread-web 打出来的桌面应用（deb / DMG），不是 PyPI 上
+# 这一份对应 farfarfun-read/funread-web 打出来的桌面应用（deb / DMG），不是 PyPI 上
 # 那个同名的 Python 库 —— 后者的文案在 funread-cli.toml，包名也已经改叫
 # funread-cli 了。
 
@@ -38,20 +38,20 @@ text.en = "It stores a device token rather than your password, so a lost phone c
 # 重截一遍（Playwright + 一套写死的假数据，所以界面没改的话图就不会变）。这边
 # 构建时下到站点下面，不热链。
 [[shots]]
-light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/shelf-light.png"
-dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/shelf-dark.png"
+light = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/shelf-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/shelf-dark.png"
 alt.zh = "funread 的书架，手机上的样子"
 alt.en = "The funread bookshelf on a phone"
 
 [[shots]]
-light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/read-light.png"
-dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/read-dark.png"
+light = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/read-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/read-dark.png"
 alt.zh = "正文阅读界面，右边是夜间配色"
 alt.en = "The reading view, with the night colour scheme on the right"
 
 [[shots]]
-light = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/admin-light.png"
-dark = "https://raw.githubusercontent.com/farfarfun/funread-web/master/docs/snapshots/admin-dark.png"
+light = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/admin-light.png"
+dark = "https://raw.githubusercontent.com/farfarfun-read/funread-web/master/docs/snapshots/admin-dark.png"
 alt.zh = "管理端的采集源列表"
 alt.en = "The collector source list in the admin console"
 
