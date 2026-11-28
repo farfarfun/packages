@@ -1,0 +1,45 @@
+# funmirror 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "跨平台 Git 组织仓库与 Release 并行镜像工具，支持 GitHub / Gitee / GitLab / GitCode。"
+tagline.en = "Parallel repository and release mirroring CLI across GitHub, Gitee, GitLab and GitCode."
+
+description.zh = "funmirror 在代码托管平台之间并行镜像整个组织的仓库与 Release 附件，自动跳过默认分支未变更的仓库，支持增量状态文件与两阶段并发限流。核心由 Rust + Tokio 异步引擎实现，单静态二进制免 Python 环境，同时提供零依赖 PyO3 Python 扩展。"
+description.en = "funmirror mirrors entire organizations and release assets in parallel across GitHub, Gitee, GitLab and GitCode, skipping unchanged repositories with an incremental state file and two-phase concurrency throttling. Built on Rust and Tokio as a standalone static binary alongside a zero-dependency PyO3 Python package."
+
+[[features]]
+title.zh = "两阶段并发，精准限流"
+title.en = "Two-phase parallelism"
+text.zh = "高并发 detect 阶段快速比对分支 SHA，低并发 sync 阶段按信号量限流推送，兼顾吞吐与目标平台防封控。"
+text.en = "High-concurrency detect workers compare branch SHAs quickly while semaphore-throttled sync workers push only changed repos."
+
+[[features]]
+title.zh = "增量状态与跳过未变"
+title.en = "Incremental & skip-unchanged"
+text.zh = "支持跨次运行的命名空间 JSON 状态文件，仅在确认同步成功后更新状态，未变仓库零克隆开销。"
+text.en = "Persists namespaced JSON state across runs, updating entries only after confirmed syncs so unchanged repos are skipped without cloning."
+
+[[features]]
+title.zh = "Release 与大附件镜像"
+title.en = "Release asset mirroring"
+text.zh = "支持 GitHub 到 Gitee 的 Release 与二进制附件按名称与大小增量同步，逐文件流式传输并即时清理临时文件。"
+text.en = "Mirrors GitHub releases and binary assets to Gitee incrementally by name and size, streaming one asset at a time with immediate cleanup."
+
+[[features]]
+title.zh = "原生 CI 集成"
+title.en = "Built for CI"
+text.zh = "单静态二进制毫秒启动，自动写入 GITHUB_STEP_SUMMARY 与 GITHUB_OUTPUT，无需在 Actions 里安装 Python 依赖。"
+text.en = "Single static binary with instant startup and native GITHUB_STEP_SUMMARY / GITHUB_OUTPUT support—no Python setup needed in Actions."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install funmirror"
+note.zh = "有 Rust 工具链时直接从 crates.io 安装。"
+note.en = "Install directly from crates.io with a Rust toolchain."
+
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funmirror"
+note.zh = "仅安装 Python API 库，不含 funmirror 命令——命令行请走上面的 apt / brew / Cargo / Release 渠道。"
+note.en = "Installs the Python library only; it does not ship the funmirror CLI. Use apt, brew, Cargo or Release binaries above for the CLI."

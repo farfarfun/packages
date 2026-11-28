@@ -1,0 +1,45 @@
+# funpub 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "多渠道制品发布工具：支持阿里云 Packages generic 仓库分块上传、校验下载与临时签名链接。"
+tagline.en = "Multi-channel artifact publishing CLI with chunked upload, verified download and signed URLs."
+
+description.zh = "funpub 通过统一接口向制品仓库上传与下载发布产物，支持大文件自动分块上传、合并轮询、MD5/SHA1/SHA256 校验与原子落盘。核心由 Rust 实现并直接集成 funsecret-core 读取凭据，同时提供零依赖 PyO3 Python 扩展。"
+description.en = "funpub uploads and downloads release artifacts across publishing channels with automatic chunked upload, merge polling, MD5/SHA1/SHA256 verification and atomic downloads. Powered by Rust with built-in funsecret-core credential lookup, alongside a zero-dependency PyO3 Python library."
+
+[[features]]
+title.zh = "大文件分块与校验"
+title.en = "Chunked upload & checksums"
+text.zh = "超过阈值自动走分块上传与合并状态轮询，全程流式计算 MD5/SHA1/SHA256，保障大产物完整可靠。"
+text.en = "Automatically switches large files to multipart chunked uploads with merge polling and streaming MD5/SHA1/SHA256 verification."
+
+[[features]]
+title.zh = "内置 funsecret 凭据管理"
+title.en = "Built-in funsecret integration"
+text.zh = "直接复用 funsecret-core 从本机加密库按仓库名读取账号密码，凭据不进入命令行参数与 shell 历史。"
+text.en = "Reads repository credentials by name via funsecret-core so passwords never appear in CLI arguments or shell history."
+
+[[features]]
+title.zh = "CI 友好的单文件二进制"
+title.en = "CI-ready static binary"
+text.zh = "内置纯 Rust TLS 与根证书，无 OpenSSL 与 Python 运行时依赖，适配最小镜像与各类 CI runner。"
+text.en = "Uses pure-Rust TLS with bundled root certificates and zero OpenSSL or Python dependencies for minimal CI containers."
+
+[[features]]
+title.zh = "独立二进制 + Python 扩展"
+title.en = "Native binary & Python API"
+text.zh = "命令行走静态原生二进制分发；Python 包零运行时依赖，提供与 CLI 共享核心的发布器 API。"
+text.en = "Distributes the CLI as a standalone static binary while the Python package exposes the same Rust core with zero runtime dependencies."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install funpub"
+note.zh = "有 Rust 工具链时直接从 crates.io 安装。"
+note.en = "Install directly from crates.io with a Rust toolchain."
+
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funpub"
+note.zh = "仅安装 Python API 库，不含 funpub 命令——命令行请走上面的 apt / brew / Cargo / Release 渠道。"
+note.en = "Installs the Python library only; it does not ship the funpub CLI. Use apt, brew, Cargo or Release binaries above for the CLI."

@@ -1,0 +1,45 @@
+# funshell 的包页文案。格式见 docs/package-spec.md。
+
+tagline.zh = "跨平台端口/进程查杀与 shell 命令执行工具，原生系统接口、不依赖 lsof / ss。"
+tagline.en = "Cross-platform port/process query & kill and shell execution CLI without lsof/ss."
+
+description.zh = "funshell 提供按端口号与进程名关键字查杀进程以及带超时控制的 shell 命令执行。核心与命令行由 Rust 实现，Linux 下直接读取 /proc/net 发现端口占用，零外部命令依赖，同时提供零依赖 PyO3 Python 扩展。"
+description.en = "funshell finds and terminates processes by listening port or command-line keyword and runs shell commands with timeout control. Its core and CLI are written in Rust—reading /proc/net directly on Linux without requiring lsof or ss—paired with a zero-dependency PyO3 Python package."
+
+[[features]]
+title.zh = "原生端口与进程发现"
+title.en = "Native port & process discovery"
+text.zh = "Linux 直接解析 /proc/net 与进程表，精简容器无 lsof / ss 也能查杀端口占用，并原生发送终止信号。"
+text.en = "Reads /proc/net and system process tables natively on Linux so port lookup works even in minimal containers without lsof or ss."
+
+[[features]]
+title.zh = "安全信号校验与防误杀"
+title.en = "Safe signal handling"
+text.zh = "支持名称与编号信号（TERM、KILL、9、15 等）严格校验，命令行按名查杀自动排除自身进程。"
+text.en = "Validates named and numeric signals strictly and automatically excludes the funshell CLI process itself during name-based kills."
+
+[[features]]
+title.zh = "超时可控的命令执行"
+title.en = "Timeout-safe shell execution"
+text.zh = "内置 run 子命令支持工作目录、超时自动终止、实时流式输出与多编码捕获。"
+text.en = "Includes a run subcommand with working directory control, automatic timeout termination, live streaming and multi-encoding capture."
+
+[[features]]
+title.zh = "独立二进制 + Python 扩展"
+title.en = "Native binary & Python API"
+text.zh = "命令行是静态链接原生二进制；Python 包零运行时依赖，执行命令与进程操作自动释放 GIL。"
+text.en = "The CLI ships as a statically linked binary while the Python package has zero runtime dependencies and releases the GIL during I/O."
+
+[[install]]
+id = "cargo"
+title = "Cargo"
+cmd = "cargo install funshell"
+note.zh = "有 Rust 工具链时直接从 crates.io 安装。"
+note.en = "Install directly from crates.io with a Rust toolchain."
+
+[[install]]
+id = "pip"
+title = "pip"
+cmd = "pip install funshell"
+note.zh = "仅安装 Python API 库，不含 funshell 命令——命令行请走上面的 apt / brew / Cargo / Release 渠道。"
+note.en = "Installs the Python library only; it does not ship the funshell CLI. Use apt, brew, Cargo or Release binaries above for the CLI."

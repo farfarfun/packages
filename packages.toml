@@ -80,6 +80,36 @@ desc = "One-command release pipeline for Python, frontend, Flutter and Rust repo
 checks = [["--help", "build"]]
 
 [[source]]
+repo = "farfarfun/funshell"
+keep = 3
+# 2.0.0 起核心与 CLI 改为 Rust 原生实现并发布 .deb / tarball / SHA256SUMS。
+min_version = "2.0.0"
+
+[source.brew]
+desc = "Cross-platform shell execution and port/process query & kill CLI"
+checks = [["--help", "port"]]
+
+[[source]]
+repo = "farfarfun/funpub"
+keep = 3
+# 0.2.0 起核心与 CLI 改为 Rust 原生实现并发布 .deb / tarball / SHA256SUMS。
+min_version = "0.2.0"
+
+[source.brew]
+desc = "Multi-channel artifact publishing CLI powered by Rust"
+checks = [["channels", "aliyun"]]
+
+[[source]]
+repo = "farfarfun/funmirror"
+keep = 3
+# 0.7.0 起核心与 CLI 改为 Rust 原生实现并发布 .deb / tarball / SHA256SUMS。
+min_version = "0.7.0"
+
+[source.brew]
+desc = "Parallel repository and release mirroring CLI across GitHub, Gitee, GitLab and GitCode"
+checks = [["--help", "mirror"]]
+
+[[source]]
 repo = "farfarfun/funclash"
 # 一个 .deb 45 MB，两个架构，所以 keep=2 就占了 180 MB，而 Pages 整站上限 1 GB。
 # 留两版而不是三版：能回退是留多版的全部理由，两版就够用，第三版只是再占 90 MB。
